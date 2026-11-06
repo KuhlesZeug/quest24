@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Quest 24 · Der Hort des Aschenkönigs</title>
+<meta name="theme-color" content="#1b1410">
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Grenze+Gotisch:wght@500;700;800&family=Alegreya:ital,wght@0,400;0,500;0,700;1,400&family=Alegreya+SC:wght@500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css?v=1793996155">
+</head>
+<body>
+
+<!-- Start -->
+<section id="s-start" class="screen on">
+  <div class="st-bg"></div>
+  <div class="st-in">
+    <img class="st-logo" src="a/ui/logo.png" alt="Quest 24">
+    <div class="st-sub">Der Hort des Aschenkönigs</div>
+    <p id="giftline" class="giftline"></p>
+    <div class="st-form">
+      <div id="codebox" class="field"><label for="code">Zugangscode aus deiner Abenteuerakte</label><input id="code" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="Zugangscode"></div>
+      <button id="btn-start" class="pbtn big">Abenteuer beginnen</button>
+      <p class="small"><button class="lnk" onclick="openKomplize()">Du verschenkst das Abenteuer? Hier einrichten</button></p>
+      <p class="small">Ton an, am schönsten mit Kopfhörern. Dein Spielstand bleibt auf diesem Handy, spiel deshalb immer hier und nicht im privaten Modus.</p>
+    </div>
+  </div>
+</section>
+
+<!-- Film -->
+<section id="s-film" class="screen">
+  <div class="film" id="film"></div>
+  <div class="film-sub" id="film-sub"></div>
+  <button class="lnk film-skip" id="btn-skip">Überspringen</button>
+</section>
+
+<!-- Charakterbau -->
+<section id="s-hero" class="screen"><div class="hero-in" id="hero-in"></div></section>
+
+<!-- Karte -->
+<section id="s-map" class="screen">
+  <div class="hud" id="hud"></div>
+  <div class="map" id="map"><div class="map-in" id="map-in"><img src="a/img/karte.jpg" alt="Landkarte von Eldmark"></div></div>
+  <p class="map-foot" id="map-foot"></p>
+</section>
+
+<!-- Szene -->
+<section id="s-scene" class="screen">
+  <div class="sc-bg" id="sc-bg"></div>
+  <div class="sc-top"><button class="hb" id="sc-back" aria-label="Zur Karte">'</button><div class="sc-title" id="sc-title"></div></div>
+  <div class="sc-box" id="sc-box"><div class="sb-face"></div><div class="sb-main"><div class="sb-name"></div><div class="sb-text"></div></div><div class="sb-more"></div></div>
+  <div class="sc-choices" id="sc-choices"></div>
+</section>
+
+<div id="battle" class="ovl battle"></div>
+<div id="card" class="ovl card"></div>
+<div id="sheet" class="ovl sheet"></div>
+<div id="toast" class="toast"></div>
+
+<script src="gate.js?v=1793996155"></script>
+<script src="engine.js?v=1793996155"></script>
+<script src="scene.js?v=1793996155"></script>
+<script src="dice.js?v=1793996155"></script>
+<script src="items.js?v=1793996155"></script>
+<script src="battle.js?v=1793996155"></script>
+<script src="ui.js?v=1793996155"></script>
+<script src="games.js?v=1793996155"></script>
+<script src="films.js?v=1793996155"></script>
+<script src="days1.js?v=1793996155"></script>
+<script src="days2.js?v=1793996155"></script>
+<script src="days3.js?v=1793996155"></script>
+<script src="days4.js?v=1793996155"></script>
+<script src="hero.js?v=1793996155"></script>
+<script src="komplize.js?v=1793996155"></script>
+<script src="main.js?v=1793996155"></script>
+</body>
+</html>

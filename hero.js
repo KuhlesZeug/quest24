@@ -1,0 +1,30 @@
+// Sitzung Null: Klasse, Aussehen, Werte, Herkunft, Gesinnung, Name
+const CLS_SAY={krieger:'Robust. Mutig. Vermutlich laut.',waldlaeufer:'Kennt jeden Baum beim Vornamen.',magier:'Liest viel. Explodiert manchmal.',schurke:'Ich zähle nach der Sitzung meine Würfel.'};
+const LOOKS=4; // je Klasse: 1 und 2 weiblich, 3 und 4 männlich
+const ORIG=[['berg','Bergdorf','Aufgewachsen zwischen Ziegen und Lawinen.'],['hafen','Hafenstadt','Kennt jedes Schiff und jeden Taschendieb.'],['wald','Waldhütte','Spricht fließend Eichhörnchen.']];
+const ALIGN=[['rg','Rechtschaffen gut'],['ng','Neutral gut'],['cg','Chaotisch gut'],['rn','Rechtschaffen neutral'],['nn','Neutral'],['cn','Chaotisch neutral'],['rb','Rechtschaffen böse'],['nb','Neutral böse'],['cb','Chaotisch böse']];
+const STATI={str:['st_str','Stärke','Zuschlagen, tragen, Türen eintreten'],dex:['st_dex','Geschick','Schießen, klettern, ausweichen'],wis:['st_wis','Weisheit','Zaubern, bemerken, Rätsel']};
+
+function buildHero(){return new Promise(done=>{
+ const H={cls:null,look:1,str:1,dex:1,wis:1,orig:null,align:null,name:(GIFT&&GIFT.an)||'',skills:[]};let stp=0;const box=$('#hero-in');show('#s-hero');music(A+'mus/taverne.mp3',.35);atmo(A+'atmo/lagerfeuer.mp3',.3);
+ const nav=(back,next,ok)=>'<div class="hero-nav">'+(back?'<button class="pbtn" id="hn-b">Zurück</button>':'')+'<button class="pbtn" id="hn-n"'+(ok?'':' disabled style="opacity:.5"')+'>'+(next||'Weiter')+'</button></div>';
+ const bindNav=(ok)=>{const b=$('#hn-b');if(b)b.onclick=()=>{stp--;sfx('pergament',.5);draw()};$('#hn-n').onclick=()=>{if(!ok())return;stp++;sfx('pergament',.5);draw()}};
+ const say=(t,vo)=>{if(vo)playVo(A+'vo/'+vo+'.mp3');return '<p class="say">'+t+'</p>'};
+ function draw(){window.scrollTo(0,0);box.parentElement.scrollTop=0;
+  if(stp===0){box.innerHTML='<div class="step">Schritt 1 von 6</div><h2>Wähle deine Klasse</h2>'+say('Hier entsteht deine Figur. Das ist der wichtigste Moment des ganzen Abenteuers. Also, einer der wichtigsten.')+'<div class="cls-grid">'+Object.entries(CLS).map(([k,c])=>'<button class="cls-b'+(H.cls===k?' on':'')+'" data-k="'+k+'"><div class="im" style="background-image:url('+A+'img/h_'+k+'_'+(H.cls===k?H.look:1)+'.jpg)"></div><b>'+c.nf+' oder '+c.n+'</b><span>'+SK[c.start].n+': '+SK[c.start].d+'</span></button>').join('')+'</div>'+nav(0,0,!!H.cls);
+   $$('.cls-b').forEach(b=>b.onclick=()=>{H.cls=b.dataset.k;sfx('ui_klick',.6);playVo(A+'vo/held_'+H.cls+'.mp3');$$('.cls-b').forEach(x=>x.classList.toggle('on',x===b));$('#hn-n').disabled=false;$('#hn-n').style.opacity=1});bindNav(()=>!!H.cls)}
+  if(stp===1){box.innerHTML='<div class="step">Schritt 2 von 6</div><h2>Dein Aussehen</h2><div class="look-grid">'+[1,2,3,4].map(i=>'<button class="look-b'+(H.look===i?' on':'')+'" data-i="'+i+'"><div class="im" style="background-image:url('+A+'img/h_'+H.cls+'_'+i+'.jpg)"></div></button>').join('')+'</div>'+nav(1,0,1);
+   $$('.look-b').forEach(b=>b.onclick=()=>{H.look=+b.dataset.i;H.f=H.look<=2;sfx('ui_klick',.6);$$('.look-b').forEach(x=>x.classList.toggle('on',x===b))});bindNav(()=>true)}
+  if(stp===2){const left=9-H.str-H.dex-H.wis;box.innerHTML='<div class="step">Schritt 3 von 6</div><h2>Deine Werte</h2>'+say('Verteile 6 Punkte. Jeder Wert startet bei 1, höchstens 4.')+Object.entries(STATI).map(([k,s])=>'<div class="stat-row">'+UI(s[0])+'<b>'+s[1]+'<br><small style="font-family:var(--body);font-weight:400;color:var(--ink2)">'+s[2]+'</small></b><button class="pm" data-k="'+k+'" data-d="-1">−</button><span class="v">'+H[k]+'</span><button class="pm" data-k="'+k+'" data-d="1">+</button></div>').join('')+'<p class="pts">Noch '+left+' Punkte</p><div style="text-align:center"><button class="lnk" id="h-roll">Lieber auswürfeln (je W10)</button></div>'+nav(1,0,left===0);
+   $$('.pm').forEach(b=>b.onclick=()=>{const k=b.dataset.k,d=+b.dataset.d,l=9-H.str-H.dex-H.wis;if(d>0&&(l<=0||H[k]>=4))return;if(d<0&&H[k]<=1)return;H[k]+=d;sfx('ui_klick',.5);draw()});
+   $('#h-roll').onclick=async()=>{const conv=v=>v<=3?1:v<=6?2:v<=9?3:4;for(const k of ['str','dex','wis']){const v=await rollPercentD10(STATI[k][1]);H[k]=conv(v)}playVo(A+'vo/held_wuerfeln.mp3');H.rolled=1;draw()};
+   bindNav(()=>H.rolled||9-H.str-H.dex-H.wis===0)}
+  if(stp===3){box.innerHTML='<div class="step">Schritt 4 von 6</div><h2>Deine Herkunft</h2><div class="opt-list">'+ORIG.map(o=>'<button data-k="'+o[0]+'" class="'+(H.orig===o[0]?'on':'')+'"><b style="font-family:var(--sc)">'+o[1]+'</b><br>'+o[2]+'</button>').join('')+'</div>'+nav(1,0,!!H.orig);
+   $$('.opt-list button').forEach(b=>b.onclick=()=>{H.orig=b.dataset.k;sfx('ui_klick',.6);draw()});bindNav(()=>!!H.orig)}
+  if(stp===4){box.innerHTML='<div class="step">Schritt 5 von 6</div><h2>Deine Gesinnung</h2>'+say('Wie handelt deine Figur, wenn es drauf ankommt?')+'<div class="al-grid">'+ALIGN.map(a=>'<button data-k="'+a[0]+'" class="'+(H.align===a[0]?'on':'')+'">'+a[1]+'</button>').join('')+'</div>'+nav(1,0,!!H.align);
+   $$('.al-grid button').forEach(b=>b.onclick=()=>{H.align=b.dataset.k;sfx('ui_klick',.6);if(/b$/.test(H.align))playVo(A+'vo/held_boese.mp3');draw()});bindNav(()=>!!H.align)}
+  if(stp===5){box.innerHTML='<div class="step">Schritt 6 von 6</div><h2>Dein Name</h2><div class="look-b on" style="max-width:220px;margin:0 auto 14px"><div class="im" style="background-image:url('+A+'img/h_'+H.cls+'_'+H.look+'.jpg)"></div></div><input class="name-in" id="h-name" maxlength="24" value="'+esc(H.name)+'" placeholder="Name deiner Figur">'+nav(1,'Figur fertig',1);
+   $('#hn-b').onclick=()=>{stp--;draw()};$('#hn-n').onclick=()=>{const n=$('#h-name').value.trim();if(!n)return toast('Deine Figur braucht einen Namen.');H.name=n;H.f=H.look<=2;st.hero=H;st.hp=heroMaxHp();save();sfx('stufenaufstieg');done()}}
+ }
+ draw()})}
+async function rollPercentD10(lbl){const ov=diceOvl();ov.innerHTML='<div class="dice-card"><div class="dc-t">'+lbl+'</div><div class="dc-row"></div></div>';ov.classList.add('on');const d=dieEl('w10');ov.querySelector('.dc-row').appendChild(d);sfx('wuerfel');const v=rnd(10);await tumble(d,v===10?'10':v,x=>x==null?rnd(10):x);await sleep(900);ov.classList.remove('on');return v}

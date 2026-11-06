@@ -1,0 +1,183 @@
+// Tag 19 bis 24: Frostturm, Gipfel der Winde, Aschenland, Drachenreiter, Hort
+const EIS_={mus:'eis',atmo:'bergwind',acc:['eis_knackt','wolf'],every:12};
+
+DAYS[19]={end:'Heute zum Ausdrucken: Nachtigalls Gefährtenbogen.',steps:[
+ {bg:'ort19',...EIS_},
+ {s:'SL',t:'Der Frostturm. Niemand weiß, wer ihn gebaut hat. Ich auch nicht. Ich hab ihn nur gezeichnet.'},
+ {probe:{stat:'dex',ziel:14,name:'Klettern',tag:'klettern'},
+  ok:[{s:'SL',t:'Wie eine Bergziege. Eine sehr heldenhafte Bergziege.'}],
+  fail:[{s:'SL',t:'Du rutschst zweimal ab und kommst trotzdem oben an. Grumbold schiebt von unten.'}]},
+ {s:'SL',t:'Ein Kater. Im Eis. Mitten im Satz.'},
+ {s:'HU',t:'Ach, du armes Ding.',e:'sad'},
+ {fig:'g_eis_0'},
+ {s:'EIS',t:'Niemand berührt den Gefangenen. Er hat meinen Turm beleidigt.',e:'angry'},
+ {s:'SL',t:'Würfelt Initiative!'},
+ {fight:'eis'},
+ {bg:'ort19',mus:'eis',sfx:'eis_knackt',fig:null},
+ {s:'NA',t:'… und deshalb ist dieser Turm architektonisch eine Zumutung.'},
+ {s:'NA',t:'Oh. Publikum.',e:'shock'},
+ {s:'NA',t:'Nachtigall. Kein Vogel. Bevor jemand fragt.',e:'sly'},
+ {s:'ZI',t:'Aber warum heißt du dann …'},
+ {s:'NA',t:'Jemand fragt.'},
+ {s:'HU',t:'Na, du bist ja ganz durchgefroren.',e:'smile'},
+ {sfx:'katze'},
+ {s:'NA',t:'Das ist kein Schnurren. Das ist der Wind.'},
+ {s:'SL',t:'Es ist kein Wind im Turm.'},
+ {s:'NA',t:'Dann ist es der Spielleiter.',e:'sly'},
+ {join:'na'},
+ {s:'SL',t:'Und damit ist die Gruppe vollständig. Fünf Figuren. Ich hab Gänsehaut. Wendelgard, haben Sie auch Gänsehaut?',e:'laugh'},
+ {s:'WG',note:1,t:'Nein.'},
+ {loot:1},{hide:1}
+]};
+
+DAYS[20]={end:'Heute zum Ausdrucken: die Gipfelkarte und Teil 3 der Landkarte.',steps:[
+ {bg:'ort20',mus:'eis',atmo:'bergwind',acc:['donner'],every:14},
+ {s:'SL',t:'Der Gipfel der Winde. Hier oben wurde früher der Lichternachtstern entzündet.'},
+ {s:'NA',t:'Ich weiß.',e:'sad'},
+ {s:'GR',t:'Woher weißt du das?'},
+ {s:'NA',t:'Ich weiß vieles. Ich bin eine Katze. Weiter.'},
+ {s:'SL',t:'Über den Grat kommen Windböen. Tippe im richtigen Moment, damit sich alle hinter Grumbold ducken.'},
+ {game:'sturm'},
+ {s:'NA',t:'Von der Feuerschale aus. Zwei Katzensprünge nach Norden. Ein Katzensprung nach Osten. Dann ein Menschenschritt nach Westen.'},
+ {s:'NA',t:'Ein Katzensprung sind zwei Felsen. Ein Menschenschritt ist einer. Menschen sind langsam.',e:'sly'},
+ {code:{id:'gipfel',k:'Nachtigalls Versteck',q:'Auf welchem Felsen der Gipfelkarte liegt das Versteck?<br><small>Die Feuerschale steht auf C5.</small>',ph:'zum Beispiel B3',h:['__D1__'],
+  hints:['Ein Katzensprung zählt doppelt. Zwei Katzensprünge sind also vier Felsen.','Nach den Sprüngen nach Norden stehst du in der obersten Reihe.','Nach dem Sprung nach Osten stehst du ganz am rechten Rand, auf E1. Ein Schritt zurück: D1.'],
+  wrongSteps:[{s:'NA',t:'Mein Mittagessen von vor sechzig Jahren. Nein danke.'}]}},
+ {s:'NA',t:'Der Schattenschlüssel. Damit kommt man durch jeden Schatten. Auch durch sehr große.'},
+ {s:'HU',t:'Du kennst den Drachen, nicht wahr?',e:'worried'},
+ {wait:1200},
+ {s:'NA',t:'Weiter.',e:'sad'},
+ {item:'schattenschluessel'},
+ {sfx:'fanfare'},
+ {s:'SL',t:'Stufe fünf! Die letzte. Ich hab die Fanfare zurückgeholt. Nur dieses eine Mal.',e:'laugh'},
+ {levelup:5},
+ {s:'WG',note:1,t:'Genehmigt.'},
+ {learn:'hu:plaetzchen'},
+ {film:'z5'},{hide:1}
+]};
+FILMS.z5={shots:[
+ {img:'f_z5a',mus:'asche',atmo:'bergwind',s:'SL',t:'Und dann sahen sie es zum ersten Mal.'},
+ {img:'f_z5b',pan:1,s:'SL',t:'Das Aschenland. Und dahinter: der Hort des Aschenkönigs.'},
+ {img:'f_z5c',d:3000},
+ {s:'GR',t:'Das ist … weit.'},
+ {img:'f_tisch',mus:null,sfx:'plattenkratzer',s:'SL',t:'Ich hab es kürzer gezeichnet, als es ist. Tut mir leid. Ich hab die Maßstabsleiste vergessen.'}
+]};
+
+DAYS[21]={end:'Nachtigall trägt die Schuppe ganz vorsichtig.',steps:[
+ {bg:'ort21',mus:'asche',atmo:'aschenland',acc:['lava','drachenknurren'],every:15},
+ {s:'SL',t:'Das Aschenland. Früher ein Meer aus Glut. Heute so kalt wie ein Montagmorgen.'},
+ {s:'NA',t:'Es war schön hier. Früher.',e:'sad'},
+ {s:'SL',t:'Würfelt Initiative! Das letzte Mal vor dem Drachen. Wahrscheinlich. Ich hab mir nicht alles aufgeschrieben.'},
+ {fn:()=>{const a=st.flags.sk_na||[];if(!a.includes('frostkralle'))a.push('frostkralle');st.flags.sk_na=a;const z=st.flags.sk_zi||[];if(!z.includes('ballade'))z.push('ballade');st.flags.sk_zi=z;save()}},
+ {s:'NA',t:'Ich hatte das schon immer drauf. Ich hatte nur keine Lust.',e:'sly'},
+ {s:'ZI',t:'Endlich ein Lied, das etwas bewirkt! Also, alle meine Lieder bewirken etwas. Dieses aber messbar.',e:'laugh'},
+ {fight:'asche'},
+ {bg:'ort21',mus:'asche'},
+ {s:'NA',t:'Die ist von ihm. Er hat Schuppen verloren. Das ist nicht gut.',e:'worried'},
+ {item:'drachenschuppe'},{loot:1},{hide:1}
+]};
+
+DAYS[22]={end:'Heute zum Ausdrucken: die Tagebuchseiten mit der Drehscheibe.',steps:[
+ {bg:'ort22',mus:'asche',atmo:'aschenland',acc:['wind_boe'],every:15},
+ {s:'SL',t:'Das Lager der Drachenreiter. Früher lebten hier die Hüter, die Vharkon jedes Jahr begleitet haben. Heute … nur noch Staub. Und ein Tagebuch.'},
+ {s:'SL',t:'Die letzte Seite ist verschlüsselt. Nimm die Drehscheibe von deinem Druckblatt.'},
+ {code:{id:'tagebuch',k:'Das Tagebuch des letzten Hüters',q:'Wie heißt das letzte lange Wort der entschlüsselten Seite?',ph:'Wort eingeben',h:['__PLAETZCHEN__'],
+  hints:['Grumbold zählt immer bis sieben und fängt dann wieder an. Das ist die Zahl.','Drehe den inneren Ring so, dass unter dem äußeren K ein D steht. Dann kannst du alles direkt ablesen.','Die Seite lautet: DAS HERZJUWEL IST FORT. DIE DIEBIN LIESS EIN PLAETZCHEN DA.']}},
+ {film:'z6'},
+ {item:'herzjuwel'},{fn:()=>{st.insp=1;save();toast('Inspiration für alle')}},{hide:1}
+]};
+FILMS.z6={shots:[
+ {img:'ort22',mus:null,atmo:'lagerfeuer',s:'HU',t:'Ich war zwanzig. Und ich war die Beste. Ich wollte beweisen, dass ich alles stehlen kann. Sogar aus einem Drachenhort.'},
+ {img:'f_z6a',mus:'rueckblende',s:'HU',t:'Ich dachte, es wäre einfach ein Juwel. Ein schönes, warmes Juwel.'},
+ {img:'f_z6b',s:'HU',t:'Ich hab ein Plätzchen dagelassen. Wie immer. Damit es nicht so … nackt aussieht.'},
+ {img:'f_z6c',mus:null,s:'HU',t:'Ich habe es nie verkauft. Ich konnte nicht. Es ist kalt geworden, sobald ich draußen war. Sechzig Jahre trage ich es mit mir herum.'},
+ {s:'NA',t:'Ich war dabei, als er aufgewacht ist. Er hat nicht gebrüllt. Er hat nur gefragt, wo es so kalt herkommt.'},
+ {s:'NA',t:'Und ich bin gegangen. Weil ich es nicht ausgehalten habe, ihn so zu sehen.'},
+ {img:'f_z6d',d:2500},
+ {s:'SL',t:'Manchmal ist das Schwerste an einem Abenteuer nicht der Drache. Sondern das, was man selbst mit sich herumträgt.'},
+ {s:'SL',t:'Und manchmal braucht es nur eine Gruppe, die bleibt, damit man es endlich ablegen kann.'},
+ {sfx:'rohrpost',d:1500},
+ {s:'WG',t:'Weiter so.'}
+]};
+
+DAYS[23]={end:'Heute zum Ausdrucken: der Schlachtplan.',steps:[
+ {bg:'ort23',mus:'asche',atmo:'lagerfeuer',acc:['drachenknurren','wolf'],every:18},
+ {s:'SL',t:'Die letzte Nacht vor der Lichternacht. Lange Rast. Alles wird aufgefüllt. Und ich trinke meinen letzten Tee vor der Bewertung. Ich zittere ein bisschen. Das ist der Tee.',e:'worried'},
+ {s:'NA',t:'Er hieß nicht immer Aschenkönig. Früher nannten sie ihn den Hüter. Ich hab auf seiner Nase gesessen, jedes Jahr, wenn er den Stern angezündet hat.',e:'sad'},
+ {s:'NA',t:'Die letzte Kerze, die er je entzündet hat, hab ich mitgenommen. Als Erinnerung.'},
+ {s:'NA',t:'Die Sonnenkerze. Sie brennt noch. Ein bisschen. So wie er.'},
+ {s:'NA',t:'Das ist für dich. Du bist die Einzige hier ohne Vorgeschichte mit ihm. Er wird dir zuhören.',tm:'Das ist für dich. Du bist der Einzige hier ohne Vorgeschichte mit ihm. Er wird dir zuhören.'},
+ {item:'sonnenkerze'},
+ {learn:'na:neunleben'},
+ {s:'NA',t:'Ich hab noch acht übrig. Glaube ich. Ich hab nicht gezählt.',e:'sly'},
+ {s:'GR',t:'Ich kann zählen helfen. Bis sieben.',e:'smile'},
+ {fn:()=>playSong('zirpia_11',.85)},
+ {s:'ZI',t:'Das Summen war Absicht. Künstlerisch.',e:'sly'},
+ {s:'HU',t:'Natürlich, Kindchen.',e:'smile'},
+ {s:'SL',t:'Nachtigall erzählt, was morgen passieren wird. Leg mit deinem Druckblatt Schlachtplan fest, wer in welcher Phase vorangeht.'},
+ {game:'plan'},
+ {s:'SL',t:'Morgen ist Lichternacht. Schlaft gut. Ich werde nicht schlafen. Aber ihr.',e:'worried'},{hide:1}
+]};
+
+DAYS[24]={end:'Heute ist Lichternacht.',steps:[
+ {bg:'ort24',mus:'boss',mv:.3,atmo:'drachenhort',acc:['drachenknurren'],every:10},
+ {s:'VH',t:'Noch mehr Lichter. Ihr bringt mir noch mehr Lichter.',e:1},
+ {s:'VH',t:'Sie wärmen nicht. Keines von ihnen wärmt.',e:5},
+ {s:'NA',t:'Hallo, alter Freund.',e:'sad'},
+ {s:'VH',t:'Du. Du bist gegangen.',e:2},
+ {s:'NA',t:'Ich weiß.',e:'sad'},
+ {sfx:'drache'},
+ {s:'VH',t:'Geht. Bevor ich euch die Kälte zeige, die ich seit sechzig Jahren fühle.',e:3},
+ {s:'SL',t:'Okay. Das ist es. Würfelt Initiative. Alle. Zusammen.',e:'worried'},
+ {fn:()=>music(A+'mus/boss.mp3',.5)},
+ {s:'HU',t:'Kindchen, runter da.',e:'angry'},{fn:()=>keyProbe(0)},{sfx:'netz'},
+ {s:'VH',t:'Was … ist das? Gestrickt?',e:4},{s:'HU',t:'Doppelt. Mit Zopfmuster.',e:'sly'},
+ {s:'GR',t:'Eins. Zwei. Drei. Vier. Fünf. Sechs. Sieben.'},{wait:900},{s:'GR',t:'Acht.',e:'laugh'},
+ {s:'SL',t:'Er hat bis acht gezählt.',e:'shock'},{fn:()=>keyProbe(1)},{sfx:'feuerball'},
+ {s:'GR',t:'Entschuldigung. Das hat sicher wehgetan.',e:'worried'},
+ {s:'ZI',t:'Endlich. Mein größtes Publikum.',e:'smile'},{fn:()=>keyProbe(2)},
+ {fn:()=>playSong('zirpia_12',.9,24)},
+ {s:'ZI',t:'Kein Applaus jetzt. Er schläft fast.',e:'smile'},
+ {if:'traum',then:[{s:'ZI',t:'Du bist ein wunderschöner Drache.',e:'smile'},{s:'VH',t:'… Danke.',e:6}]},
+ {fn:()=>keyProbe(3)},{sfx:'katze'},
+ {s:'NA',t:'Da. Wo das Herz war. Eine Kruste aus Asche, sechzig Jahre dick.',e:'sad'},
+ {s:'NA',t:'Ich bin wieder da, Großer.',e:'sad'},
+ {fn:()=>{music(A+'mus/rueckblende.mp3',.4)}},
+ {s:'SL',t:'Jetzt liegt es an dir, {NAME}.',e:'worried'},
+ {choice:[{t:'Das Herzjuwel zurückgeben',go:[{fn:()=>keyProbe(4)},{s:'HU',t:'Es tut mir leid. Sechzig Jahre lang.',e:'sad'},{sfx:'feuer_entfacht'},{s:'VH',t:'Warm. Es ist … warm.',e:7}]},
+  {t:'Den Stern selbst entzünden',go:[{fn:()=>keyProbe(4)},{sfx:'licht_an'},{s:'HU',t:'Kindchen, das gehört dir. Hat es immer.',e:'sad'},{sfx:'feuer_entfacht'},{s:'VH',t:'… Warm.',e:7}]}]},
+ {film:'z7'},
+ {s:'VH',t:'Ein Hüter vergisst nicht, wer ihm geholfen hat.',e:6},
+ {s:'SL',t:'Für dich, {NAME}. Jemand hat ihn hier für dich hinterlegt.'},
+ {game:'schatz'},
+ {s:'SL',t:'Ich glaube, dieser Teil des Abenteuers gehört nur dir.'},
+ {bg:'ort01',mus:'dorf',atmo:'dorf_winter',acc:['glocke'],every:12},
+ {s:'ALT',t:'{NAME}. Du hast es geschafft.',e:'laugh'},
+ {s:'ALT',t:'Hast du das Butterbrot noch?'},
+ {if:()=>has('butterbrot'),then:[{s:'SL',t:'Du hast es noch. Natürlich. Niemand isst das Butterbrot.',e:'laugh'}],else:[{s:'SL',t:'Nein. Gegessen. An Tag … ich will es gar nicht wissen. Sehr vernünftig.'}]},
+ {if:()=>GIFT&&GIFT.von,then:[{s:'ALT',t:'Und schöne Grüße von {VON}. Es hieß, nie hätte jemand an dir gezweifelt.',novo:1}]},
+ {bg:'f_tisch',mus:null,sfx:'rohrpost'},
+ {s:'WG',t:'Abschlussbewertung. Erzählung: lebendig. Witze: zahlreich. Teilweise gut. Bob: weiterhin unerklärt.',e:'neutral'},
+ {s:'WG',t:'Herz: vorhanden. Ergebnis: bestanden. Feste Anstellung bei der Ehrwürdigen Gilde der Erzähler.',e:'smile'},
+ {sfx:'muenzen'},
+ {s:'SL',t:'Danke. Danke! Meisterin Wendelgard, danke! Und danke an dich. Ja, dich. Du hast gewürfelt, gerätselt, gekämpft und jeden meiner Witze ertragen. Das war mein erstes Abenteuer. Und es war das beste.',e:'laugh'},
+ {s:'WG',t:'Der letzte Satz war kitschig.',e:'sly'},
+ {s:'SL',t:'Ich weiß. Ich lass ihn drin.',e:'smile'},
+ {film:'abspann'},{hide:1}
+]};
+FILMS.z7={shots:[
+ {img:'f_z7a',mus:'titel',mv:.7,s:'SL',t:'Und in der Lichternacht, zum ersten Mal seit sechzig Jahren …'},
+ {img:'f_z7a',s:'SL',t:'… flog der Hüter wieder auf den Gipfel.'},
+ {img:'f_z7b',sfx:'feuerball',d:3200},
+ {img:'f_z7c',pan:1,s:'SL',t:'Und jedes Licht fand seinen Weg nach Hause.'},
+ {img:'f_z7d',d:3500},
+ {s:'SL',t:'Ich lass die Musik heute einfach laufen.'}
+]};
+FILMS.abspann={shots:[
+ {img:'f_abspann',fn:'abspann'},
+ {img:'f_tisch',mus:null,s:'SL',t:'In einer Zeit vor unserer Zeit … nein, warte, das ist der Einkaufszettel. Milch, Eier, Drachen …'},
+ {s:'SL',t:'Würfelt Initiative! … Würfle Initiative. Sie ist allein. Ich vergesse das immer.',tm:'Würfelt Initiative! … Würfle Initiative. Er ist allein. Ich vergesse das immer.'},
+ {s:'SL',t:'Der Krokodilkönig hat eine schiefe … nein. Eine königliche Krone. Er hört zu. Er hört immer zu.'},
+ {sfx:'rohrpost',s:'SL',t:'Oh nein. Nicht jetzt.'},
+ {s:'WG',t:'Ich wollte nur sagen: Gute Nacht.'}
+]};
