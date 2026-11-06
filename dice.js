@@ -10,11 +10,12 @@ async function tumble(d,final,fmt){const k=d.dataset.k,n=DFR[k]||0,img=d.querySe
  img.src=A+'ui/'+k+'.png';b.style.opacity=1;d.classList.remove('roll');d.classList.add('land');b.textContent=fmt(final);setTimeout(()=>d.classList.remove('land'),500)}
 
 // Eigene Würfel: Ergebnis selbst eintippen
-function ownDice(max,label){return new Promise(r=>{const o=diceOvl();const f=el('div','own','<p>'+label+'</p><input type="number" inputmode="numeric" min="1" max="'+max+'" placeholder="1 bis '+max+'"><button class="pbtn">Übernehmen</button>');o.appendChild(f);
- const i=f.querySelector('input');i.focus();f.querySelector('button').onclick=()=>{const v=+i.value;if(v>=1&&v<=max){f.remove();r(v)}else toast('Bitte eine Zahl von 1 bis '+max)}})}
+function ownDice(max,label){return new Promise(r=>{const o=diceOvl();const f=el('div','own','<p>'+label+'</p><input type="number" inputmode="numeric" min="1" max="'+max+'" placeholder="1 bis '+max+'"><button class="pbtn">Übernehmen</button><button class="lnk own-app">Lieber hier in der App würfeln</button>');o.appendChild(f);
+ const i=f.querySelector('input');i.focus();f.querySelector('.pbtn').onclick=()=>{const v=+i.value;if(v>=1&&v<=max){f.remove();r(v)}else toast('Bitte eine Zahl von 1 bis '+max)};
+ f.querySelector('.own-app').onclick=()=>{st.flags.own=0;save();f.remove();r(rnd(max))}})}
 
 // W20 Probe: zeigt Ziel, Bonus, Ergebnis
-async function rollD20(o){const ov=diceOvl();ov.innerHTML='<div class="dice-card"><div class="dc-t">'+esc(o.title)+'</div><div class="dc-s">'+esc(o.sub||'')+'</div><div class="dc-row"></div><div class="dc-res"></div><button class="pbtn dc-go">Würfeln</button>'+(st.flags.own?'':'<button class="lnk dc-own">Ich würfle mit eigenen Würfeln</button>')+'</div>';
+async function rollD20(o){const ov=diceOvl();ov.innerHTML='<div class="dice-card"><div class="dc-t">'+esc(o.title)+'</div><div class="dc-s">'+esc(o.sub||'')+'</div><div class="dc-row"></div><div class="dc-res"></div><button class="pbtn dc-go">Würfeln</button>'+'</div>';
  ov.classList.add('on');const row=ov.querySelector('.dc-row');const d=dieEl('w20');row.appendChild(d);d.querySelector('b').textContent='20';
  await new Promise(r=>{ov.querySelector('.dc-go').onclick=r;d.onclick=r;const ob=ov.querySelector('.dc-own');if(ob)ob.onclick=async()=>{ov._own=1;r()}});
  ov.querySelector('.dc-go').remove();const ob=ov.querySelector('.dc-own');if(ob)ob.remove();

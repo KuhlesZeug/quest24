@@ -99,7 +99,7 @@ async function battle(F,key,tries){const ov=$('#battle');ov.innerHTML='';ov.clas
  B={F,key,round:0,foes:F.foes.map((f,i)=>({...f,i,max:f.hp,skip:0,minus:0,poison:0,intent:null})),party:partyUnits(),used:{},buff:{},first:true,log:[]};
  if(st.hero.skills.includes('waldsegen'))B.party.forEach(p=>p.hp=Math.min(p.max,p.hp+3));
  ov.innerHTML='<div class="bt-bg" style="background-image:url('+A+'img/'+F.bg+'.jpg)"></div><div class="bt-top"><div class="bt-t">'+esc(F.t)+'</div><div class="bt-r" id="bt-r"></div></div><div class="bt-foes" id="bt-foes"></div><div class="bt-log" id="bt-log"></div><div class="bt-party" id="bt-party"></div><div class="bt-act" id="bt-act"></div>';
- sfx('schwert_ziehen');if(tries&&TIPS[key])blog('Tipp: '+TIPS[key],1);
+ preloadSprites();sfx('schwert_ziehen');if(tries&&TIPS[key])blog('Tipp: '+TIPS[key],1);
  if(F.tut&&!st.flags.tut_done)await tutorial();
  while(true){B.round++;$('#bt-r').textContent='Runde '+B.round;planFoes();render();
   for(const u of B.party){if(u.hp<=0)continue;if(u.web){u.web=0;blog(u.n+' hängt im Netz fest und setzt aus.');render();await sleep(900);continue}
@@ -117,7 +117,11 @@ function blog(t,tip){const l=$('#bt-log');if(!l)return;const p=el('div',tip?'tip
 function planFoes(){B.foes.forEach(f=>{if(f.hp<=0)return;if(f.warned){f.intent=f.warned;f.warned=null;return}
  const a=f.acts[(B.round+f.i)%f.acts.length];if(a.warn&&!f.intent?.warn){f.intent={n:'holt aus',pre:a};f.warned=a;return}f.intent=a})}
 function render(){const fo=$('#bt-foes');fo.innerHTML='';B.foes.forEach(f=>{const d=el('div','bt-f'+(f.hp<=0?' down':'')+(f.boss?' boss':''),'<div class="bt-fi" style="background-image:url('+A+'img/'+f.img+'_'+(f.hp<=0?3:(f.fr||0))+'.png)"></div><div class="bt-hp"><i style="width:'+Math.max(0,f.hp/f.max*100)+'%"></i></div><div class="bt-fn">'+esc(f.n)+' <span class="el el-'+f.el+'"></span></div>'+(f.hp>0&&f.intent?'<div class="bt-int">'+esc(f.intent.pre?f.intent.pre.n+' kommt':f.intent.n)+'</div>':''));d.dataset.i=f.i;fo.appendChild(d)});
- const pa=$('#bt-party');pa.innerHTML='';B.party.forEach((u,k)=>{const d=el('div','bt-u'+(u.hp<=0?' down':'')+(B.cur===u?' cur':''),'<div class="bt-ui" style="background-image:url('+(u.hero?heroImg():A+'img/p_'+u.id+'_'+(u.hp<=0?8:(u.face??0))+'.jpg')+')"></div><div class="bt-hp p"><i style="width:'+Math.max(0,u.hp/u.max*100)+'%"></i></div><div class="bt-un">'+u.hp+'/'+u.max+'</div>');d.dataset.k=k;pa.appendChild(d)})}
+ const pa=$('#bt-party');pa.innerHTML='';B.party.forEach((u,k)=>{const pose=u.hp<=0?3:(u.pose||0);const d=el('div','bt-u'+(u.hp<=0?' down':'')+(B.cur===u?' cur':'')+(pose===1?' atk':'')+(pose===2?' hurt':''),'<div class="bt-sp" style="background-image:url('+spriteSrc(u,pose)+')"></div><div class="bt-hp p"><i style="width:'+Math.max(0,u.hp/u.max*100)+'%"></i></div><div class="bt-un"><span class="bt-mini" style="background-image:url('+(u.hero?heroImg():A+'img/p_'+u.id+'_'+(u.hp<=0?8:(u.face??0))+'.jpg')+')"></span>'+u.hp+'/'+u.max+'</div>');d.dataset.k=k;pa.appendChild(d)})}
+// Rückansicht im Kampf: 0 bereit, 1 Angriff, 2 getroffen, 3 besiegt
+function spriteSrc(u,p){return A+'img/b_'+(u.hero?st.hero.cls+'_'+st.hero.look:u.id)+'_'+p+'.png'}
+function poseFor(u,p,ms){u.pose=p;clearTimeout(u._pt);if(B)render();u._pt=setTimeout(()=>{u.pose=0;if(B)render()},ms)}
+function preloadSprites(){B.party.forEach(u=>{for(let p=0;p<4;p++){const i=new Image();i.src=spriteSrc(u,p)}})}
 function pick(sel,filter){return new Promise(r=>{const els=$$(sel);els.forEach(e=>{const ok=filter(e);e.classList.toggle('pickable',ok);if(ok)e.onclick=()=>{els.forEach(x=>{x.classList.remove('pickable');x.onclick=null});r(e)}})})}
 async function partyTurn(u){B.cur=u;render();const act=$('#bt-act');
  const opts=[{k:'atk',t:u.hit}];u.skills.forEach(s=>{const S=SK[s];if(!S||S.passive)return;if(S.once&&B.used[u.id+s])return;opts.push({k:'sk',s,t:S.n,d:S.d})});
@@ -133,6 +137,7 @@ async function pickFoe(){const alive=B.foes.filter(f=>f.hp>0);if(alive.length===
 async function pickAlly(down){const e=await pick('#bt-party .bt-u',e=>down?B.party[+e.dataset.k].hp<=0:B.party[+e.dataset.k].hp>0);return B.party[+e.dataset.k]}
 async function attack(u,f,o){let bonus=u.atk+(B.buff.all||0)+(u.next||0)+(o.add||0)-(u.blind?2:0);u.next=0;
  let v;if(u.hero){const r=await rollD20({title:u.hit+' gegen '+f.n,sub:'W20 plus '+bonus+', Ziel '+f.def,bonus,ziel:f.def,force:o.crit?20:null});v=r}else{const x=rnd(20);v={v:x,total:x+bonus,crit:x===20,fumble:x===1}}
+ poseFor(u,1,700);if(!u.hero)await sleep(250);
  if(v.fumble&&u.hero){await fumble();return}
  if(v.total<f.def&&!v.crit){blog(u.n+' verfehlt.');sfx('falsch',.5);await sleep(500);return}
  let dmg=o.fixed||(Math.ceil(d10()/2)+u.dmg+(o.dmgAdd||0));const el_=o.el||u.el;let m=o.ignore?Math.max(1,elemMul(el_,f.el)):elemMul(el_,f.el);
@@ -154,10 +159,10 @@ function hurtUnit(u,d,f,an){if(u.block){u.block=0;blog(an+' prallt am Steinwall 
  if(u.dodge){u.dodge=0;blog(u.n+' springt in den Schatten. Daneben.');return}
  if(u.mirror){u.mirror=0;blog(an+' trifft nur ein Spiegelbild.');return}
  if(u.hero&&st.hero.skills.includes('ausweichen')&&!B.used.ausw){B.used.ausw=1;d=Math.ceil(d/2)}
- u.hp=Math.max(0,u.hp-d);sfx('au',.6);u.face=5;setTimeout(()=>{u.face=0;if(B)render()},700);blog(f.n+': '+an+' trifft '+u.n+', '+d+' Schaden.');
+ u.hp=Math.max(0,u.hp-d);sfx('au',.6);u.face=5;if(u.hp>0)poseFor(u,2,650);setTimeout(()=>{u.face=0;if(B)render()},700);blog(f.n+': '+an+' trifft '+u.n+', '+d+' Schaden.');
  if(u.hp<=0&&u.hero&&st.hero.skills.includes('eisernwille')&&!B.used.wille){B.used.wille=1;u.hp=1;blog('Eiserner Wille: '+u.n+' bleibt stehen.')}
  render();const e=$('#bt-party .bt-u[data-k="'+B.party.indexOf(u)+'"]');if(e){e.classList.add('hit');setTimeout(()=>e.classList.remove('hit'),400)}}
-async function useSkill(u,s){const S=SK[s];if(S.once)B.used[u.id+s]=1;sfx('zauber',.7);fx('magic',$('#bt-party .bt-u[data-k="'+B.party.indexOf(u)+'"]'),110);
+async function useSkill(u,s){const S=SK[s];if(S.once)B.used[u.id+s]=1;sfx('zauber',.7);poseFor(u,1,800);fx('magic',$('#bt-party .bt-u[data-k="'+B.party.indexOf(u)+'"]'),110);
  switch(s){
  case 'steinwall':case 'schildwall':{const a=await pickAlly();a.block=1;blog(u.n+' stellt sich vor '+a.n+'.');break}
  case 'glutfaust':{const f=await pickFoe();await attack(u,f,{el:'feuer',dmgAdd:1});break}

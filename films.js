@@ -8,7 +8,8 @@ async function playFilm(key){const F=FILMS[key];if(!F)return;show('#s-film');con
   if(sh.mus!==undefined)music(sh.mus?A+'mus/'+sh.mus+'.mp3':null,sh.mv??.55);
   if(sh.atmo!==undefined)atmo(sh.atmo?A+'atmo/'+sh.atmo+'.mp3':null,.4);
   if(sh.sfx)sfx(sh.sfx,sh.v);
-  if(sh.img&&sh.img!==curImg){curImg=sh.img;const d=el('div','fs'+(sh.pan?' pan':''),'<div class="bg" style="background-image:url('+A+'img/'+sh.img+'.jpg)"></div><div class="shade"></div>');f.appendChild(d);requestAnimationFrame(()=>requestAnimationFrame(()=>{[...f.children].forEach(x=>x.classList.toggle('on',x===d))}));setTimeout(()=>{[...f.children].forEach(x=>{if(x!==d&&!x.classList.contains('on'))x.remove()})},1500)}
+  if(sh.img&&sh.img!==curImg){curImg=sh.img;const d=el('div','fs'+(sh.pan?' pan':''),'<div class="bg" style="background-image:url('+A+'img/'+sh.img+'.jpg)"></div><div class="shade"></div>');d._t0=performance.now();d._pan=!!sh.pan;f.appendChild(d);requestAnimationFrame(()=>requestAnimationFrame(()=>{[...f.children].forEach(x=>x.classList.toggle('on',x===d))}));setTimeout(()=>{[...f.children].forEach(x=>{if(x!==d&&!x.classList.contains('on'))x.remove()})},1500)}
+  if(sh.fade){const fd=sh.fade;setTimeout(()=>{if(run!==filmRun)return;sfx(fd.sfx||'wind_boe',.7);const base=[...f.children].reverse().find(x=>x._t0);const el0=base?performance.now()-base._t0:0;const d=el('div','fs slow'+(base&&base._pan?' pan':''),'<div class="bg" style="background-image:url('+A+'img/'+fd.img+'.jpg);animation-delay:-'+Math.round(el0)+'ms"></div><div class="shade"></div>');d._t0=base?base._t0:performance.now();d._pan=base&&base._pan;f.appendChild(d);curImg=fd.img;requestAnimationFrame(()=>requestAnimationFrame(()=>d.classList.add('on')))},fd.at)}
   if(sh.card){const c=el('div','fs on','<div class="fcard"><img src="'+A+'ui/'+sh.card+'.png" alt=""></div>');f.appendChild(c)}
   if(sh.fn==='ballade'){sub.classList.remove('on');await playSong(ballade(),.95,45);continue}
   if(sh.fn==='abspann'){sub.classList.remove('on');music(null);const lines=[['GR','Ich kann jetzt bis acht zählen. Herbert ist sehr stolz.'],['ZI','Nächstes Jahr: Welttournee. Erste Station: Pilzbühne.'],['HU','Ich hab übrigens noch was von euch allen in meiner Schürze. Holt es euch ab.'],['NA','Mir hat es nicht gefallen. Überhaupt nicht. Ich komme nächstes Jahr wieder. Um mich zu beschweren.'],['VH','Danke.']];
@@ -32,10 +33,18 @@ const FILMS={
   {img:'f_tisch',mus:null,sfx:'plattenkratzer',s:'SL',t:'Moment. Moment. Falsche Seite.'},
   {sfx:'pergament',s:'SL',t:'Das ist … mein Einkaufszettel.'},
   {sfx:'pergament',s:'SL',t:'So. Jetzt.'},
+  {img:'f_wg1',mus:null,s:'WG',t:'Wir warten.'},
+  {s:'SL',t:'Ach so. Darf ich vorstellen: Meisterin Wendelgard. Sie hat schon tausend Abenteuer geleitet. Ich bisher … keins.'},
+  {s:'WG',t:'Null. Er hat null Abenteuer geleitet.'},
+  {s:'SL',t:'Heute beginnt meine Probezeit. Vierundzwanzig Nächte. Wenn sie am Ende zufrieden ist, bin ich ein echter Spielleiter.'},
+  {img:'f_wg2',s:'WG',t:'Und wenn nicht, sortiert er wieder Würfel. Nach Farben.'},
+  {img:'f_wg3',sfx:'rohrpost',s:'SL',t:'Sie schreibt alles mit. Und wenn ihr etwas auffällt, schickt sie mir einen Zettel. Per Rohrpost.'},
+  {img:'f_wg4',s:'WG',t:'Fang an.'},
+  {img:'f_tisch',s:'SL',t:'Ja. Natürlich. Also.'},
   {img:'f_intro3',mus:'intro_dunkel',s:'SL',t:'Doch seit sechzig Jahren ist der Lichternachtstern nicht mehr aufgegangen. Und in diesem Winter … verschwinden auch die Lichter in den Fenstern.'},
   {img:'f_intro4',s:'SL',t:'Vharkon. Der Aschenkönig. Jede Nacht holt er sich ein Licht. Und niemand weiß, warum.'},
-  {img:'ort01',s:'SL',t:'In vierundzwanzig Nächten ist Lichternacht. Wenn bis dahin das letzte Licht erlischt … bleibt Eldmark für immer im Dunkeln.'},
-  {img:'ort01',s:'SL',t:'Das Königreich braucht eine Heldin. Oder einen Helden. Jemand Mutigen. Jemand Starken. Jemand …'},
+  {img:'ort01',s:'SL',t:'In vierundzwanzig Nächten ist Lichternacht. Wenn bis dahin das letzte Licht erlischt … bleibt Eldmark für immer im Dunkeln.',fade:{img:'ort01_dunkel',at:5200,sfx:'laterne_zischt'}},
+  {img:'ort01_dunkel',s:'SL',t:'Das Königreich braucht eine Heldin. Oder einen Helden. Jemand Mutigen. Jemand Starken. Jemand …'},
   {s:'SL',t:'… Verfügbaren.'},
   {img:'f_held1',pan:1,mus:'intro_dunkel',s:'SL',t:'Irgendwo in Morgentau liegt in dieser Nacht jemand wach. Jemand, den noch niemand kennt.'},
   {img:'f_held2',sfx:'tuer_knarzt',s:'SL',t:'Wie diese Gestalt aussieht? Wie sie heißt? Was sie kann? Das steht noch in keinem Buch.'},

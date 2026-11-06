@@ -17,6 +17,9 @@ const WHO={
  EIS:{n:'Der Eiswächter',p:'p_eis'},
  SPK:{n:'Spinnenkönigin',p:'p_spk'},
  KRU:{n:'Kapuzengestalt',p:'p_kap'},
+ SCHL:{n:'Linkes Schild',p:'p_schild_l'},
+ SCHM:{n:'Mittleres Schild',p:'p_schild_m'},
+ SCHR:{n:'Rechtes Schild',p:'p_schild_r'},
  HELD:{n:'',p:''}
 };
 const EMO={neutral:0,talk:1,smile:2,laugh:3,shock:4,worried:5,angry:6,sly:7,sad:8};

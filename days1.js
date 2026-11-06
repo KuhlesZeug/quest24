@@ -57,12 +57,15 @@ DAYS[4]={end:'Heute zum Ausdrucken: Grumbolds Gefährtenbogen.',steps:[
  {bg:'ort04',mus:'mine',atmo:'hoehle',acc:['tropfen','stein_rieseln'],every:10},
  {s:'GR',t:'Eins. Zwei. Drei. Vier. Fünf. Sechs. Sieben.'},
  {wait:1200},
+ {bg:'f_gr_dunkel'},
  {s:'GR',t:'Eins. Zwei …'},
  {s:'SL',t:'Jemand zählt. Und kommt nicht über die Sieben. Das ist entweder sehr unheimlich oder sehr traurig.'},
+ {bg:'f_gr_tunnel'},
  {s:'SL',t:'Vier alte Messingspiegel hängen an den Wänden. Dreh sie so, dass das Licht deiner Laterne bis in die hintere Kammer fällt.'},
  {game:'spiegel'},
- {sfx:'licht_an'},
+ {hide:1},{sfx:'licht_an'},{bg:'f_gr_licht'},{wait:1800},
  {s:'GR',t:'Oh. Oh! Licht. Danke. Ich … ich mag das Dunkle nicht so. Das ist peinlich für einen Golem aus einer Mine, ich weiß.'},
+ {bg:'f_gr_kiesel'},
  {s:'GR',t:'Ich bin Grumbold. Das hier ist Herbert. Herbert ist ein Kiesel.'},
  {s:'SL',t:'Ich mag ihn. Ich darf das nicht sagen. Ich bin neutral.'},
  {s:'SL',t:'Ich mag ihn sehr.'},
@@ -91,13 +94,13 @@ DAYS[5]={end:'Heute zum Ausdrucken: die Runenschablone. Du brauchst sie morgen.'
 ]};
 
 DAYS[6]={end:'Grumbolds Glut leuchtet heller als je zuvor.',steps:[
- {bg:'ort06',mus:'mine',atmo:'hoehle',acc:['tropfen','glut_knistern'],every:11},
+ {bg:'ort06_kalt',mus:'mine',atmo:'hoehle',acc:['tropfen','wind_boe'],every:11},
  {s:'GR',t:'Hier … hier bin ich gemacht worden. Ich erinnere mich an die Wärme.'},
  {s:'SL',t:'Die Runen an der Wand verraten, wie man das Feuer wieder weckt. Leider sind es viele Runen. Sehr viele.'},
  {s:'SL',t:'Leg die Runenschablone von gestern auf das Druckblatt Runenwand.'},
  {code:{id:'runen',k:'Die Runenwand',q:'Welches Wort ergeben die Runen unter der Schablone?',ph:'Wort eingeben',h:['cf462ff3ce8c1b827bf28c86e4b4d57cfa42646edd114fc9e776b04bbe61b94b'],
   hints:['Die Schablone von gestern gehört auf die Runenwand. Achte auf das kleine Glutsteinzeichen in der Ecke.','Lies die Löcher wie ein Buch: Zeile für Zeile, von links nach rechts. Übersetze mit dem Runenalphabet.','Die Runen ergeben HERZFEUER.']}},
- {sfx:'feuer_entfacht'},
+ {hide:1},{fn:async()=>{sfx('feuer_entfacht');setBg(A+'img/ort06.jpg');atmo(A+'atmo/hoehle.mp3',.6);accents(['glut_knistern','tropfen'],9);await sleep(3200)}},
  {s:'GR',t:'Oh. Das ist … warm.'},
  {s:'SL',t:'Manchmal reicht ein bisschen Licht, damit jemand merkt, dass er selbst leuchtet.'},
  {s:'SL',t:'Das war gut, oder? Das war gut. Meisterin Wendelgard, das war gut.'},
@@ -109,10 +112,10 @@ DAYS[6]={end:'Grumbolds Glut leuchtet heller als je zuvor.',steps:[
 ]};
 
 FILMS.z1={shots:[
- {img:'f_z1a',mus:'bedrohlich',atmo:'wald_nacht',s:'SL',t:'In derselben Nacht kam er zurück.'},
- {img:'f_z1b',pan:1,s:'SL',t:'Er brüllte nicht. Er zerstörte nichts. Er nahm nur die Lichter. Eines nach dem anderen.'},
- {img:'f_z1c',s:'SL',t:'Und keines davon wärmte ihn.'},
- {img:'f_z1d',d:2200},
- {img:'f_tisch',mus:null,sfx:'plattenkratzer',s:'SL',t:'Das war übrigens euer Dorf. Nur damit ihr Bescheid wisst.'},
+ {img:'f_z1a',mus:'bedrohlich',atmo:'wald_nacht',s:'SL',t:'Während ihr in der Mine wart, flog Vharkon über Morgentau. Über euer Dorf.'},
+ {img:'f_z1b',pan:1,s:'SL',t:'Er brüllte nicht. Er zerstörte nichts. Er griff nur ganz vorsichtig durch ein Fenster und nahm die Kerze.'},
+ {img:'f_z1c',s:'SL',t:'Er hielt sie ganz nah an sein Gesicht. Als wollte er sich daran wärmen. Aber sie wärmte ihn nicht.'},
+ {img:'f_z1d',s:'SL',t:'Am Morgen brannte in Morgentau wieder ein Licht weniger.'},
+ {img:'f_tisch',mus:null,sfx:'plattenkratzer',s:'SL',t:'Das war übrigens das Fenster von Aldric. Der mit dem Butterbrot.'},
  {s:'SL',t:'Kein Druck.'}
 ]};

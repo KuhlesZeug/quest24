@@ -7,30 +7,37 @@ DAYS[7]={end:'Die Laterne leuchtet. Der Wald flüstert trotzdem weiter.',steps:[
  {s:'SL',t:'Ich rede normal.'},
  {s:'GR',t:'Die Bäume sagen, wir sollen umkehren.'},
  {s:'SL',t:'Das sagen sie zu jedem. Das ist ihr Ding.'},
- {s:'SL',t:'Drei Wege führen in den Wald. Nur einer führt nach Norden. Die Waldgeister haben die Schilder verhext: Nur ein einziges Schild sagt die Wahrheit.'},
- {code:{id:'wege',k:'Die drei Wegweiser',q:'Linkes Schild: Ich führe nach Norden.<br>Mittleres Schild: Ich führe nicht nach Norden.<br>Rechtes Schild: Der linke Weg führt nach Norden.<br><br>Nur ein Schild sagt die Wahrheit. Welcher Weg führt nach Norden?',opts:['Links','Mitte','Rechts'],a:2,
+ {bg:'f_schild_weg'},
+ {s:'SL',t:'Drei Wege führen in den Wald. Nur einer führt nach Norden. Und die Waldgeister haben die Wegweiser verhext. Sie reden. Aber nur einer sagt die Wahrheit.'},
+ {bg:'f_schild_l'},{s:'SCHL',t:'Ich! Ich führe nach Norden! Ganz sicher. Ich bin schließlich das schönste Schild hier.'},
+ {bg:'f_schild_m'},{s:'SCHM',t:'Ich führe nicht nach Norden. Das sag ich gleich, damit sich keiner beschwert.'},
+ {bg:'f_schild_r'},{s:'SCHR',t:'Hihi. Der linke Weg führt nach Norden. Wirklich. Ganz ehrlich. Hihi.'},
+ {bg:'f_schild_weg'},
+ {s:'SL',t:'Nur eines der drei Schilder sagt die Wahrheit. Welcher Weg führt nach Norden?'},
+ {code:{id:'wege',k:'Die drei Wegweiser',q:'Links: „Ich führe nach Norden.“<br>Mitte: „Ich führe nicht nach Norden.“<br>Rechts: „Der linke Weg führt nach Norden.“<br>Nur ein Schild sagt die Wahrheit.',opts:['Links','Mitte','Rechts'],a:2,
   hints:['Nimm nacheinander an, jeder Weg wäre der richtige, und zähle, wie viele Schilder dann die Wahrheit sagen.','Das linke und das rechte Schild sagen dasselbe. Sie sind also entweder beide wahr oder beide falsch.','Links und rechts müssen beide lügen, dann sagt die Mitte die Wahrheit. Der rechte Weg führt nach Norden.'],
-  wrongSteps:[{s:'GR',t:'Den Baum kenne ich. Ich hab ihn Gerhard genannt.'},{s:'SL',t:'Zurück an den Anfang. Gerhard grüßt.'}]}},
+  wrongSteps:[{s:'GR',t:'Den Baum kenne ich. Ich hab ihn Gerhard genannt.'},{s:'SL',t:'Zurück an den Anfang. Gerhard grüßt.'},{bg:'f_schild_weg'}]},
+  ok:[{bg:'f_schild_m'},{s:'SCHM',t:'Na endlich. Ich hab doch gleich gesagt, dass ich nicht lüge. Rechts lang. Und grüßt mir den Norden.'},{bg:'ort07'}]},
  {s:'GR',t:'Eins, zwei, drei, vier, fünf, sechs, sieben. Eins …'},
  {s:'SL',t:'Wir haben Zeit. Also, wir haben siebzehn Nächte. Das ist ja Zeit.'},
  {item:'laterne'},{hide:1}
 ]};
 
 DAYS[8]={end:'Ein Irrlicht leuchtet jetzt im Glas. Es kichert manchmal.',steps:[
- {bg:'ort08',mus:'wald',atmo:'wald_nacht',acc:['eule','wolf'],every:14},
+ {bg:'ort08_leer',mus:'wald',atmo:'wald_nacht',acc:['eule','wolf'],every:14},
  {s:'SL',t:'Irrlichter. Wunderschön. Und hinterhältig. Wer ihnen folgt, landet im Sumpf. Wer sie ignoriert, landet … auch im Sumpf, aber später.'},
  {s:'GR',t:'Die sind so hell. Darf ich eins behalten?'},
  {s:'SL',t:'Die Irrlichter leuchten in einer Reihenfolge auf. Merk sie dir und tippe sie nach.'},
  {game:'irrlicht'},
  {item:'irrlicht'},
- {sfx:'eule',fig:'g_eulenbaer_0'},
+ {hide:1},{sfx:'eule',fig:'g_eulenbaer_0'},{wait:1200},
  {s:'SL',t:'Ein Eulenbär. Bleib ganz ruhig. Keine schnellen Bewegungen.'},
  {choice:[
   {t:'Leise vorbeischleichen',go:[{probe:{stat:'dex',ziel:10,name:'Schleichen'},ok:[{s:'SL',t:'Er schaut nur. Lange. Aber nur.'}],fail:[{s:'SL',t:'Er schaut. Sehr nah. Du riechst jetzt nach Eule.'}]}]},
   {t:'Kann ich ihn streicheln?',go:[{s:'SL',t:'Natürlich fragt das jemand. Es fragt immer jemand.'},{sfx:'wuerfel'},{s:'SL',t:'Na gut. Du darfst.'},{s:'SL',t:'Er mag dich. Er mag dich zu sehr. Das ist jetzt deine Feder.'},{item:'eulenfeder'}]},
   {t:'Grumbold vorschicken',go:[{s:'GR',t:'Guten Abend. Entschuldigung. Wir gehen nur vorbei.'},{s:'SL',t:'Der Eulenbär verbeugt sich. Ich wusste nicht, dass die das können.'}]}]},
  {fig:null},
- {s:'WG',note:1,t:'Drei Optionen für einen Bären. Sie verwöhnen die Spielerin.'},
+ {s:'WG',note:1,t:'Drei Optionen für einen Bären. Sie verwöhnen Ihre Gäste.'},
  {s:'SL',t:'Er ist halb Eule. Also eigentlich nur anderthalb Optionen pro Tier.'},
  {s:'WG',t:'Bitte nicht rechnen.'},{hide:1}
 ]};

@@ -18,9 +18,22 @@ function renderMap(){const m=$('#map-in');m.querySelectorAll('.wp,.token').forEa
   const b=el('button','wp'+(done?' done':open?' open':' lock')+(d===nd&&open?' cur':''),'<img src="'+A+'ui/'+(done?'siegel':'marke')+'.png" alt=""><b>'+d+'</b>');
   b.style.left=p[0]+'%';b.style.top=p[1]+'%';b.onclick=()=>tapDay(d);m.appendChild(b)}
  const at=Math.max(1,Math.min(24,nd>24?24:(st.done[nd-1]?nd-1:Math.max(1,nd-1))));const tp=WP[Object.keys(st.done).length?Math.max(...Object.keys(st.done).map(Number)):1];
- const tk=el('div','token','<div style="background-image:url('+heroImg()+')"></div>');tk.style.left=tp[0]+'%';tk.style.top=tp[1]+'%';m.appendChild(tk);
+ const tk=el('div','token','<i class="tk-sh"></i><div class="tk-sp" style="background-image:url('+runImg(0)+')"></div>');tk.style.left=tp[0]+'%';tk.style.top=tp[1]+'%';m.appendChild(tk);standBeside(tk,Object.keys(st.done).length?Math.max(...Object.keys(st.done).map(Number)):1);for(let i=0;i<4;i++){const im=new Image();im.src=runImg(i)}
  const sc=$('#map');requestAnimationFrame(()=>{const w=m.offsetWidth;sc.scrollLeft=Math.max(0,tp[0]/100*w-sc.clientWidth/2)});
  $('#map-foot').innerHTML=nd>24?'Das Abenteuer ist bestanden. Du kannst jeden Tag noch einmal erleben.':unlocked(nd)?'Tippe auf Wegpunkt '+nd+', um weiterzuspielen.':lockMsg(nd)}
+// Mini Figur auf der Karte: steht, rennt von Punkt zu Punkt und bleibt stehen
+const RUNF={schurke_1:[1,3],schurke_2:[1,3]};
+// Steht neben dem Wegpunkt, auf der Seite weg vom nächsten Punkt, damit keine Zahl verdeckt wird
+function standBeside(tk,d){const n=WP[Math.min(24,d+1)],c=WP[d];const right=n&&n!==c?n[0]>=c[0]:true;tk.style.setProperty('--dx',(right?-34:34)+'px');tk.classList.toggle('left',!right)}
+function runImg(i){const h=st.hero;return h?A+'img/r_'+h.cls+'_'+h.look+'_'+i+'.png':A+'img/r_krieger_1_0.png'}
+async function runTo(d){const tk=$('.token');if(!tk)return;const m=$('#map-in'),sc=$('#map'),sp=tk.querySelector('.tk-sp');
+ const x0=parseFloat(tk.style.left),y0=parseFloat(tk.style.top),x1=WP[d][0],y1=WP[d][1];
+ const W=m.offsetWidth,H=m.offsetHeight,dist=Math.hypot((x1-x0)/100*W,(y1-y0)/100*H);if(dist<4)return;
+ const ms=Math.max(900,Math.min(2600,dist*7));tk.classList.toggle('left',x1<x0);tk.classList.add('run');
+ const h=st.hero,fr=(h&&RUNF[h.cls+'_'+h.look])||[1,2,3];let k=0;const iv=setInterval(()=>{sp.style.backgroundImage='url('+runImg(fr[k++%fr.length])+')'},115);
+ tk.style.transition='left '+ms+'ms linear,top '+ms+'ms linear,transform .35s ease-out';requestAnimationFrame(()=>{tk.style.left=x1+'%';tk.style.top=y1+'%'});
+ sc.scrollTo({left:Math.max(0,x1/100*W-sc.clientWidth/2),behavior:'smooth'});
+ sfx('schritte',.6);await sleep(ms);clearInterval(iv);tk.classList.remove('run');standBeside(tk,d);sp.style.backgroundImage='url('+runImg(0)+')';await sleep(500)}
 function lockMsg(d){const b=berlin();return b.month===12?'Wegpunkt '+d+' öffnet sich am '+d+'. Dezember.':'Das Abenteuer beginnt am 1. Dezember.'}
 async function tapDay(d){sfx('ui_klick',.6);
  if(!unlocked(d)){await rollPercent({title:'Tageswurf',sub:'Noch nicht',locked:'Nachtigall: Geduld ist auch eine Tugend. Angeblich.'});return}
@@ -28,7 +41,7 @@ async function tapDay(d){sfx('ui_klick',.6);
  if(st.done[d]){const r=await choice([{t:'Tag '+d+' noch einmal erleben'},{t:'Zurück zur Karte'}]);if(r===1)return;return playDay(d,true)}
  await rollPercent({title:'Tageswurf',sub:'W100 und W10 zeigen die Zahl des Tages',fixed:d,after:v=>'Auf zu Wegpunkt '+v+': '+DAYN[v]});
  // Figur zieht weiter
- const tk=$('.token');if(tk){tk.style.left=WP[d][0]+'%';tk.style.top=WP[d][1]+'%';sfx('schritte',.6);await sleep(1300)}
+ await runTo(d)
  playDay(d,false)}
 
 async function playDay(d,again){const D=DAYS[d];if(!D){toast('Dieser Tag wird gerade gebaut.');return}
@@ -69,7 +82,7 @@ function openParty(){if(!st.hero)return;const h=st.hero,c=CLS[h.cls];
  const hero='<div class="pt-c"><div class="pt-p" style="background-image:url('+heroImg()+')"></div><div><b>'+heroName()+'</b><span>'+(h.f?c.nf:c.n)+', Stufe '+st.lvl+'</span><div class="pt-st">'+UI('st_str')+h.str+' '+UI('st_dex')+h.dex+' '+UI('st_wis')+h.wis+' '+UI('herz')+heroMaxHp()+'</div><span class="sk">'+[c.start,...h.skills].map(s=>SK[s].n).join(', ')+'</span></div></div>';
  sheet('<h2>Die Gruppe</h2>'+hero+st.party.map(id=>{const C=COMP[id];return '<div class="pt-c"><div class="pt-p" style="background-image:url('+A+'img/k_'+id+'.jpg)"></div><div><b>'+C.n+'</b><span>Element '+ELEM[C.el]+'</span><div class="pt-st">'+UI('herz')+C.hp+'</div><span class="sk">'+[...Object.keys(C.skills),...(st.flags['sk_'+id]||[])].map(s=>SK[s].n).join(', ')+'</span></div></div>'}).join('')+(st.party.length<4?'<p class="mute">Unterwegs wartet noch jemand auf dich.</p>':''))}
 function openLog(){const days=Object.keys(st.done).map(Number).sort((a,b)=>a-b);
- sheet('<h2>Tagebuch</h2>'+(days.length?days.map(d=>'<button class="log-d" data-d="'+d+'"><b>Tag '+d+'</b><span>'+DAYN[d]+'</span></button>').join(''):'<p class="mute">Hier sammeln sich deine Abenteuer.</p>')+'<h4>Einstellungen</h4><label class="set"><input type="checkbox" id="set-auto"'+(st.auto?' checked':'')+'> Text läuft nach der Stimme automatisch weiter</label><label class="set"><input type="checkbox" id="set-own"'+(st.flags.own?' checked':'')+'> Ich würfle mit eigenen Würfeln</label>');
+ sheet('<h2>Tagebuch</h2>'+(days.length?days.map(d=>'<button class="log-d" data-d="'+d+'"><b>Tag '+d+'</b><span>'+DAYN[d]+'</span></button>').join(''):'<p class="mute">Hier sammeln sich deine Abenteuer.</p>')+'<h4>Einstellungen</h4><label class="set"><input type="checkbox" id="set-auto"'+(st.auto?' checked':'')+'> Text läuft nach der Stimme automatisch weiter</label><label class="set"><input type="checkbox" id="set-own"'+(st.flags.own?' checked':'')+'> Ich würfle mit echten Würfeln am Tisch und tippe das Ergebnis selbst ein</label>');
  $$('.log-d').forEach(b=>b.onclick=()=>{$('#sheet').classList.remove('on');playDay(+b.dataset.d,true)});
  $('#set-auto').onchange=e=>{st.auto=e.target.checked;save()};$('#set-own').onchange=e=>{st.flags.own=e.target.checked;save()}}
 
