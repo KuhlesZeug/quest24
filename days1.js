@@ -19,12 +19,15 @@ DAYS[1]={end:'Heute zum Ausdrucken: dein Heldenbogen, Teil 1 der Landkarte und d
 DAYS[2]={end:'Der Kompass zeigt nach Norden. Fast immer.',steps:[
  {bg:'ort02',mus:'taverne',atmo:'taverne',acc:['krug','lachen','holz_knarzt'],every:12},
  {s:'SL',t:'Jedes große Abenteuer beginnt in einer Taverne. Das ist Gesetz. Ich habe nachgesehen.'},
+ {bg:'f_tav_ecke'},
  {s:'SL',t:'Siehst du die Gestalt in der Ecke? Geheimnisvoll. Gefährlich. Würfle auf Wahrnehmung.'},
  {probe:{stat:'wis',ziel:10,name:'Wahrnehmung'},
   ok:[{s:'SL',t:'Du erkennst, dass es nur ein Mann ist, der seine Mütze nicht abnehmen will, weil er schlecht frisiert ist.'}],
   fail:[{s:'SL',t:'Du starrst ihn so lange an, bis er sich beschwert. Gleiches Ergebnis.'}]},
- {s:'KAP',t:'Was guckst du so? Ich hab heute einfach keinen guten Haartag.'},
+ {bg:'f_tav_kap'},
+ {s:'KAP',t:'Was guckst du so? Meine Frau hat mir gestern die Haare geschnitten. Sie war dabei sehr wütend.'},
  {s:'SL',t:'Ich hatte ehrlich gesagt mehr erwartet.'},
+ {bg:'f_tav_theke'},
  {s:'WIRT',t:'Du willst nach Norden? Dann brauchst du einen Kompass. Ich hab einen. Er ist in einem dieser drei Krüge.'},
  {s:'WIRT',t:'Auf jedem Krug steht ein Satz. Nur ein einziger Satz stimmt.'},
  {code:{id:'krug',k:'Das Rätsel des Wirts',q:'Krug A: Der Kompass ist in diesem Krug.<br>Krug B: Der Kompass ist nicht in diesem Krug.<br>Krug C: Der Kompass ist nicht in Krug A.<br><br>Nur ein Satz stimmt. Wo ist der Kompass?',opts:['Krug A','Krug B','Krug C'],a:1,
@@ -32,12 +35,13 @@ DAYS[2]={end:'Der Kompass zeigt nach Norden. Fast immer.',steps:[
   wrongSteps:[{s:'SL',t:'Leer. Bis auf einen Korken. Den darfst du behalten.'},{if:()=>!has('korken'),then:[{item:'korken'}]}]},
   ok:[{sfx:'gegenstand'},{s:'WIRT',t:'Krug B. Na also. Der Kompass gehört dir.'}]},
  {item:'kompass'},
+ {bg:'f_tav_ofen'},
  {s:'WG',note:1,t:'Der Witz mit der Kapuze. Mittelmäßig.'},
  {s:'SL',t:'Mittelmäßig ist gut. Mittelmäßig ist die Mitte. Die Mitte ist ein Anfang.'},{hide:1}
 ]};
 
 DAYS[3]={end:'Heute zum Ausdrucken: die Beutetabelle und der erste Bogen Itemkarten.',steps:[
- {bg:'ort02',mus:'taverne',atmo:'taverne',acc:['krug','lachen'],every:14},
+ {bg:'f_tav_theke',mus:'taverne',atmo:'taverne',acc:['krug','lachen'],every:14},
  {s:'WIRT',t:'Ach, und da du schon mal hier bist … im Keller sind Ratten.'},
  {s:'SL',t:'Ratten im Keller. Die erste Quest. Die älteste Quest der Welt. Ich hab Gänsehaut.'},
  {bg:'ort03',atmo:'hoehle',acc:['tropfen','ratte_quiek'],every:9,sfx:'tuer_knarzt'},

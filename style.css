@@ -59,7 +59,7 @@ img{display:block;max-width:100%}
 .hud-candle span{font-size:.7rem}
 .cd-wrap{position:relative;width:26px;height:52px}
 .cd-wrap .cd-body{position:absolute;inset:0;width:100%;height:100%;object-fit:contain}
-.cd-wrap .cd-flame{position:absolute;left:50%;width:22px;transform:translateX(-50%);animation:flick 1.6s ease-in-out infinite}
+.cd-wrap .cd-flame{position:absolute;left:50%;width:22px;transform:translateX(-50%);transform-origin:50% 92%;animation:flick 1.6s ease-in-out infinite}
 @keyframes flick{0%,100%{transform:translateX(-50%) scale(1)}50%{transform:translateX(-50%) scale(1.08,.94)}}
 .hud-stat{display:flex;align-items:center;gap:3px;font-family:var(--sc);font-size:.9rem}
 .hud-stat .ui-ic{width:1.5em;height:1.5em}
@@ -134,9 +134,9 @@ img{display:block;max-width:100%}
 .hint{font-size:.92rem}
 .hint span{display:block;font-family:var(--sc);font-size:.8rem;color:var(--red)}
 .hint:not(.open){opacity:.75}
-.cd-big{position:relative;width:70px;height:140px;margin:0 auto}
+.cd-big{position:relative;width:130px;height:130px;margin:30px auto 4px}
 .cd-big .cd-body{width:100%;height:100%;object-fit:contain}
-.cd-big .cd-flame{position:absolute;left:50%;top:-22%;width:50px;transform:translateX(-50%);animation:flick 1.6s ease-in-out infinite}
+.cd-big .cd-flame{position:absolute;left:49%;top:-29px;width:44px;transform:translateX(-50%);transform-origin:50% 92%;animation:flick 1.6s ease-in-out infinite;filter:drop-shadow(0 0 10px rgba(255,180,60,.75))}
 
 /* Würfel */
 .dice-card .dc-s{font-size:.95rem;color:var(--ink2);margin-bottom:8px}
@@ -201,8 +201,11 @@ img{display:block;max-width:100%}
 .bt-who{font-family:var(--head);font-size:1.15rem;margin-bottom:6px}
 .bt-btns{display:grid;grid-template-columns:1fr 1fr;gap:6px}
 .bt-b{padding:8px 10px}
-.bt-b.it{display:flex;gap:8px;align-items:center}
-.bt-b.it img{width:40px;height:40px}
+.bt-btns.its{grid-template-columns:1fr;max-height:46vh;overflow:auto}
+.bt-b.it{display:grid;grid-template-columns:44px 1fr;column-gap:10px;align-items:center;min-width:0}
+.bt-b.it img{width:44px;height:44px;object-fit:contain;grid-row:1/3}
+.bt-b.it b,.bt-b.it span{grid-column:2;min-width:0;overflow-wrap:break-word}
+.bt-b,.lv-b,.code-o,.hint{overflow-wrap:break-word;min-width:0}
 .el-pick .bt-b{display:flex;align-items:center;gap:6px}
 .bt-tut{position:absolute;inset:auto 12px 12px 12px;z-index:3;padding:18px;color:var(--ink);background:url(a/ui/pergament.jpg) center/cover;border:4px solid var(--wood);border-radius:14px}
 .bt-tut h3{font-family:var(--head);margin:0 0 6px;font-size:1.4rem}

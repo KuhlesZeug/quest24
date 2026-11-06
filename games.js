@@ -26,10 +26,13 @@ GAMES.spiegel=()=>new Promise(done=>{
 
 // Lieder von Zirpia (Suno), laufen über der Musik
 let songEl=null;
-function playSong(name,vol,max){stopSong();if(!st.sound)return Promise.resolve();ac();const a=new Audio(A+'songs/'+name+'.mp3');a.volume=vol??.9;songEl=a;duck(true);
- return new Promise(r=>{let t=null;const end=()=>{clearTimeout(t);if(songEl===a){songEl=null;duck(false)}r()};a.onended=end;a.onerror=end;a.play().catch(end);if(max)t=setTimeout(()=>{fadeOut(a).then(end)},max*1000)})}
-function fadeOut(a){return new Promise(r=>{const iv=setInterval(()=>{a.volume=Math.max(0,a.volume-.06);if(a.volume<=.01){clearInterval(iv);a.pause();r()}},60)})}
-function stopSong(){if(songEl){try{songEl.pause()}catch(e){}songEl=null;duck(false)}}
+function playSong(name,vol,max){stopSong();if(!st.sound)return Promise.resolve();ac();const me={stop:null,done:null};songEl=me;duck(true);
+ return new Promise(r=>{let t=null,fin=false;const end=()=>{if(fin)return;fin=true;clearTimeout(t);clearTimeout(me._w);if(songEl===me){songEl=null;duck(false)}r()};me.done=end;
+  loadVo(A+'songs/'+name+'.mp3').then(b=>{if(songEl!==me||fin)return end();if(!b)return end();const s=AC.createBufferSource();s.buffer=b;const g=AC.createGain();g.gain.value=vol??.9;s.connect(g);g.connect(voOut());s.onended=end;s.start();
+   me.stop=()=>{try{g.gain.setTargetAtTime(0,AC.currentTime,.05);s.stop(AC.currentTime+.2)}catch(e){}end()};
+   me._w=setTimeout(end,(b.duration+1.5)*1000);
+   if(max)t=setTimeout(()=>{g.gain.setTargetAtTime(0,AC.currentTime,.5);setTimeout(()=>{try{s.stop()}catch(e){}end()},2200)},max*1000)})})}
+function stopSong(){if(songEl){const m=songEl;songEl=null;if(m.stop)m.stop();else if(m.done)m.done();duck(false)}}
 function ballade(){if(!st.flags.ballade){st.flags.ballade=['zirpia_02','zirpia_03','zirpia_04','zirpia_05'][Math.floor(Math.random()*4)];save()}return st.flags.ballade}
 
 // Tag 8: Lichtfolge merken. Drei Runden mit 4, 6 und 8 Lichtern.

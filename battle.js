@@ -198,7 +198,7 @@ async function useSkill(u,s){const S=SK[s];if(S.once)B.used[u.id+s]=1;sfx('zaube
  }
  render();await sleep(500)}
 function pickElem(){return new Promise(r=>{const act=$('#bt-act');const row=el('div','bt-btns el-pick');act.appendChild(row);['feuer','natur','erde','blitz','eis'].forEach(e=>{const b=el('button','bt-b','<span class="el el-'+e+'"></span><b>'+ELEM[e]+'</b>');b.onclick=()=>{row.remove();r(e)};row.appendChild(b)})})}
-async function useItemBattle(u){const pots=st.inv.filter(x=>ITEMS[x.id]&&ITEMS[x.id].use);const act=$('#bt-act');const row=el('div','bt-btns');act.appendChild(row);
+async function useItemBattle(u){const pots=st.inv.filter(x=>ITEMS[x.id]&&ITEMS[x.id].use);const act=$('#bt-act');const row=el('div','bt-btns its');act.appendChild(row);
  const it=await new Promise(r=>pots.forEach(x=>{const I=ITEMS[x.id];const b=el('button','bt-b it','<img src="'+A+'items/'+x.id+'.png" alt=""><b>'+esc(I.n)+'</b><span>'+esc(I.d)+'</span>');b.onclick=()=>r(x);row.appendChild(b)}));
  row.remove();const I=ITEMS[it.id];const U=I.use;
  if(U.heal){const a=U.all?null:await pickAlly();(U.all?B.party.filter(p=>p.hp>0):[a]).forEach(p=>{p.hp=Math.min(p.max,p.hp+U.heal);fx('heal',$('#bt-party .bt-u[data-k="'+B.party.indexOf(p)+'"]'),110)});sfx('trank')}

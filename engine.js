@@ -34,7 +34,7 @@ function nextDay(){for(let d=1;d<=24;d++)if(!st.done[d])return d;return 25}
 // Ton: Musik, Atmosphäre, Effekte, Stimmen
 let AC=null,master=null,musBus=null,atmoBus=null,sfxBus=null;
 const BUF={};
-function ac(){if(!AC){AC=new (window.AudioContext||window.webkitAudioContext)();master=AC.createGain();master.gain.value=st.sound?1:0;master.connect(AC.destination);
+function ac(){if(!AC){try{if(navigator.audioSession)navigator.audioSession.type='playback'}catch(e){}AC=new (window.AudioContext||window.webkitAudioContext)();master=AC.createGain();master.gain.value=st.sound?1:0;master.connect(AC.destination);
  musBus=AC.createGain();musBus.gain.value=.55;musBus.connect(master);atmoBus=AC.createGain();atmoBus.gain.value=.7;atmoBus.connect(master);sfxBus=AC.createGain();sfxBus.gain.value=.9;sfxBus.connect(master)}
  if(AC.state==='suspended')AC.resume();return AC}
 async function loadBuf(src){if(BUF[src])return BUF[src];const p=fetch(src).then(r=>{if(!r.ok)throw 0;return r.arrayBuffer()}).then(a=>new Promise((ok,no)=>ac().decodeAudioData(a,ok,no))).catch(()=>null);BUF[src]=p;return p}
@@ -57,10 +57,20 @@ function accents(list,every){clearInterval(accTimer);if(!list||!list.length)retu
 
 // Stimmen
 let curVo=null;
-function stopVo(){if(curVo){try{curVo.pause()}catch(e){}const u=curVo._ui;curVo=null;u&&u(false);duck(false)}}
-function playVo(src,ui){stopVo();if(!src||!st.sound)return null;ac();const a=new Audio(src);a.preload='auto';a._ui=ui;curVo=a;duck(true);ui&&ui(true);
- const end=()=>{if(curVo===a){curVo=null;duck(false)}ui&&ui(false)};a.onended=end;a.onerror=()=>{a._err=1;end()};a.play().catch(()=>{a._err=1;end()});return a}
-function voDone(a){return new Promise(r=>{if(!a)return r(false);if(a._err)return r(false);const t=setInterval(()=>{if(a.ended||a._err||curVo!==a){clearInterval(t);r(!a._err)}},120)})}
+// Stimmen laufen über Web Audio: einmal freigeschaltet, spielen sie auch ohne Berührung zuverlässig bis zum Ende
+let voBus=null;
+function voOut(){ac();if(!voBus){voBus=AC.createGain();voBus.gain.value=1;voBus.connect(master)}return voBus}
+function loadVo(src){return fetch(src).then(r=>{if(!r.ok)throw 0;return r.arrayBuffer()}).then(a=>new Promise((ok,no)=>ac().decodeAudioData(a,ok,no))).catch(()=>null)}
+function stopVo(){if(curVo){const a=curVo;curVo=null;a.stop();const u=a._ui;u&&u(false);duck(false)}}
+function playVo(src,ui){stopVo();if(!src||!st.sound)return null;ac();const a={ended:false,_err:0,_ui:ui,s:null};
+ a.stop=()=>{a.ended=true;clearTimeout(a._t);if(a.s){try{a.s.stop()}catch(e){}}};
+ const end=()=>{if(a.ended&&curVo!==a)return;a.ended=true;clearTimeout(a._t);if(curVo===a){curVo=null;duck(false)}ui&&ui(false)};
+ curVo=a;duck(true);ui&&ui(true);
+ loadVo(src).then(b=>{if(curVo!==a||a.ended)return;if(!b){a._err=1;end();return}
+  const s=AC.createBufferSource();s.buffer=b;s.connect(voOut());s.onended=end;a.s=s;if(AC.state!=='running')AC.resume();s.start();
+  a._t=setTimeout(end,(b.duration+1.2)*1000)});
+ return a}
+function voDone(a){return new Promise(r=>{if(!a)return r(false);if(a._err)return r(false);const t=setInterval(()=>{if(a.ended||a._err||curVo!==a){clearInterval(t);r(!a._err)}},100)})}
 
 function setSound(on){st.sound=on;save();if(master)master.gain.value=on?1:0;if(!on)stopVo();$$('.btn-snd').forEach(b=>b.classList.toggle('off',!on))}
 
