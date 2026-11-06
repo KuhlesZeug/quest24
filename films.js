@@ -37,7 +37,13 @@ async function titleReveal(f,stop){const w=t=>stop()?Promise.resolve():sleep(t);
  o.classList.add('s4');sfx('fanfare',.9);music(A+'mus/titel.mp3',.55);await w(1300);
  sfx('drache',.5);o.classList.add('s5');
  const t='Der Hort des Aschenkönigs',sb=o.querySelector('.ttl-sub');for(const c of t){if(stop())break;sb.innerHTML+=c===' '?' ':'<span>'+c+'</span>';await sleep(55)}
- await w(3600);o.classList.add('out');await w(900);o.remove();music(A+'mus/intro.mp3',.45)}
+ await w(2400);
+ // Der kleine Drache holt Luft und spuckt Feuer direkt auf uns zu
+ const lg=o.querySelector('.lg'),dr=o.querySelector('.lg-dr');dr.style.animation='drinhale .9s ease-in forwards';sfx('drachenknurren',.6);await w(900);
+ const r=lg.getBoundingClientRect(),fr=f.getBoundingClientRect(),mx=r.left-fr.left+r.width*.215,my=r.top-fr.top+r.height*.42;
+ const fb=el('div','fball','<img src="'+A+'ui/feuerball.png" alt="">');fb.style.left=mx+'px';fb.style.top=my+'px';f.appendChild(fb);
+ dr.style.animation='drspit .5s ease-out forwards';sfx('feuerball',1);sfx('feuer_entfacht',.8);requestAnimationFrame(()=>requestAnimationFrame(()=>fb.classList.add('go')));
+ await w(1000);o.remove();music(A+'mus/intro.mp3',.45);fb.classList.add('gone');setTimeout(()=>fb.remove(),1300)}
 
 const FILMS={
  intro:{shots:[
@@ -66,9 +72,6 @@ const FILMS={
   {img:'f_held3',sfx:'gegenstand',s:'SL',t:'Nur eins steht fest. Sie nimmt eine Laterne mit. Einen Rucksack. Und ziemlich viel Mut.'},
   {img:'f_held4',pan:1,mus:'intro',s:'SL',t:'Alles andere … entscheidest du.',gap:900},
   {fn:'titel'},
-  {img:'f_tisch',s:'SL',t:'Na dann. Würfelt Initiative.'},
-  {s:'SL',t:'Also du. Du würfelst.'},
-  {img:'f_wg4',sfx:'rohrpost',s:'WG',t:'Probezeit, Tag eins. Ich höre zu.'},
-  {img:'f_tisch',s:'SL',t:'Natürlich, Meisterin Wendelgard. Selbstverständlich. Danke. Danke. Ich fange an.'}
+  {img:'f_tisch',s:'SL',t:'Gut. Dann beginnt das Abenteuer. Und zwar mit dir.'}
  ]}
 };

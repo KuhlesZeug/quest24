@@ -47,7 +47,7 @@ DAYS[3]={end:'Heute zum Ausdrucken: die Beutetabelle und der erste Bogen Itemkar
  {bg:'ort03',atmo:'hoehle',acc:['tropfen','ratte_quiek'],every:9,sfx:'tuer_knarzt'},
  {s:'SL',t:'Würfelt Initiative! … Würfle Initiative.'},
  {fight:'ratten'},
- {bg:'ort03',mus:'dorf'},
+ {bg:'ort03_leer',mus:'dorf'},
  {s:'SL',t:'Gewonnen! Und jetzt kommt mein Lieblingsteil. Die Beutetabelle.'},
  {s:'SL',t:'Ich habe sie selbst geschrieben. Nummer siebenundvierzig ist mein Lieblingseintrag. Mehr sage ich nicht.'},
  {loot:1},{item:'heiltrank'},{xp:10},{hide:1}
@@ -82,9 +82,10 @@ DAYS[5]={end:'Heute zum Ausdrucken: die Runenschablone. Du brauchst sie morgen.'
    {choice:[{t:'Vorsichtig um die Truhe herumgehen',go:[{s:'SL',t:'Ihr schleicht vorbei. Die Truhe schmollt.'}]},
     {t:'Ihr den Korken zum Kauen geben',need:()=>has('korken'),go:[{drop:'korken'},{sfx:'kauen'},{s:'SL',t:'Sie kaut. Sie schnurrt. Sie folgt euch. Ich glaube, ihr habt jetzt ein Haustier. Für einen Tag.'},{flag:'kiste'}]}]}],
   fail:[{sfx:'biss'},{s:'SL',t:'Die Truhe beißt dich. Ich hab dich gewarnt. Also, ich hab gesagt, würfle. Das ist eine Warnung in Spielleitersprache.'}]},
- {s:'SL',t:'Und da flattert schon etwas aus dem Dunkel. Aschenmotten. Sie fressen Licht.'},
+ {bg:'ort05_leer'},
+ {s:'SL',t:'Ihr geht tiefer in den Stollen. Und da flattert schon etwas aus dem Dunkel. Aschenmotten. Sie fressen Licht.'},
  {fight:'motten'},
- {bg:'ort05'},
+ {bg:'ort05_leer'},
  {sfx:'fanfare'},
  {s:'SL',t:'Stufe zwei! Wähle eine neue Fähigkeit.'},
  {levelup:2},
@@ -107,7 +108,7 @@ DAYS[6]={end:'Grumbolds Glut leuchtet heller als je zuvor.',steps:[
  {item:'glutstein'},{learn:'gr:glutfaust'},{xp:10},
  {film:'z1'},
  {bg:'ort06'},
- {s:'WG',note:1,t:'Das mit dem Auge. Gut.'},
+ {s:'WG',note:1,t:'Der Drache mit der Kerze. Das war gut.'},
  {s:'SL',t:'Sie hat gut gesagt. Sie hat gut gesagt!'},{hide:1}
 ]};
 

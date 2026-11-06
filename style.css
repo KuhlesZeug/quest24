@@ -169,10 +169,10 @@ img{display:block;max-width:100%}
 .bt-bg{position:absolute;inset:0;background-size:cover;background-position:center;filter:brightness(.55) saturate(.9)}
 .bt-top{position:relative;display:flex;justify-content:space-between;align-items:baseline;padding:calc(10px + env(safe-area-inset-top)) 14px 4px;font-family:var(--head);font-size:1.3rem;text-shadow:0 2px 6px #000}
 .bt-r{font-family:var(--sc);font-size:.9rem}
-.bt-foes{position:relative;flex:1;display:flex;justify-content:center;align-items:flex-end;gap:6px;padding:0 6px;min-height:0}
+.bt-foes{position:relative;flex:1;display:flex;justify-content:center;align-items:flex-end;gap:6px;padding:34px 6px 0;min-height:0;overflow:hidden}
 .bt-f{position:relative;flex:1;max-width:46%;display:flex;flex-direction:column;align-items:center;transition:transform .2s}
 .bt-f.boss{max-width:78%}
-.bt-fi{width:86%;margin:0 auto;aspect-ratio:1;background-size:contain;background-position:center bottom;background-repeat:no-repeat;filter:drop-shadow(0 6px 10px rgba(0,0,0,.6))}
+.bt-fi{width:min(86%,26vh);margin:0 auto;aspect-ratio:1;background-size:contain;background-position:center bottom;background-repeat:no-repeat;filter:drop-shadow(0 6px 10px rgba(0,0,0,.6))}
 .bt-f.down{opacity:.25;filter:grayscale(1)}
 .bt-f.hit .bt-fi{animation:shake .35s}
 .bt-f.lunge{transform:translateY(16px) scale(1.06)}
@@ -413,11 +413,39 @@ img{display:block;max-width:100%}
 /* Becherspiel */
 .bc-wrap{text-align:center}
 .bc-st{font-family:var(--sc);margin-bottom:6px}
-.bc-table{position:relative;height:150px;margin:6px 0;border-radius:12px;background:url(a/ui/leiste.jpg) center/cover;box-shadow:inset 0 0 18px rgba(0,0,0,.6)}
+.bc-table{position:relative;height:160px;margin:6px 0;border-radius:12px;border:4px solid var(--wood);background:radial-gradient(ellipse at 50% 85%,#fff3d0 0,#f1d08f 35%,#c99653 75%,#8a5a2e 100%);box-shadow:inset 0 -10px 24px rgba(90,50,20,.35)}
 .bc-c{position:absolute;bottom:14px;width:28%;max-width:110px;transform:translateX(-50%);background:none;border:0;padding:0;transition-property:left,transform;transition-timing-function:ease-in-out;z-index:2}
-.bc-c img{width:100%;display:block;transition:transform .3s ease-out;filter:drop-shadow(0 6px 4px rgba(0,0,0,.55))}
+.bc-c img{width:100%;display:block;transition:transform .3s ease-out;filter:drop-shadow(0 0 2px #fff8e6) drop-shadow(0 0 2px #fff8e6) drop-shadow(0 8px 5px rgba(60,30,10,.55))}
 .bc-c.up img{transform:translateY(-55%) rotate(-14deg)}
 .bc-c.arcA{transform:translateX(-50%) translateY(-14px) scale(1.05);z-index:3}
 .bc-c.arcB{transform:translateX(-50%) translateY(8px) scale(.94);z-index:1}
 .bc-k{position:absolute;bottom:18px;width:15%;max-width:56px;transform:translateX(-50%);opacity:0;transition:opacity .25s;z-index:1}
 .bc-msg{min-height:1.6em;font-family:var(--sc);font-size:1.1rem}
+/* Bildspiel: im Bild tippen statt Texttafeln */
+.pg{position:absolute;inset:0;z-index:6;transition:opacity .5s}
+.pg.out{opacity:0}
+.pg-img{position:absolute;inset:0;background:center/cover no-repeat}
+.pg-top{position:absolute;top:calc(14px + env(safe-area-inset-top));left:50%;transform:translateX(-50%);padding:6px 16px;border-radius:20px;background:rgba(20,12,6,.7);color:#ffe9b8;font-family:var(--sc);font-size:1rem;white-space:nowrap;border:2px solid var(--wood)}
+.pg-tip{position:absolute;top:calc(10px + env(safe-area-inset-top));right:12px;width:46px;height:46px;border:0;background:none;padding:0}
+.pg-tip img{width:100%}
+.pg-spot{position:absolute;transform:translate(-50%,-50%);background:none;border:0;border-radius:40% 40% 20% 20%;box-shadow:0 0 0 0 rgba(255,214,110,0);animation:pgpulse 2.2s ease-in-out infinite}
+.pg-spot:nth-of-type(2){animation-delay:.7s}.pg-spot:nth-of-type(3){animation-delay:1.4s}
+@keyframes pgpulse{0%,100%{box-shadow:0 0 0 0 rgba(255,214,110,0)}50%{box-shadow:0 0 18px 4px rgba(255,214,110,.55)}}
+.pg-spot.on{animation:none;box-shadow:0 0 22px 6px rgba(255,214,110,.75)}
+.pg-spot.talk{animation:pgtalk .35s ease-in-out infinite}
+@keyframes pgtalk{0%,100%{transform:translate(-50%,-50%) rotate(0)}50%{transform:translate(-50%,-50%) rotate(1.5deg) scale(1.02)}}
+.pg-bub{position:absolute;left:50%;bottom:103%;transform:translateX(-50%);width:max-content;max-width:42vw;padding:8px 12px;border-radius:14px;background:#fff8e6;color:var(--ink);font-family:var(--body);font-style:normal;font-size:.95rem;line-height:1.25;box-shadow:0 4px 12px rgba(0,0,0,.5);opacity:0;transition:opacity .25s;pointer-events:none}
+.pg-bub::after{content:"";position:absolute;left:50%;top:100%;transform:translateX(-50%);border:8px solid transparent;border-top-color:#fff8e6}
+.pg-spot.talk .pg-bub{opacity:1}
+.pg-go{position:absolute;transform:translate(-50%,-50%) scale(.6);opacity:0;pointer-events:none;padding:8px 14px;border-radius:12px;border:3px solid var(--wood);background:url(a/ui/knopf.png) center/100% 100%;color:#fff3d6;font-family:var(--sc);font-size:1rem;text-shadow:0 1px 2px #000;transition:.25s;white-space:nowrap}
+.pg-go.on{opacity:1;pointer-events:auto;transform:translate(-50%,-50%) scale(1)}
+
+/* Feuerstoß als Überleitung */
+@keyframes drinhale{to{transform:scale(1.03,1.08) translateY(-2%)}}
+@keyframes drspit{0%{transform:scale(1.03,1.08) translateY(-2%)}30%{transform:scale(.97,.95) translate(-2%,1%)}100%{transform:none}}
+.fball{position:absolute;z-index:8;width:0;height:0;pointer-events:none}
+.fball img{position:absolute;left:0;top:0;max-width:none;width:min(130vw,700px);translate:-50% -50%;transform:scale(.04) rotate(-30deg);opacity:.2;transition:transform 1s cubic-bezier(.4,0,.7,1),opacity .3s;filter:drop-shadow(0 0 30px #ff8a1a)}
+.fball.go img{transform:scale(4.2) rotate(25deg);opacity:1}
+.fball::after{content:"";position:fixed;inset:0;background:radial-gradient(circle,#fff7d6,#ffb13b 45%,#ff6a00);opacity:0;transition:opacity .25s .85s}
+.fball.go::after{opacity:1}
+.fball.gone img,.fball.gone::after{opacity:0;transition:opacity 1.2s;transition-delay:0s}

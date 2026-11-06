@@ -165,3 +165,23 @@ GAMES.becher=()=>new Promise(done=>{
   if(c===prize){sfx('richtig',.7);msg.textContent=['Richtig!','Wieder richtig!','Dreimal richtig!'][round];await sleep(1200);lift(c,false);await sleep(400);round++;miss=0;slow=1;if(round>=3){gameEnd();return done()}play()}
   else{sfx('falsch',.6);st.flags.becher_leer=1;save();msg.textContent='Leer.';await sleep(700);lift(prize,true);await sleep(1300);lift(c,false);lift(prize,false);miss++;if(miss>=2&&slow===1){slow=1.5;toast('Der Wirt mischt jetzt etwas langsamer.')}await sleep(500);play()}});
  setTimeout(play,500)});
+
+// Tag 7: Die sprechenden Wegweiser. Schilder antippen, zuhören, dann einem Weg folgen.
+GAMES.schilder=(s)=>new Promise(done=>{const sc=$('#s-scene');const IW=810,IH=1080;
+ const SG=[{k:'l',sp:'SCHL',x:.36,y:.52,t:'Ich führe nach Norden!'},{k:'m',sp:'SCHM',x:.52,y:.54,t:'Ich führe nicht nach Norden.'},{k:'r',sp:'SCHR',x:.70,y:.52,t:'Der linke Weg führt nach Norden.'}];
+ const HINTS=['Probier es aus: Wäre links richtig, hätten alle drei Schilder recht. Das kann nicht sein.','Wäre die Mitte richtig, würden alle drei lügen. Auch das kann nicht sein.','Bleibt rechts: Dann lügen links und rechts, und nur das mittlere Schild sagt die Wahrheit.'];
+ const o=el('div','pg','<div class="pg-img" style="background-image:url('+A+'img/f_schild_weg.jpg)"></div><div class="pg-top">Tippe ein Schild an</div><button class="pg-tip"><img src="'+A+'ui/tipp.png" alt="Tipp"></button>');sc.appendChild(o);
+ const box=()=>{const W=o.clientWidth,H=o.clientHeight,k=Math.max(W/IW,H/IH);return {k,ox:(W-IW*k)/2,oy:(H-IH*k)/2}};
+ let heard=new Set(),sel=null,busy=false,hint=0;
+ const spots=SG.map((g,i)=>{const b=el('button','pg-spot','<i class="pg-bub"></i>');b.dataset.i=i;o.appendChild(b);
+  const go=el('button','pg-go','Hier lang');go.dataset.i=i;o.appendChild(go);return {g,b,go}});
+ const lay=()=>{const {k,ox,oy}=box();spots.forEach(({g,b,go})=>{const x=ox+g.x*IW*k,y=oy+g.y*IH*k;b.style.left=x+'px';b.style.top=y+'px';b.style.width=(IW*k*.13)+'px';b.style.height=(IH*k*.46)+'px';go.style.left=x+'px';go.style.top=(oy+.80*IH*k)+'px'})};
+ lay();addEventListener('resize',lay);
+ spots.forEach(sp=>{sp.b.onclick=async()=>{if(busy)return;busy=true;sel=sp;spots.forEach(x=>{x.b.classList.toggle('on',x===sp);x.go.classList.toggle('on',x===sp)});
+  const bub=sp.b.querySelector('.pg-bub');bub.textContent=sp.g.t;sp.b.classList.add('talk');
+  const a=playVo(A+'vo/d07_s'+sp.g.k+'.mp3');await voDone(a);sp.b.classList.remove('talk');heard.add(sp.g.k);
+  o.querySelector('.pg-top').textContent=heard.size<3?'Tippe ein Schild an':'Welchem Weg folgst du?';busy=false};
+  sp.go.onclick=async()=>{if(busy||!sel)return;busy=true;sfx('schritte_schnee',.7);
+   if(sp.g.k==='r'){o.classList.add('out');setTimeout(()=>o.remove(),500);removeEventListener('resize',lay);return done()}
+   o.style.display='none';await run(s.wrong||[]);hideBox();o.style.display='';spots.forEach(x=>{x.b.classList.remove('on');x.go.classList.remove('on')});busy=false}});
+ o.querySelector('.pg-tip').onclick=()=>{toast(HINTS[Math.min(hint,2)],6500);hint++}});
