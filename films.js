@@ -11,6 +11,7 @@ async function playFilm(key){const F=FILMS[key];if(!F)return;show('#s-film');con
   if(sh.img&&sh.img!==curImg){curImg=sh.img;const d=el('div','fs'+(sh.pan?' pan':''),'<div class="bg" style="background-image:url('+A+'img/'+sh.img+'.jpg)"></div><div class="shade"></div>');d._t0=performance.now();d._pan=!!sh.pan;f.appendChild(d);requestAnimationFrame(()=>requestAnimationFrame(()=>{[...f.children].forEach(x=>x.classList.toggle('on',x===d))}));setTimeout(()=>{[...f.children].forEach(x=>{if(x!==d&&!x.classList.contains('on'))x.remove()})},1500)}
   if(sh.fade){const fd=sh.fade;setTimeout(()=>{if(run!==filmRun)return;sfx(fd.sfx||'wind_boe',.7);const base=[...f.children].reverse().find(x=>x._t0);const el0=base?performance.now()-base._t0:0;const d=el('div','fs slow'+(base&&base._pan?' pan':''),'<div class="bg" style="background-image:url('+A+'img/'+fd.img+'.jpg);animation-delay:-'+Math.round(el0)+'ms"></div><div class="shade"></div>');d._t0=base?base._t0:performance.now();d._pan=base&&base._pan;f.appendChild(d);curImg=fd.img;requestAnimationFrame(()=>requestAnimationFrame(()=>d.classList.add('on')))},fd.at)}
   if(sh.card){const c=el('div','fs on','<div class="fcard"><img src="'+A+'ui/'+sh.card+'.png" alt=""></div>');f.appendChild(c)}
+  if(sh.fn==='titel'){sub.classList.remove('on');await titleReveal(f,()=>skip||run!==filmRun);curImg=null;continue}
   if(sh.fn==='ballade'){sub.classList.remove('on');await playSong(ballade(),.95,45);continue}
   if(sh.fn==='abspann'){sub.classList.remove('on');music(null);const lines=[['GR','Ich kann jetzt bis acht zählen. Herbert ist sehr stolz.'],['ZI','Nächstes Jahr: Welttournee. Erste Station: Pilzbühne.'],['HU','Ich hab übrigens noch was von euch allen in meiner Schürze. Holt es euch ab.'],['NA','Mir hat es nicht gefallen. Überhaupt nicht. Ich komme nächstes Jahr wieder. Um mich zu beschweren.'],['VH','Danke.']];
    const p=playSong('zirpia_13',.9);await sleep(9000);for(const [k,t] of lines){if(skip)break;sub.innerHTML='<i>'+WHO[k].n+'</i>'+t;sub.classList.add('on');await sleep(Math.max(5000,t.length*70));sub.classList.remove('on');await sleep(2500)}await p;continue}
@@ -23,6 +24,20 @@ async function playFilm(key){const F=FILMS[key];if(!F)return;show('#s-film');con
   else await sleep(sh.d||1800);
  }
  sub.classList.remove('on');stopVo();await sleep(400)}
+
+// Der große Auftritt: Würfel rollt, kritische 20, Lichtschlag, Logo
+async function titleReveal(f,stop){const w=t=>stop()?Promise.resolve():sleep(t);
+ const o=el('div','ttl','<div class="ttl-bg" style="background-image:url('+A+'img/f_intro5.jpg)"></div><div class="ttl-flash"></div><div class="ttl-rays"></div><div class="ttl-embers"></div><div class="ttl-logo"><div class="lg"><img class="lg-base" src="'+A+'ui/logo_base.png" alt=""><img class="lg-dr" src="'+A+'ui/logo_drache.png" alt=""><i class="lg-glow"></i><img class="lg-fl" src="'+A+'ui/flamme.png" alt=""></div><div class="ttl-sub"></div></div>');
+ f.appendChild(o);[...f.children].forEach(x=>{if(x!==o)x.classList.remove('on')});
+ const em=o.querySelector('.ttl-embers');for(let i=0;i<34;i++){const e=el('i','');e.style.left=Math.random()*100+'%';e.style.animationDelay=(Math.random()*4)+'s';e.style.animationDuration=(3+Math.random()*3)+'s';const z=2+Math.random()*4;e.style.width=e.style.height=z+'px';em.appendChild(e)}
+ music(null);sfx('trommel',.9);requestAnimationFrame(()=>o.classList.add('s1'));await w(700);
+ sfx('wuerfel',1);await w(1500);
+ o.classList.add('s2');await w(900);
+ sfx('kritisch',1);o.classList.add('s3');await w(260);
+ o.classList.add('s4');sfx('fanfare',.9);music(A+'mus/titel.mp3',.55);await w(1300);
+ sfx('drache',.5);o.classList.add('s5');
+ const t='Der Hort des Aschenkönigs',sb=o.querySelector('.ttl-sub');for(const c of t){if(stop())break;sb.innerHTML+=c===' '?' ':'<span>'+c+'</span>';await sleep(55)}
+ await w(3600);o.classList.add('out');await w(900);o.remove();music(A+'mus/intro.mp3',.45)}
 
 const FILMS={
  intro:{shots:[
@@ -50,11 +65,10 @@ const FILMS={
   {img:'f_held2',sfx:'tuer_knarzt',s:'SL',t:'Wie diese Gestalt aussieht? Wie sie heißt? Was sie kann? Das steht noch in keinem Buch.'},
   {img:'f_held3',sfx:'gegenstand',s:'SL',t:'Nur eins steht fest. Sie nimmt eine Laterne mit. Einen Rucksack. Und ziemlich viel Mut.'},
   {img:'f_held4',pan:1,mus:'intro',s:'SL',t:'Alles andere … entscheidest du.',gap:900},
-  {img:'f_intro5',sfx:'wuerfel',d:1400},
-  {sfx:'fanfare',card:'logo',d:2600},
-  {s:'SL',t:'Na dann. Würfelt Initiative.'},
+  {fn:'titel'},
+  {img:'f_tisch',s:'SL',t:'Na dann. Würfelt Initiative.'},
   {s:'SL',t:'Also du. Du würfelst.'},
-  {sfx:'rohrpost',s:'WG',t:'Probezeit, Tag eins. Ich höre zu.'},
-  {s:'SL',t:'Natürlich, Meisterin Wendelgard. Selbstverständlich. Danke. Danke. Ich fange an.'}
+  {img:'f_wg4',sfx:'rohrpost',s:'WG',t:'Probezeit, Tag eins. Ich höre zu.'},
+  {img:'f_tisch',s:'SL',t:'Natürlich, Meisterin Wendelgard. Selbstverständlich. Danke. Danke. Ich fange an.'}
  ]}
 };

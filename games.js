@@ -145,3 +145,23 @@ GAMES.schatz=()=>new Promise(async done=>{sfx('truhe');const g=GIFT||{};
  await showCard('<img class="cc-img" src="'+A+'ui/truhe.png" alt=""><div class="cc-k">Der Schatz des Hüters</div><h3>Für '+heroName()+'</h3><div class="brief">'+msg+(g.von?'<p class="sig">'+esc(g.von)+'</p>':'')+'</div>'+(g.ort?'<div class="cc-k" style="margin-top:12px">Im zweiten Fach liegt ein Zettel</div><p>'+esc(g.ort)+'</p>':''),'fanfare');
  await showCard('<img class="cc-img" src="'+A+'ui/medaille.png" alt=""><div class="cc-k">Abzeichen</div><h3>Retter der Lichternacht</h3><p>'+heroName()+', '+(st.hero.f?CLS[st.hero.cls].nf:CLS[st.hero.cls].n)+' der Stufe '+st.lvl+', mit Grumbold, Zirpia, Oma Hulda und Nachtigall.</p>','stufenaufstieg');
  st.flags.badge=1;save();done()});
+
+// Tag 2: Hütchenspiel des Wirts. Kompass unter einem Becher, drei Runden, immer schneller.
+GAMES.becher=()=>new Promise(done=>{
+ const area=gameShell('Das Becherspiel','Merk dir, unter welchem Becher der Kompass liegt. Der Wirt mischt. Dann tippe auf den richtigen Becher. Dreimal hintereinander.');
+ area.innerHTML='<div class="bc-wrap"><div class="bc-st">Runde 1 von 3</div><div class="bc-table"><img class="bc-k" src="'+A+'ui/kompass_klein.png" alt=""></div><div class="bc-msg"></div></div>';
+ const tb=area.querySelector('.bc-table'),kp=area.querySelector('.bc-k'),msg=area.querySelector('.bc-msg'),st_=area.querySelector('.bc-st');
+ const X=[18,50,82];const cups=[0,1,2].map(i=>{const c=el('button','bc-c','<img src="'+A+'ui/becher.png" alt="">');c.dataset.i=i;c.style.left=X[i]+'%';tb.appendChild(c);return {el:c,slot:i}});
+ const R=[{n:5,ms:560},{n:8,ms:400},{n:12,ms:280}];let round=0,miss=0,slow=1,prize=null,busy=true;
+ const place=c=>{c.el.style.left=X[c.slot]+'%'};
+ const lift=(c,on)=>c.el.classList.toggle('up',on);
+ async function swap(a,b,ms){a.el.style.transitionDuration=b.el.style.transitionDuration=ms+'ms';a.el.classList.add('arcA');b.el.classList.add('arcB');const t=a.slot;a.slot=b.slot;b.slot=t;place(a);place(b);sfx('krug',.25);await sleep(ms+30);a.el.classList.remove('arcA');b.el.classList.remove('arcB')}
+ async function play(){busy=true;st_.textContent='Runde '+(round+1)+' von 3';msg.textContent='';const r=R[round];
+  prize=cups[Math.floor(Math.random()*3)];kp.style.left=X[prize.slot]+'%';kp.style.opacity=1;
+  cups.forEach(c=>{c.el.style.transitionDuration='300ms'});lift(prize,true);await sleep(1300);lift(prize,false);await sleep(450);kp.style.opacity=0;
+  for(let k=0;k<r.n;k++){let a=Math.floor(Math.random()*3),b=(a+1+Math.floor(Math.random()*2))%3;await swap(cups[a],cups[b],Math.round(r.ms*slow))}
+  msg.textContent='Wo ist der Kompass?';busy=false}
+ cups.forEach(c=>c.el.onclick=async()=>{if(busy)return;busy=true;kp.style.left=X[prize.slot]+'%';kp.style.opacity=1;cups.forEach(x=>x.el.style.transitionDuration='300ms');lift(c,true);
+  if(c===prize){sfx('richtig',.7);msg.textContent=['Richtig!','Wieder richtig!','Dreimal richtig!'][round];await sleep(1200);lift(c,false);await sleep(400);round++;miss=0;slow=1;if(round>=3){gameEnd();return done()}play()}
+  else{sfx('falsch',.6);st.flags.becher_leer=1;save();msg.textContent='Leer.';await sleep(700);lift(prize,true);await sleep(1300);lift(c,false);lift(prize,false);miss++;if(miss>=2&&slow===1){slow=1.5;toast('Der Wirt mischt jetzt etwas langsamer.')}await sleep(500);play()}});
+ setTimeout(play,500)});

@@ -172,7 +172,7 @@ img{display:block;max-width:100%}
 .bt-foes{position:relative;flex:1;display:flex;justify-content:center;align-items:flex-end;gap:6px;padding:0 6px;min-height:0}
 .bt-f{position:relative;flex:1;max-width:46%;display:flex;flex-direction:column;align-items:center;transition:transform .2s}
 .bt-f.boss{max-width:78%}
-.bt-fi{width:100%;aspect-ratio:1;background-size:contain;background-position:center bottom;background-repeat:no-repeat;filter:drop-shadow(0 6px 10px rgba(0,0,0,.6))}
+.bt-fi{width:86%;margin:0 auto;aspect-ratio:1;background-size:contain;background-position:center bottom;background-repeat:no-repeat;filter:drop-shadow(0 6px 10px rgba(0,0,0,.6))}
 .bt-f.down{opacity:.25;filter:grayscale(1)}
 .bt-f.hit .bt-fi{animation:shake .35s}
 .bt-f.lunge{transform:translateY(16px) scale(1.06)}
@@ -192,11 +192,11 @@ img{display:block;max-width:100%}
 .bt-log div:not(:first-child){opacity:.55}
 .bt-log .tip{color:#ffd76a}
 .bt-party{position:relative;display:flex;justify-content:center;align-items:flex-end;gap:4px;padding:4px 6px}
-.bt-u{width:68px;text-align:center;transition:transform .2s;position:relative}
-.bt-sp{width:68px;height:100px;margin:0 auto;background-size:contain;background-repeat:no-repeat;background-position:center bottom;transform-origin:50% 100%;animation:spbreathe 2.4s ease-in-out infinite;filter:drop-shadow(0 4px 4px rgba(0,0,0,.55))}
+.bt-u{width:var(--pw,68px);margin:0 calc(var(--pw,68px)*-.07);text-align:center;transition:transform .2s;position:relative}
+.bt-sp{width:var(--pw,68px);height:calc(var(--pw,68px)*1.35);margin:0 auto;background-size:contain;background-repeat:no-repeat;background-position:center bottom;transform-origin:50% 100%;animation:spbreathe 2.4s ease-in-out infinite;filter:drop-shadow(0 4px 4px rgba(0,0,0,.55))}
 @keyframes spbreathe{0%,100%{transform:scale(1,1)}50%{transform:scale(1.015,1.03)}}
 .bt-u.cur .bt-sp{filter:drop-shadow(0 0 7px var(--gold)) drop-shadow(0 4px 4px rgba(0,0,0,.55))}
-.bt-u.cur::before{content:'';position:absolute;left:10%;right:10%;top:90px;height:14px;border-radius:50%;background:radial-gradient(ellipse,rgba(255,210,90,.75),transparent 70%)}
+.bt-u.cur::before{content:'';position:absolute;left:10%;right:10%;bottom:34px;height:14px;border-radius:50%;background:radial-gradient(ellipse,rgba(255,210,90,.75),transparent 70%)}
 .bt-u.atk .bt-sp{animation:lungeup .55s ease-out}
 @keyframes lungeup{0%{transform:translateY(0) scale(1)}35%{transform:translateY(-16px) scale(1.1)}100%{transform:translateY(0) scale(1)}}
 .bt-u.hurt .bt-sp{animation:hurtshake .45s ease-out;filter:drop-shadow(0 0 6px #ff3b2f) brightness(1.15) sepia(.4) saturate(2.5) hue-rotate(-20deg)}
@@ -359,3 +359,65 @@ img{display:block;max-width:100%}
 .sc-fig.on{opacity:1;transform:none;animation:breathe 3.2s ease-in-out infinite}
 @keyframes breathe{50%{transform:scale(1.02) translateY(-3px)}}
 .fx{position:fixed;z-index:60;pointer-events:none;background:center/contain no-repeat}
+
+/* Startbild: Gebirge zieht seitwärts, Dorf davor, Schnee */
+.st-bg{background:#0d1a2e}
+.st-pano{position:absolute;inset:0 0 25% 0;background:url(a/img/titel_pano.jpg) 0% 40%/auto 100% repeat-x;animation:panx 70s ease-in-out infinite alternate}
+@keyframes panx{from{background-position:0% 40%}to{background-position:100% 40%}}
+.st-front{position:absolute;inset:0;background:url(a/img/titel.jpg) center top/cover no-repeat;-webkit-mask-image:linear-gradient(180deg,transparent 52%,#000 68%);mask-image:linear-gradient(180deg,transparent 52%,#000 68%)}
+.st-snow{position:absolute;inset:0;pointer-events:none;background-image:radial-gradient(2px 2px at 20% 30%,#fff9,transparent),radial-gradient(1.5px 1.5px at 70% 10%,#fffa,transparent),radial-gradient(2px 2px at 45% 60%,#fff8,transparent),radial-gradient(1.5px 1.5px at 85% 45%,#fff9,transparent),radial-gradient(1px 1px at 10% 80%,#fffa,transparent),radial-gradient(2px 2px at 60% 85%,#fff7,transparent);background-size:300px 300px;animation:snowfall 14s linear infinite}
+@keyframes snowfall{from{background-position:0 0,0 0,0 0,0 0,0 0,0 0}to{background-position:40px 300px,-30px 300px,20px 300px,-20px 300px,30px 300px,-10px 300px}}
+/* Logo mit Drache, Rauch und Kerze */
+.lg{position:relative;width:min(86vw,420px);aspect-ratio:986/428;margin-bottom:4px;filter:drop-shadow(0 6px 10px rgba(0,0,0,.6))}
+.lg img{position:absolute;display:block}
+.lg-base,.lg-dr{inset:0;width:100%;height:100%}
+.lg-dr{transform-origin:40% 48%;animation:drbreath 3.6s ease-in-out infinite}
+@keyframes drbreath{0%,100%{transform:scale(1,1)}45%{transform:scale(1.012,1.04) translateY(-.6%)}60%{transform:scale(1.006,1.02)}}
+.lg-fl{left:84.8%;top:18.7%;width:8.9%;transform-origin:50% 92%;animation:lgflick 1.3s ease-in-out infinite}
+@keyframes lgflick{0%,100%{transform:scale(1,1) rotate(0)}20%{transform:scale(.94,1.06) rotate(-3deg)}45%{transform:scale(1.05,.95) rotate(2deg)}70%{transform:scale(.97,1.08) rotate(-1deg)}}
+.lg-glow{position:absolute;left:83%;top:12%;width:13%;aspect-ratio:1;border-radius:50%;background:radial-gradient(circle,rgba(255,200,90,.55),rgba(255,160,40,.15) 45%,transparent 70%);animation:lgglow 1.3s ease-in-out infinite;pointer-events:none}
+@keyframes lgglow{0%,100%{opacity:.8;transform:scale(1)}40%{opacity:1;transform:scale(1.12)}70%{opacity:.7;transform:scale(.95)}}
+.lg-smoke{position:absolute;inset:0;pointer-events:none;overflow:visible}
+.lg-smoke img{position:absolute;width:9%;opacity:0;animation:puff 2.4s ease-out forwards}
+@keyframes puff{0%{opacity:0;transform:translate(0,0) scale(.4)}15%{opacity:.85}100%{opacity:0;transform:translate(-120%,-160%) scale(1.6)}}
+
+/* Titelauftritt im Intro */
+.ttl{position:absolute;inset:0;z-index:5;overflow:hidden;background:#000;transition:opacity .9s}
+.ttl.out{opacity:0}
+.ttl-bg{position:absolute;inset:-4%;background:center/cover;opacity:0;transform:scale(1.05);transform-origin:39% 52%;transition:opacity .6s,transform 1s cubic-bezier(.5,0,.9,.4),filter 1s}
+.ttl.s1 .ttl-bg{opacity:1;animation:ttlshake .12s linear 8 .7s}
+.ttl.s2 .ttl-bg{transform:scale(3.4);filter:brightness(1.4) saturate(1.2)}
+.ttl.s4 .ttl-bg{opacity:0;transition:opacity .4s}
+@keyframes ttlshake{0%,100%{translate:0 0}25%{translate:3px -2px}50%{translate:-3px 2px}75%{translate:2px 3px}}
+.ttl-flash{position:absolute;inset:0;background:radial-gradient(circle at 50% 46%,#fff,#ffe3a0 35%,#ffb347 60%,transparent 85%);opacity:0;pointer-events:none}
+.ttl.s3 .ttl-flash{animation:ttlflash 1.4s ease-out forwards}
+@keyframes ttlflash{0%{opacity:0}12%{opacity:1}100%{opacity:0}}
+.ttl-rays{position:absolute;left:50%;top:44%;width:240vmax;height:240vmax;translate:-50% -50%;background:repeating-conic-gradient(from 0deg,rgba(255,206,110,.32) 0 6deg,transparent 6deg 18deg);-webkit-mask-image:radial-gradient(circle,#000 0,#000 8%,transparent 42%);mask-image:radial-gradient(circle,#000 0,#000 8%,transparent 42%);opacity:0;transform:scale(.3);transition:opacity .8s,transform 1.4s cubic-bezier(.2,1,.3,1)}
+.ttl.s4 .ttl-rays{opacity:1;transform:scale(1);animation:ttlspin 40s linear infinite}
+@keyframes ttlspin{to{rotate:360deg}}
+.ttl.s4{background:radial-gradient(circle at 50% 44%,#4a2a10,#120804 70%)}
+.ttl-embers{position:absolute;inset:0;opacity:0;transition:opacity 1s}
+.ttl.s4 .ttl-embers{opacity:1}
+.ttl-embers i{position:absolute;bottom:-10px;border-radius:50%;background:#ffcf6a;box-shadow:0 0 8px #ff9a2a,0 0 2px #fff;animation:ember 4s linear infinite}
+@keyframes ember{0%{transform:translate(0,0);opacity:0}10%{opacity:1}100%{transform:translate(30px,-105vh);opacity:0}}
+.ttl-logo{position:absolute;left:0;right:0;top:44%;translate:0 -50%;display:flex;flex-direction:column;align-items:center;opacity:0;transform:scale(2.6);filter:blur(14px)}
+.ttl.s4 .ttl-logo{animation:ttllogo 1.2s cubic-bezier(.2,1.5,.4,1) forwards}
+@keyframes ttllogo{0%{opacity:0;transform:scale(2.6);filter:blur(14px)}55%{opacity:1;filter:blur(0)}100%{opacity:1;transform:scale(1);filter:blur(0)}}
+.ttl-logo .lg{width:min(94vw,520px);filter:drop-shadow(0 0 22px rgba(255,190,80,.55)) drop-shadow(0 8px 14px #000)}
+.ttl-logo .lg::after{content:"";position:absolute;inset:-10%;border-radius:50%;border:3px solid rgba(255,220,140,.9);opacity:0;transform:scale(.4)}
+.ttl.s4 .ttl-logo .lg::after{animation:ring 1s .35s ease-out forwards}
+@keyframes ring{0%{opacity:1;transform:scale(.4)}100%{opacity:0;transform:scale(1.8)}}
+.ttl-sub{margin-top:16px;font-family:var(--head);font-size:2.1rem;color:#ffe08a;text-shadow:0 0 6px rgba(255,160,50,.7),0 2px 2px #000,0 3px 8px #000;min-height:2.6rem;padding:0 10px;text-align:center}
+.ttl-sub span{display:inline-block;animation:letter .5s ease-out both}
+@keyframes letter{from{opacity:0;transform:translateY(10px) scale(1.6);filter:blur(4px)}to{opacity:1;transform:none;filter:none}}
+/* Becherspiel */
+.bc-wrap{text-align:center}
+.bc-st{font-family:var(--sc);margin-bottom:6px}
+.bc-table{position:relative;height:150px;margin:6px 0;border-radius:12px;background:url(a/ui/leiste.jpg) center/cover;box-shadow:inset 0 0 18px rgba(0,0,0,.6)}
+.bc-c{position:absolute;bottom:14px;width:28%;max-width:110px;transform:translateX(-50%);background:none;border:0;padding:0;transition-property:left,transform;transition-timing-function:ease-in-out;z-index:2}
+.bc-c img{width:100%;display:block;transition:transform .3s ease-out;filter:drop-shadow(0 6px 4px rgba(0,0,0,.55))}
+.bc-c.up img{transform:translateY(-55%) rotate(-14deg)}
+.bc-c.arcA{transform:translateX(-50%) translateY(-14px) scale(1.05);z-index:3}
+.bc-c.arcB{transform:translateX(-50%) translateY(8px) scale(.94);z-index:1}
+.bc-k{position:absolute;bottom:18px;width:15%;max-width:56px;transform:translateX(-50%);opacity:0;transition:opacity .25s;z-index:1}
+.bc-msg{min-height:1.6em;font-family:var(--sc);font-size:1.1rem}
