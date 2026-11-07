@@ -47,7 +47,7 @@ DAYS[14]={end:'Heute zum Ausdrucken: Oma Huldas Gefährtenbogen.',steps:[
  {s:'SL',t:'Und so wächst die Gruppe. Ein Golem, eine Grille und eine Oma. Ich hab das nicht so geplant. Es ist besser, als ich es geplant hatte.'},
  {join:'hu'},
  {s:'SL',t:'Gesinnung: chaotisch gut. Mit Betonung auf chaotisch.'},
- {fn:()=>playSong('zirpia_08',.9)},
+ {song:'zirpia_08',v:.9,imgs:['zr1','zr2','zr3','zr4']},
  {s:'HU',t:'Hübsch. Ein bisschen schnell.'},
  {gold:40},{item:'stricknadel'},{hide:1}
 ]};
@@ -59,7 +59,7 @@ DAYS[15]={end:'Heute zum Ausdrucken: die Ladenliste von Goldhafen.',steps:[
  {s:'BOB',t:'Hallo, ich bin Bob.'},
  {s:'BOB2',t:'Hallo, ich bin auch Bob. Sein Bruder.'},
  {s:'SL',t:'Bob! Und noch ein Bob! Meisterin Wendelgard, Sie wollten Bob erklärt bekommen. Das hier ist die Erklärung.'},
- {s:'WG',note:1,t:'Das erklärt gar nichts.'},
+ {s:'WG',note:1,wg:'wgc6',t:'Das erklärt gar nichts.'},
  {s:'HU',t:'Vier Händler, Kindchen. Genau einer betrügt, und der lügt immer. Die anderen drei sagen immer die Wahrheit.'},
  {code:{id:'betrug',k:'Wer betrügt?',q:'Bob: Berta betrügt nicht.<br>Bob der Zweite: Ferdinand betrügt.<br>Berta: Einer der beiden Bobs betrügt.<br>Ferdinand: Bob der Zweite lügt.<br><br>Wer ist der Betrüger?',opts:['Bob','Bob der Zweite','Berta','Ferdinand'],a:1,
   hints:['Nimm nacheinander an, jeder der vier wäre der Betrüger, und prüfe, ob dann alle Sätze zusammenpassen.','Bob der Zweite und Ferdinand widersprechen sich direkt. Einer von beiden muss der Betrüger sein.','Wäre Ferdinand der Betrüger, müsste Berta lügen. Berta ist aber ehrlich. Bob der Zweite betrügt.'],
@@ -69,10 +69,10 @@ DAYS[15]={end:'Heute zum Ausdrucken: die Ladenliste von Goldhafen.',steps:[
  {game:'laden'},
  {if:()=>!has('stange'),then:[{s:'BOB',t:'Nimm die Stange mit, sie steht mir im Weg.'},{item:'stange'}]},
  {s:'SL',t:'Eine drei Meter Stange. Wer kauft so was? Wofür? Ich frage für einen Freund.'},
- {fn:()=>playSong('zirpia_09',.85)},
+ {song:'zirpia_09',v:.85,imgs:['zm1','zm2','zm3','zm4']},
  {s:'SL',t:'Stufe vier! Ohne Fanfare. Nur ich. Tadaaa.'},
  {levelup:4},
- {s:'WG',note:1,t:'Besser als die Fanfare.'},{hide:1}
+ {s:'WG',note:1,wg:'wgc7',t:'Besser als die Fanfare.'},{hide:1}
 ]};
 
 DAYS[16]={end:'Hulda hat ein altes Zeitungsblatt eingesteckt. Ganz schnell.',steps:[
@@ -116,7 +116,7 @@ DAYS[17]={end:'Alle tragen jetzt einen roten Schal. Auch Herbert.',steps:[
  {choice:[{t:'Hulda: Warum hast du aufgehört zu stehlen?',go:[{s:'HU',t:'Weil man irgendwann merkt, dass man das Wichtigste nicht in der Schürze tragen kann.'}]},
   {t:'Hulda: Was stand auf dem Zeitungsblatt?',go:[{s:'HU',t:'Altes Zeug, Kindchen. Iss ein Plätzchen.'},{flag:'zeitung'}]}]},
  {fn:()=>{st.flags.trust=Math.min(3,(st.flags.trust||0)+1);save();toast('Drei Vertrauensmarker für den Drachenkampf')}},
- {fn:()=>playSong('zirpia_10',.85)},
+ {song:'zirpia_10',v:.85,imgs:['zo1','zo2','zo3','zo4']},
  {s:'SL',t:'Und in dieser Nacht lernte Grumbold, dass Wärme nicht davon abhängt, wie hell man leuchtet. Sondern davon, wer neben einem sitzt.'},
  {s:'SL',t:'Das war schön. Ich sag nichts mehr.'},
  {s:'SL',t:'Das war sehr schön.'},
@@ -143,6 +143,6 @@ DAYS[18]={end:'Heute zum Ausdrucken: das Rätselblatt Eisbrücke mit den Figuren
  {s:'SL',t:'Und jetzt … holst du die drei Meter Stange heraus.'},
  {sfx:'gegenstand'},
  {s:'SL',t:'Die Stange. Die drei Meter Stange. Ich hab mein ganzes Leben auf diesen Moment gewartet.'},
- {s:'WG',note:1,t:'Ich gebe zu: Das war gut aufgebaut.'},
+ {s:'WG',note:1,wg:'wgc9',t:'Ich gebe zu: Das war gut aufgebaut.'},
  {item:'eishaken'},{hide:1}
 ]};

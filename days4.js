@@ -26,7 +26,7 @@ DAYS[19]={end:'Heute zum Ausdrucken: Nachtigalls Gefährtenbogen.',steps:[
  {s:'NA',t:'Dann ist es der Spielleiter.',e:'sly'},
  {join:'na'},
  {s:'SL',t:'Und damit ist die Gruppe vollständig. Fünf Figuren. Ich hab Gänsehaut. Wendelgard, haben Sie auch Gänsehaut?',e:'laugh'},
- {s:'WG',note:1,t:'Nein.'},
+ {s:'WG',note:1,wg:'wgc8',t:'Nein.'},
  {loot:1},{hide:1}
 ]};
 
@@ -51,7 +51,7 @@ DAYS[20]={end:'Heute zum Ausdrucken: die Gipfelkarte und Teil 3 der Landkarte.',
  {sfx:'fanfare'},
  {s:'SL',t:'Stufe fünf! Die letzte. Ich hab die Fanfare zurückgeholt. Nur dieses eine Mal.',e:'laugh'},
  {levelup:5},
- {s:'WG',note:1,t:'Genehmigt.'},
+ {s:'WG',note:1,wg:'wgc10',t:'Genehmigt.'},
  {learn:'hu:plaetzchen'},
  {film:'z5'},{hide:1}
 ]};
@@ -97,7 +97,7 @@ FILMS.z6={shots:[
  {s:'SL',t:'Manchmal ist das Schwerste an einem Abenteuer nicht der Drache. Sondern das, was man selbst mit sich herumträgt.'},
  {s:'SL',t:'Und manchmal braucht es nur eine Gruppe, die bleibt, damit man es endlich ablegen kann.'},
  {sfx:'rohrpost',d:1500},
- {s:'WG',t:'Weiter so.'}
+ {s:'WG',wg:'wgc7',t:'Weiter so.'}
 ]};
 
 DAYS[23]={end:'Heute zum Ausdrucken: der Schlachtplan.',steps:[
@@ -111,7 +111,7 @@ DAYS[23]={end:'Heute zum Ausdrucken: der Schlachtplan.',steps:[
  {learn:'na:neunleben'},
  {s:'NA',t:'Ich hab noch acht übrig. Glaube ich. Ich hab nicht gezählt.',e:'sly'},
  {s:'GR',t:'Ich kann zählen helfen. Bis sieben.',e:'smile'},
- {fn:()=>playSong('zirpia_11',.85)},
+ {song:'zirpia_11',v:.85,imgs:['zl1','zl4','zl2','zl5','zl3','zl6']},
  {s:'ZI',t:'Das Summen war Absicht. Künstlerisch.',e:'sly'},
  {s:'HU',t:'Natürlich, Kindchen.',e:'smile'},
  {s:'SL',t:'Nachtigall erzählt, was morgen passieren wird. Leg mit deinem Druckblatt Schlachtplan fest, wer in welcher Phase vorangeht.'},
@@ -136,7 +136,7 @@ DAYS[24]={end:'Heute ist Lichternacht.',steps:[
  {s:'SL',t:'Er hat bis acht gezählt.',e:'shock'},{fn:()=>keyProbe(1)},{sfx:'feuerball'},
  {s:'GR',t:'Entschuldigung. Das hat sicher wehgetan.',e:'worried'},
  {s:'ZI',t:'Endlich. Mein größtes Publikum.',e:'smile'},{fn:()=>keyProbe(2)},
- {fn:()=>playSong('zirpia_12',.9,24)},
+ {song:'zirpia_12',v:.9,max:24,imgs:['zw1','zw2','zw3','zw4']},
  {s:'ZI',t:'Kein Applaus jetzt. Er schläft fast.',e:'smile'},
  {if:'traum',then:[{s:'ZI',t:'Du bist ein wunderschöner Drache.',e:'smile'},{s:'VH',t:'… Danke.',e:6}]},
  {fn:()=>keyProbe(3)},{sfx:'katze'},
@@ -157,11 +157,11 @@ DAYS[24]={end:'Heute ist Lichternacht.',steps:[
  {if:()=>has('butterbrot'),then:[{s:'SL',t:'Du hast es noch. Natürlich. Niemand isst das Butterbrot.',e:'laugh'}],else:[{s:'SL',t:'Nein. Gegessen. An Tag … ich will es gar nicht wissen. Sehr vernünftig.'}]},
  {if:()=>GIFT&&GIFT.von,then:[{s:'ALT',t:'Und schöne Grüße von {VON}. Es hieß, nie hätte jemand an dir gezweifelt.',novo:1}]},
  {bg:'f_tisch',mus:null,sfx:'rohrpost'},
- {s:'WG',t:'Abschlussbewertung. Erzählung: lebendig. Witze: zahlreich. Teilweise gut. Bob: weiterhin unerklärt.',e:'neutral'},
- {s:'WG',t:'Herz: vorhanden. Ergebnis: bestanden. Feste Anstellung bei der Ehrwürdigen Gilde der Erzähler.',e:'smile'},
+ {s:'WG',wg:'wgc5',t:'Abschlussbewertung. Erzählung: lebendig. Witze: zahlreich. Teilweise gut. Bob: weiterhin unerklärt.',e:'neutral'},
+ {s:'WG',wg:'wgc3',t:'Herz: vorhanden. Ergebnis: bestanden. Feste Anstellung bei der Ehrwürdigen Gilde der Erzähler.',e:'smile'},
  {sfx:'muenzen'},
  {s:'SL',t:'Danke. Danke! Meisterin Wendelgard, danke! Und danke an dich. Ja, dich. Du hast gewürfelt, gerätselt, gekämpft und jeden meiner Witze ertragen. Das war mein erstes Abenteuer. Und es war das beste.',e:'laugh'},
- {s:'WG',t:'Der letzte Satz war kitschig.',e:'sly'},
+ {s:'WG',wg:'wgc4',t:'Der letzte Satz war kitschig.',e:'sly'},
  {s:'SL',t:'Ich weiß. Ich lass ihn drin.',e:'smile'},
  {film:'abspann'},{hide:1}
 ]};
@@ -179,5 +179,5 @@ FILMS.abspann={shots:[
  {s:'SL',t:'Würfelt Initiative! … Würfle Initiative. Sie ist allein. Ich vergesse das immer.',tm:'Würfelt Initiative! … Würfle Initiative. Er ist allein. Ich vergesse das immer.'},
  {s:'SL',t:'Der Krokodilkönig hat eine schiefe … nein. Eine königliche Krone. Er hört zu. Er hört immer zu.'},
  {sfx:'rohrpost',s:'SL',t:'Oh nein. Nicht jetzt.'},
- {s:'WG',t:'Ich wollte nur sagen: Gute Nacht.'}
+ {s:'WG',wg:'wgc7',t:'Ich wollte nur sagen: Gute Nacht.'}
 ]};

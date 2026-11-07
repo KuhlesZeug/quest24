@@ -37,7 +37,7 @@ DAYS[2]={end:'Der Kompass zeigt nach Norden. Fast immer.',steps:[
  {bg:'f_wirt4'},{sfx:'gegenstand'},{s:'WIRT',t:'Dreimal! Na gut. Abgemacht ist abgemacht. Der Kompass gehört dir.'},
  {item:'kompass'},
  {bg:'f_tav_ofen'},
- {s:'WG',note:1,t:'Der Witz mit der Kapuze. Mittelmäßig.'},
+ {s:'WG',note:1,wg:'wgc1',t:'Der Witz mit der Kapuze. Mittelmäßig.'},
  {s:'SL',t:'Mittelmäßig ist gut. Mittelmäßig ist die Mitte. Die Mitte ist ein Anfang.'},{hide:1}
 ]};
 
@@ -91,7 +91,7 @@ DAYS[5]={end:'Heute zum Ausdrucken: die Runenschablone. Du brauchst sie morgen.'
  {sfx:'fanfare'},
  {s:'SL',t:'Stufe zwei! Wähle eine neue Fähigkeit.'},
  {levelup:2},
- {s:'WG',note:1,t:'Die Fanfare war zu lang.'},
+ {s:'WG',note:1,wg:'wgc2',t:'Die Fanfare war zu lang.'},
  {s:'SL',t:'Ich kürze sie. Für Stufe drei. Versprochen.'},
  {loot:1},{hide:1}
 ]};
@@ -110,7 +110,7 @@ DAYS[6]={end:'Grumbolds Glut leuchtet heller als je zuvor.',steps:[
  {item:'glutstein'},{learn:'gr:glutfaust'},{xp:10},
  {film:'z1'},
  {bg:'ort06'},
- {s:'WG',note:1,t:'Der Drache mit der Kerze. Traurig, ruhig, nah dran. So holt man die Spieler ab. Gut.'},
+ {s:'WG',note:1,wg:'wgc3',t:'Der Drache mit der Kerze. Traurig, ruhig, nah dran. So holt man die Spieler ab. Gut.'},
  {s:'SL',t:'Sie hat gut gesagt. Sie hat gut gesagt! Und abgeholt!'},{hide:1}
 ]};
 

@@ -35,14 +35,16 @@ function animFace(k,emo,on){clearInterval(faceTimer);const f=$('#sc-box .sb-face
 
 const SC={id:'',n:0,skip:false,tap:null};
 function scBox(){return $('#sc-box')}
-function setBg(src,fast){const a=$('#sc-bg');const cur=a.querySelector('.on');if(cur&&cur.dataset.src===src)return;
+const BGOK={};
+function setBg(src,fast){if(BGOK[src]===false)return;if(!BGOK[src]){const im=new Image();im.onload=()=>{BGOK[src]=true;setBg(src,fast)};im.onerror=()=>{BGOK[src]=false};im.src=src;BGOK[src]=0;return}
+ const a=$('#sc-bg');const cur=a.querySelector('.on');if(cur&&cur.dataset.src===src)return;
  const i=el('div','bgi');i.dataset.src=src;i.style.backgroundImage='url('+src+')';a.appendChild(i);requestAnimationFrame(()=>requestAnimationFrame(()=>i.classList.add('on')));
  if(cur){cur.classList.remove('on');setTimeout(()=>cur.remove(),fast?300:1300)}}
 function waitTap(){return new Promise(r=>{SC.tap=()=>{SC.tap=null;r()}})}
 $('#s-scene').addEventListener('click',e=>{if(e.target.closest('button,input,.sc-choices,.ovl'))return;if(SC.tap)SC.tap()});
 
 async function say(k,text,vo,e){const b=scBox(),w=WHO[k]||WHO.SL;const name=k==='HELD'?heroName():w.n;const emo=guessEmo(k,text,e);
- wgPop(k==='WG','#s-scene',emo);
+
  b.classList.add('on');b.classList.toggle('noface',!portrait(k));
  b.querySelector('.sb-face').style.backgroundImage=portrait(k)?'url('+portrait(k,emo)+')':'none';b.querySelector('.sb-face').classList.remove('pop');void b.offsetWidth;b.querySelector('.sb-face').classList.add('pop');
  b.querySelector('.sb-name').textContent=name;const tx=b.querySelector('.sb-text');tx.innerHTML='';b.classList.remove('done');
@@ -54,28 +56,29 @@ async function say(k,text,vo,e){const b=scBox(),w=WHO[k]||WHO.SL;const name=k===
  if(st.auto&&a){const ok=await Promise.race([voDone(a),waitTap().then(()=>'tap')]);if(ok==='tap'){stopVo();return}if(ok){await Promise.race([sleep(650),waitTap()]);SC.tap=null;return}}
  await waitTap();stopVo()}
 
-function hideBox(){scBox().classList.remove('on');wgPop(false)}
-// Meisterin Wendelgard schaut kurz ins Bild, wenn sie etwas sagt
-function wgPop(on,root,emo){document.querySelectorAll('.wgpop').forEach(x=>{if(!on||!x.closest(root))x.classList.remove('on')});if(!on)return;
- let p=$(root+' .wgpop');if(!p){p=el('div','wgpop','<div class="wp-img"></div><b>Meisterin Wendelgard</b>');$(root).appendChild(p)}
- p.querySelector('.wp-img').style.backgroundImage='url('+portrait('WG',emo??0)+')';requestAnimationFrame(()=>p.classList.add('on'))}
+function hideBox(){scBox().classList.remove('on')}
 
 async function choice(opts){hideBox();const c=$('#sc-choices');c.innerHTML='';c.classList.add('on');
  return new Promise(r=>{opts.forEach((o,i)=>{if(o.need&&!o.need())return;const b=el('button','ch-btn',T(o.t));b.onclick=()=>{sfx('ui_klick',.7);c.classList.remove('on');c.innerHTML='';r(i)};c.appendChild(b)})})}
 
 // Einzelne Schritte ausführen
-async function run(steps,ctx){ctx=ctx||{};for(const s of steps){if(SC.abort)return;await step(s,ctx)}}
+async function run(steps,ctx){ctx=ctx||{};for(const s of steps){if(SC.abort)return;if(SC.wgPrev&&s.s!=='WG'&&!s.note)wgBack();await step(s,ctx)}}
+// Meisterin Wendelgard: Schnitt aus der Geschichte an den echten Spieltisch
+const WGC=['wgc1','wgc2','wgc3','wgc4','wgc5','wgc6','wgc7','wgc8','wgc9','wgc10'];let wgI=0;
+function wgCut(img){const cur=$('#sc-bg .on');if(!SC.wgPrev)SC.wgPrev=cur?cur.dataset.src:null;img=img||WGC[(wgI++)%WGC.length];sfx('pergament',.5);setBg(A+'img/'+img+'.jpg',true);$('#s-scene').classList.add('real')}
+function wgBack(){const p=SC.wgPrev;SC.wgPrev=null;$('#s-scene').classList.remove('real');if(p)setBg(p,true)}
 async function step(s,ctx){
  if(s.bg){const src=A+'img/'+s.bg+'.jpg',cur=$('#sc-bg .on');const neu=!cur||cur.dataset.src!==src;setBg(src);
   // neues Bild erst einmal in Ruhe zeigen, bevor Text darüber kommt
-  if(neu&&s.look!==0){hideBox();wgPop(false);await Promise.race([sleep(s.look||2200),waitTap()]);SC.tap=null}}
+  if(neu&&s.look!==0){hideBox();await Promise.race([sleep(s.look||2200),waitTap()]);SC.tap=null}}
  if(s.fig!==undefined){let f=$('#sc-fig');if(!f){f=el('div','sc-fig');f.id='sc-fig';$('#s-scene').insertBefore(f,$('#sc-box'))}f.classList.toggle('on',!!s.fig);if(s.fig)f.style.backgroundImage='url('+A+'img/'+s.fig+'.png)'}
  if(s.mus!==undefined)music(s.mus?A+'mus/'+s.mus+'.mp3':null,s.mv??.45);
  if(s.atmo!==undefined){atmo(s.atmo?A+'atmo/'+s.atmo+'.mp3':null,s.av??.6);accents(s.acc,s.every)}
  if(s.sfx)sfx(s.sfx,s.v);
  if(s.wait)await sleep(s.wait);
  if(s.s){const male=s.tm&&st.hero&&!st.hero.f;const vo=s.s==='HELD'||s.novo?null:A+'vo/'+s._vo+(male?'m':'')+'.mp3';
-  if(s.note){sfx('rohrpost');await rohrpost()}
+  if(s.note){sfx('rohrpost');await rohrpost();await sleep(900)}
+  if(s.s==='WG')wgCut(s.wg);
   await say(s.s,male?s.tm:s.t,vo,s.e)}
  if(s.choice){const i=await choice(s.choice);const o=s.choice[i];if(o.flag)flag(o.flag);if(o.go)await run(o.go,ctx)}
  if(s.probe){const r=await probe(s.probe);await run(r?s.ok||[]:s.fail||[],ctx)}
@@ -91,6 +94,7 @@ async function step(s,ctx){
  if(s.levelup){hideBox();await levelUp(s.levelup)}
  if(s.loot){hideBox();await lootRoll()}
  if(s.film){hideBox();await playFilm(s.film)}
+ if(s.song){hideBox();await songShow(s.song,s.imgs||[],s)}
  if(s.flag)flag(s.flag);
  if(s.if){const t=typeof s.if==='function'?s.if():st.flags[s.if];await run(t?s.then||[]:s.else||[],ctx)}
  if(s.fn)await s.fn(ctx);
@@ -111,3 +115,14 @@ function itemBonus(p){let b=0;if(p.tag)st.inv.forEach(x=>{const I=ITEMS[x.id];if
 
 // Sprechzeilen fest durchnummerieren (auch in Verzweigungen), damit jede Zeile ihre Aufnahme hat
 function numberSteps(id,steps){let n=0;const walk=a=>{(a||[]).forEach(s=>{if(s.s)s._vo=id+'_'+String(++n).padStart(3,'0');['ok','fail','then','else','wrong'].forEach(k=>walk(s[k]));if(s.choice)s.choice.forEach(o=>walk(o.go));if(s.code){walk(s.code.wrongSteps)}})};walk(steps);return n}
+
+// Zirpias Auftritt: Lied läuft, Bilder der Vorstellung wechseln, Tippen beendet
+async function songShow(name,imgs,o){const cur=$('#sc-bg .on');const prev=cur?cur.dataset.src:null;let skip=false;
+ const hint=el('div','song-hint','Tippen zum Weiterspielen');$('#s-scene').appendChild(hint);setTimeout(()=>hint.classList.add('on'),1600);
+ let i=0;const next=()=>{if(!imgs.length||skip)return;setBg(A+'img/'+imgs[i%imgs.length]+'.jpg');i++};
+ const p=playSong(name,o.v??.9,o.max);next();
+ const per=(o.per||0)||null;const dur=await songDur(name,o.max);const step=per||Math.max(3500,dur*1000/Math.max(1,imgs.length));
+ const tm=setInterval(next,step);
+ SC.tap=()=>{skip=true;stopSong()};await p;SC.tap=null;clearInterval(tm);hint.remove();if(prev&&!o.keep)setBg(prev)}
+const SDUR={zirpia_01:21.8,zirpia_02:82,zirpia_03:96.8,zirpia_04:93,zirpia_05:78.4,zirpia_06:27.5,zirpia_07:28,zirpia_08:13,zirpia_09:27.3,zirpia_10:27.2,zirpia_11:50.5,zirpia_12:30,zirpia_13:92.8};
+async function songDur(n,max){const d=SDUR[n]||30;return max?Math.min(d,max):d}

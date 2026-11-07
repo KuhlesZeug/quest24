@@ -32,14 +32,14 @@ DAYS[8]={end:'Ein Irrlicht leuchtet jetzt im Glas. Es kichert manchmal.',steps:[
   {t:'Kann ich ihn streicheln?',go:[{s:'SL',t:'Natürlich fragt das jemand. Es fragt immer jemand.'},{sfx:'wuerfel'},{s:'SL',t:'Na gut. Du darfst.'},{s:'SL',t:'Er mag dich. Er mag dich zu sehr. Das ist jetzt deine Feder.'},{item:'eulenfeder'}]},
   {t:'Grumbold vorschicken',go:[{s:'GR',t:'Guten Abend. Entschuldigung. Wir gehen nur vorbei.'},{s:'SL',t:'Der Eulenbär verbeugt sich. Ich wusste nicht, dass die das können.'}]}]},
  {bg:'ort08_leer'},
- {s:'WG',note:1,t:'Drei Optionen für einen Bären. Sie verwöhnen Ihre Gäste.'},
+ {s:'WG',note:1,wg:'wgc4',t:'Drei Optionen für einen Bären. Sie verwöhnen Ihre Gäste.'},
  {s:'SL',t:'Er ist ja nur halb Bär. Also eigentlich sechs Optionen pro Bär.'},
- {s:'WG',t:'Bitte nicht rechnen.'},{hide:1}
+ {s:'WG',wg:'wgc8',t:'Bitte nicht rechnen.'},{hide:1}
 ]};
 
 DAYS[9]={end:'Heute zum Ausdrucken: Zirpias Gefährtenbogen.',steps:[
  {bg:'ort09',mus:'mine',atmo:'spinnennest',acc:['tropfen'],every:12},
- {hide:1},{fn:async()=>{const p=playSong('zirpia_01',.9,16);for(const [img,ms] of [['f_zi3',3600],['f_zi1',3800],['f_zi4',3400],['f_zi2',3600]]){setBg(A+'img/'+img+'.jpg');await sleep(ms)}}},
+ {hide:1},{fn:async()=>{const p=playSong('zirpia_01',.9,16);for(const [img,ms] of [['f_zi3',2600],['f_zi1',2700],['zi5',2600],['f_zi4',2600],['zi6',2700],['f_zi2',2600]]){setBg(A+'img/'+img+'.jpg');await sleep(ms)}}},
  {bg:'f_zi3'},
  {s:'SL',t:'Hörst du das? Irgendwer singt der Spinnenkönigin ein Liebeslied.'},
  {s:'SL',t:'Gewagt.'},
@@ -83,7 +83,7 @@ DAYS[11]={end:'Heute zum Ausdrucken: das Rätselblatt Nebelsumpf.',steps:[
  {s:'SL',t:'Der Nebelsumpf. Nur ein Pfad trägt. Alle anderen Steine … tragen nicht.'},
  {s:'GR',t:'Ich bin sehr schwer. Ich möchte das nur gesagt haben.'},
  {s:'ZI',t:'Keine Sorge, Großer. Wenn du sinkst, singe ich dir ein Abschiedslied. Es ist schon fertig.'},
- {fn:()=>playSong('zirpia_06',.8)},
+ {song:'zirpia_06',v:.8,imgs:['zs1','zs2','zs3','zs4']},
  {s:'SL',t:'Nimm das Druckblatt Nebelsumpf. Dann tippe hier den Weg Stein für Stein nach.'},
  {game:'sumpf'},
  {item:'sumpfstiefel'},{loot:1},{hide:1}
@@ -96,15 +96,15 @@ DAYS[12]={end:'Halbzeit. Noch zwölf Nächte.',steps:[
  {s:'HEX',t:'Ihr wollt zum Aschenkönig? Dann braucht ihr einen Feuerschutztrank. Ich braue ihn euch. Für einen Tausch.'},
  {if:()=>has('korken'),
   then:[{drop:'korken'},{s:'HEX',t:'Ein Korken! Aus dem schiefen Kessel! Den suche ich seit Jahren!'},{s:'SL',t:'Ich hab gesagt, der kommt wieder. Hab ich das gesagt? Ich hab es gedacht.'},{flag:'korken_tausch'}],
-  else:[{s:'ZI',t:'Ich biete ein Lied! Ein Ständchen, nur für Sie!'},{fn:()=>playSong('zirpia_07',.8)},{s:'HEX',t:'Gut. Hauptsache, sie hört wieder auf.'}]},
+  else:[{s:'ZI',t:'Ich biete ein Lied! Ein Ständchen, nur für Sie!'},{song:'zirpia_07',v:.8,imgs:['zh1','zh2','zh3','zh4']},{s:'HEX',t:'Gut. Hauptsache, sie hört wieder auf.'}]},
  {s:'HEX',t:'Das Rezept hab ich nur noch als Reim im Kopf. Hör gut zu.'},
  {game:'trank'},
  {if:'korken_tausch',then:[{item:'feuerschutz',n:2}],else:[{item:'feuerschutz'}]},
- {s:'WG',note:1,t:'Zwischenbewertung, Tag zwölf. Erzählung: lebendig. Witze: zahlreich. Zu zahlreich. Bob: Bitte erklären Sie mir Bob.'},
+ {s:'WG',note:1,wg:'wgc5',t:'Zwischenbewertung, Tag zwölf. Erzählung: lebendig. Witze: zahlreich. Zu zahlreich. Bob: Bitte erklären Sie mir Bob.'},
  {s:'SL',t:'Verstanden. Ab jetzt nur noch ernste Erzählung.'},
  {s:'SL',t:'Der Nebel lichtete sich. Die Hexe nickte weise. Der Trank glühte in der Flasche.'},
  {s:'SL',t:'… und die Hütte hat sich hingesetzt wie ein Huhn. Entschuldigung. Das musste raus. Drei Sätze. Ich hab drei Sätze geschafft.'},
- {s:'WG',t:'Vier wären besser gewesen.'},
+ {s:'WG',wg:'wgc4',t:'Vier wären besser gewesen.'},
  {s:'SL',t:'Halbzeit. Wir sind genau in der Mitte. Wendelgard sagt, die Mitte ist ein Anfang. Nein, das hab ich gesagt.'},{hide:1}
 ]};
 

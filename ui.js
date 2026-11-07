@@ -50,7 +50,7 @@ async function tapDay(d){sfx('ui_klick',.6);
  playDay(d,false)}
 
 async function playDay(d,again){const D=DAYS[d];if(!D){toast('Dieser Tag wird gerade gebaut.');return}
- show('#s-scene');SC.id='d'+String(d).padStart(2,'0');if(!D._n)D._n=numberSteps(SC.id,D.steps)||1;SC.abort=0;$('#sc-bg').innerHTML='';const fg=$('#sc-fig');if(fg)fg.classList.remove('on');$('#sc-title').textContent='Tag '+d+' · '+DAYN[d];renderHud();
+ show('#s-scene');SC.id='d'+String(d).padStart(2,'0');if(!D._n)D._n=numberSteps(SC.id,D.steps)||1;SC.abort=0;SC.wgPrev=null;$('#s-scene').classList.remove('real');$('#sc-bg').innerHTML='';const fg=$('#sc-fig');if(fg)fg.classList.remove('on');$('#sc-title').textContent='Tag '+d+' · '+DAYN[d];renderHud();
  await run(D.steps);if(SC.abort){SC.abort=0;return goMap()}
  hideBox();if(!again){st.done[d]=Date.now();save()}
  await countdownCard(d);goMap()}
