@@ -178,10 +178,18 @@ GAMES.plan=()=>new Promise(done=>{
   st.flags.plan=p;save();const ok=PHASEN.every((x,i)=>p[i]===x[1]);gameEnd();if(!ok)await say('SL','Bist du sicher? Ich frag ja nur.',A+'vo/d23_plan.mp3');done()}});
 
 // Tag 24: Schlüsselprobe einer Phase im Drachenkampf
+// Schnelle Reaktion im Drachenkampf: Ring fliegt auf das Ziel, rechtzeitig tippen gibt Bonus
+function qte(title){return new Promise(res=>{const o=el('div','qte','<div class="qte-t">'+title+'</div><div class="qte-a"><i class="qte-ring"></i><button class="qte-b">JETZT</button></div><div class="qte-h">Tippe, wenn der Ring den Knopf erreicht</div>');$('#s-scene').appendChild(o);
+ const r=o.querySelector('.qte-ring'),b=o.querySelector('.qte-b');const dur=1500;let t0=0,done=false,rounds=0;
+ const start=()=>{t0=performance.now()+400;r.style.animation='none';void r.offsetWidth;r.style.animation='qtein '+dur+'ms linear 400ms forwards'};
+ const fin=q=>{if(done)return;done=true;clearTimeout(to);o.querySelector('.qte-h').textContent=q>.8?'Perfekt!':q>.4?'Gut!':'Knapp daneben';o.classList.add(q>.8?'p':q>.4?'g':'d');sfx(q>.4?'treffer':'falsch',.5);setTimeout(()=>{o.remove();res(q)},700)};
+ let to=0;const arm=()=>{to=setTimeout(()=>{if(++rounds<2){start();arm()}else fin(0)},dur+900)};
+ b.onclick=()=>{const d=Math.abs(performance.now()-(t0+dur));fin(d<120?1:d<260?.6:.1)};start();arm()})}
 async function keyProbe(i){const P=PHASEN[i];const plan=st.flags.plan||{};
+ hideBox();const q=await qte(P[0]);const qb=q>.8?6:q>.4?3:0;
  const right=plan[i]===P[1];const unitN={held:heroName(),gr:'Grumbold',zi:'Zirpia',hu:'Oma Hulda',na:'Nachtigall'};
  let ziel=right&&has(P[2])?8:16;if(i===2&&st.flags.traum)return true;
- for(let tries=0;tries<6;tries++){const bonus=(P[1]==='held'?Math.max(st.hero.str,st.hero.dex,st.hero.wis):4)+(st.flags.trust>0&&P[1]!=='held'?3:0);
+ for(let tries=0;tries<6;tries++){const bonus=(P[1]==='held'?Math.max(st.hero.str,st.hero.dex,st.hero.wis):4)+(st.flags.trust>0&&P[1]!=='held'?3:0)+(tries===0?qb:0);
   const r=await rollD20({title:'Phase '+(i+1)+': '+P[0],sub:esc(unitN[plan[i]||P[1]])+' mit '+ITEMS[P[2]].n+'. W20 plus '+bonus+', Ziel '+ziel,bonus,ziel});
   if(st.flags.trust>0&&P[1]!=='held'){st.flags.trust--;save()}
   if(r.total>=ziel)return true;

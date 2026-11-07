@@ -126,3 +126,13 @@ async function songShow(name,imgs,o){const cur=$('#sc-bg .on');const prev=cur?cu
  SC.tap=()=>{skip=true;stopSong();if(sk)sk()};await p;SC.tap=null;clearInterval(tm);hint.remove();if(prev&&!o.keep)setBg(prev)}
 const SDUR={zirpia_01:21.8,zirpia_02:82,zirpia_03:96.8,zirpia_04:93,zirpia_05:78.4,zirpia_06:27.5,zirpia_07:28,zirpia_08:13,zirpia_09:27.3,zirpia_10:27.2,zirpia_11:50.5,zirpia_12:30,zirpia_13:92.8};
 async function songDur(n,max){const d=SDUR[n]||30;return max?Math.min(d,max):d}
+
+// Abschlussbewertung als Urkunde: Zeilen erscheinen nacheinander, am Ende der Stempel
+function zeugnis(phase){let z=$('#zeugnis');
+ if(phase==='hide'){if(z){z.classList.add('out');setTimeout(()=>z.remove(),700)}return}
+ if(!z){z=el('div','zeugnis','<div class="zg-k">Ehrwürdige Gilde der Erzähler</div><h3>Abschlussbewertung</h3><div class="zg-s">Probezeit des Spielleiters, vierundzwanzig Nächte</div><div class="zg-rows"></div><div class="zg-sig"><i>M. Wendelgard</i><span>Meisterin der Gilde</span></div><div class="zg-stamp">Bestanden</div><div class="zg-conf"></div>');z.id='zeugnis';$('#s-scene').appendChild(z);requestAnimationFrame(()=>z.classList.add('on'))}
+ const rows=z.querySelector('.zg-rows');const star=n=>'<span class="zg-st">'+'<b>★</b>'.repeat(n)+'<b class="o">★</b>'.repeat(5-n)+'</span>';
+ const add=(l,v,r,d)=>setTimeout(()=>{const e=el('div','zg-r','<span class="zg-l">'+l+'</span><span class="zg-v">'+v+'</span>'+r);rows.appendChild(e);sfx('pergament',.4)},d);
+ if(phase===1){add('Erzählung','lebendig',star(4),400);add('Witze','zahlreich, teilweise gut',star(3),2400);add('Das Butterbrot','weiterhin unerklärt','<span class="zg-st q">?</span>',4600)}
+ if(phase===2){add('Herz','vorhanden',star(5),300);add('Mitspieler',heroName(),'<span class="zg-st">'+'<b>★</b>'.repeat(5)+'</span>',1800);
+  setTimeout(()=>{z.classList.add('stamp');sfx('treffer',1);sfx('fanfare',.7);const c=z.querySelector('.zg-conf');for(let i=0;i<40;i++){const e=el('i','');e.style.left=Math.random()*100+'%';e.style.background=['#ffd76a','#ff5ad1','#7ad7ff','#9cff7a','#ff8a5a'][i%5];e.style.animationDelay=(Math.random()*.6)+'s';e.style.animationDuration=(1.8+Math.random()*1.6)+'s';c.appendChild(e)}},3600)}}
