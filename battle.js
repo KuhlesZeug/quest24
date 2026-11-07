@@ -129,7 +129,7 @@ function pick(sel,filter){return new Promise(r=>{B.picking={sel,filter,r};markPi
 // Auswahl übersteht jedes Neuzeichnen: Markierung wird nach render erneut gesetzt, Klick über den Container
 function markPick(){const P=B&&B.picking;if(!P)return;$$(P.sel).forEach(e=>{const ok=P.filter(e);e.classList.toggle('pickable',ok);e.onclick=ok?()=>{const Q=B.picking;if(!Q)return;B.picking=null;$$(Q.sel).forEach(x=>{x.classList.remove('pickable');x.onclick=null});Q.r(e)}:null})}
 async function partyTurn(u){B.cur=u;render();const act=$('#bt-act');
- const sks=[];u.skills.forEach(s=>{const S=SK[s];if(!S||S.passive)return;if(S.once&&B.used[u.id+s])return;sks.push({k:'sk',s,t:S.n,d:S.d})});
+ const sks=[];[...new Set(u.skills)].forEach(s=>{const S=SK[s];if(!S||S.passive)return;if(S.once&&B.used[u.id+s])return;sks.push({k:'sk',s,t:S.n,d:S.d})});
  const pots=st.inv.filter(x=>ITEMS[x.id]&&ITEMS[x.id].use);
  const choose=(title,opts,cls,back)=>new Promise(r=>{act.className='bt-act'+(cls?' '+cls:'');act.innerHTML='<div class="bt-who">'+esc(title)+'</div>';const row=el('div','bt-btns'+(cls?' list':''));act.appendChild(row);
   opts.forEach(o=>{const b=el('button','bt-b'+(o.k==='sk'?' sk':'')+(o.it?' it':''),(o.it?'<img src="'+A+'items/'+o.it.id+'.png" alt="">':'')+'<b>'+esc(o.t)+'</b>'+(o.d?'<span>'+esc(o.d)+'</span>':''));b.onclick=()=>{sfx('ui_klick',.6);r(o)};row.appendChild(b)});

@@ -810,3 +810,7 @@ img{display:block;max-width:100%}
 .pl2-ring{width:30px;height:17px;border-width:3px}
 .pl2 .bg-help{animation:helpOut .8s ease 5s forwards}
 @keyframes helpOut{to{opacity:0;transform:translateY(20px)}}
+.bt-act .bt-btns:not(.list){grid-template-columns:repeat(3,1fr)}
+.bt-act .bt-btns:not(.list) .bt-b{padding:8px 6px}
+.bt-act .bt-btns:not(.list) .bt-b b{font-size:.92rem}
+.sw-m{filter:drop-shadow(0 0 0 transparent)}

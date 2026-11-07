@@ -168,11 +168,11 @@ GAMES.laden=()=>new Promise(done=>{
 GAMES.sturm=(s)=>new Promise(done=>{const sc=$('#s-scene');const L=[.14,.38,.62,.86];
  const mem=['gr','hu','zi','na'].filter(k=>k==='gr'||(st.party||[]).includes(k));const line=[...mem.map(k=>({k,src:A+'img/b_'+k+'_0.png'})),{k:'held',src:A+'img/b_'+st.hero.cls+'_'+st.hero.look+'_0.png'}];
  const o=el('div','pg sw','<div class="sw-bg"></div><div class="sw-lanes">'+L.map((x,i)=>'<div class="sw-lane" data-l="'+i+'" style="left:'+(x*100)+'%"></div>').join('')+'</div><div class="pg-top">Weiche den Windböen aus</div><div class="sw-hud"><span class="sw-c">Böe 0 von 18</span><span class="sw-life"></span></div><div class="sw-help">Tippe eine Spur an. Die ganze Gruppe folgt Grumbold.</div>');sc.appendChild(o);
- const bg=o.querySelector('.sw-bg');{const im=new Image();im.onload=()=>{bg.style.backgroundImage='url('+A+'img/sw_grat.jpg)';bg.classList.add('tile')};im.onerror=()=>{bg.style.backgroundImage='url('+A+'img/ort20.jpg)'};im.src=A+'img/sw_grat.jpg'}o.appendChild(el('div','sw-snow'));
+ const bg=o.querySelector('.sw-bg');{const im=new Image();im.onload=()=>{bg.style.backgroundImage='url('+A+'img/sw_grat.jpg)'};im.onerror=()=>{bg.style.backgroundImage='url('+A+'img/ort20.jpg)'};im.src=A+'img/sw_grat.jpg'}o.appendChild(el('div','sw-snow'));
  const P=line.map((m,i)=>{const d=el('div','sw-m'+(i===0?' lead':''),'<img src="'+m.src+'" alt="">');o.appendChild(d);return {d,lane:1,y:.5+i*.095,sc:i===0?1.25:.78+i*.04}});
  let lane=1,lives=3,hits=0,n=0,total=18,speed=.42,run=true,gusts=[],last=performance.now(),spawnT=0,inv=0;
  const life=()=>{o.querySelector('.sw-life').innerHTML='<i class="on"></i><i class="'+(lives>1?'on':'')+'"></i><i class="'+(lives>2?'on':'')+'"></i>'};life();
- const place=()=>{const W=o.clientWidth,H=o.clientHeight;P.forEach((p,i)=>{const s=Math.min(W*.22,H*.12)*p.sc;p.d.style.width=s+'px';p.d.style.left=(L[p.lane]*W)+'px';p.d.style.top=(p.y*H)+'px';p.d.style.zIndex=10+i})};
+ const place=()=>{const W=o.clientWidth,H=o.clientHeight;P.forEach((p,i)=>{const s=Math.min(W*.26,H*.14)*p.sc;p.d.style.width=s+'px';p.d.style.left=(L[p.lane]*W)+'px';p.d.style.top=(p.y*H)+'px';p.d.style.zIndex=10+i})};
  const move=l=>{if(!run||l===lane)return;lane=l;sfx('schritte_schnee',.4);P.forEach((p,i)=>setTimeout(()=>{p.lane=l;place()},i*90))};
  o.querySelectorAll('.sw-lane').forEach(e=>e.addEventListener('pointerdown',ev=>{ev.preventDefault();move(+e.dataset.l)}));
  let sx=null;o.addEventListener('touchstart',e=>{sx=e.touches[0].clientX},{passive:true});o.addEventListener('touchend',e=>{if(sx===null)return;const dx=e.changedTouches[0].clientX-sx;if(Math.abs(dx)>40)move(Math.max(0,Math.min(3,lane+(dx>0?1:-1))));sx=null},{passive:true});
