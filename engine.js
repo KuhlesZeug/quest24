@@ -46,7 +46,10 @@ function makeLooper(busName){let cur=null;
   cur=null;if(!src)return;const b=await loadBuf(src);if(!b)return;const s=AC.createBufferSource();s.buffer=b;s.loop=true;const g=AC.createGain();g.gain.value=0;s.connect(g);g.connect(busName==='mus'?musBus:atmoBus);s.start();g.gain.setTargetAtTime(vol??.5,AC.currentTime,1.1);cur={src,s,g}}}
 const music=makeLooper('mus');
 const atmo=makeLooper('atmo');
-function duck(on){if(!musBus)return;musBus.gain.setTargetAtTime(on?.22:.55,AC.currentTime,.25);atmoBus.gain.setTargetAtTime(on?.45:.7,AC.currentTime,.25)}
+let HUSH=0;let DUCKED=false;
+function duck(on){DUCKED=on;if(!musBus)return;musBus.gain.setTargetAtTime(HUSH?0:on?.22:.55,AC.currentTime,HUSH?.6:.25);atmoBus.gain.setTargetAtTime(HUSH?.12:on?.45:.7,AC.currentTime,.25)}
+// Lieder und Taktspiel: Hintergrundmusik ganz ausblenden
+function hush(on){HUSH=on?1:0;duck(DUCKED)}
 // Effekte: a und b Fassung abwechselnd, damit nichts mechanisch klingt
 const SFXV={};const SFXA={glocke_fern:'glocke',tuer_knarzt:'tavernentuer',holz_knarzt:'tavernentuer'};
 async function sfx(name,vol){if(!st.sound)return;ac();name=SFXA[name]||name;const v=SFXV[name]=(SFXV[name]||0)+1;const ab=v%2?'a':'b';

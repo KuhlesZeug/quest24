@@ -83,6 +83,13 @@ DAYS[22]={end:'Heute zum Ausdrucken: die Tagebuchseiten mit der Drehscheibe.',st
  {s:'SL',t:'Die letzte Seite ist verschlüsselt. Nimm die Drehscheibe von deinem Druckblatt.'},
  {code:{id:'tagebuch',k:'Das Tagebuch des letzten Hüters',q:'Wie heißt das letzte lange Wort der entschlüsselten Seite?',ph:'Wort eingeben',h:['967b54b5bad5a800d0f711cc3b7d331012612ff6efa46aeab82eb47bb4efc738'],
   hints:['Grumbold zählt immer bis sieben und fängt dann wieder an. Das ist die Zahl.','Drehe den inneren Ring so, dass unter dem äußeren K ein D steht. Dann kannst du alles direkt ablesen.','Die Seite lautet: DAS HERZJUWEL IST FORT. DIE DIEBIN LIESS EIN PLAETZCHEN DA.']}},
+ {bg:'d22a',alt:'ort22'},
+ {s:'SL',t:'Die Diebin ließ ein Plätzchen da. Ein Plätzchen.'},
+ {s:'GR',t:'Hulda backt die besten Plätzchen. Und sie lässt immer welche da.'},
+ {s:'ZI',t:'Und Hulda stand in der Zeitung! Ich hab die Überschrift gesehen!',e:'shock'},
+ {s:'NA',t:'Ich hab mich schon gefragt, wann ihr darauf kommt.',e:'sly'},
+ {bg:'d22b',alt:'ort22',look:1200},
+ {s:'HU',t:'Na gut, Kindchen. Ich war es. Und ich hab es immer noch.',e:'sad'},
  {film:'z6'},
  {item:'herzjuwel'},{fn:()=>{st.insp=1;save();toast('Inspiration für alle')}},{hide:1}
 ]};

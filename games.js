@@ -26,13 +26,13 @@ GAMES.spiegel=()=>new Promise(done=>{
 
 // Lieder von Zirpia (Suno), laufen über der Musik
 let songEl=null;
-function playSong(name,vol,max,onStart){stopSong();if(!st.sound)return Promise.resolve();ac();const me={stop:null,done:null};songEl=me;duck(true);
- return new Promise(r=>{let t=null,fin=false;const end=()=>{if(fin)return;fin=true;clearTimeout(t);clearTimeout(me._w);if(songEl===me){songEl=null;duck(false)}r()};me.done=end;
+function playSong(name,vol,max,onStart){stopSong();if(!st.sound)return Promise.resolve();ac();const me={stop:null,done:null};songEl=me;hush(true);
+ return new Promise(r=>{let t=null,fin=false;const end=()=>{if(fin)return;fin=true;clearTimeout(t);clearTimeout(me._w);if(songEl===me){songEl=null;hush(false)}r()};me.done=end;
   loadVo(A+'songs/'+name+'.mp3').then(b=>{if(songEl!==me||fin)return end();if(!b)return end();const s=AC.createBufferSource();s.buffer=b;const g=AC.createGain();g.gain.value=vol??.9;s.connect(g);g.connect(voOut());s.onended=end;s.start();if(onStart)onStart();
    me.stop=()=>{try{g.gain.setTargetAtTime(0,AC.currentTime,.05);s.stop(AC.currentTime+.2)}catch(e){}end()};
    me._w=setTimeout(end,(b.duration+1.5)*1000);
    if(max)t=setTimeout(()=>{g.gain.setTargetAtTime(0,AC.currentTime,.5);setTimeout(()=>{try{s.stop()}catch(e){}end()},2200)},max*1000)})})}
-function stopSong(){if(songEl){const m=songEl;songEl=null;if(m.stop)m.stop();else if(m.done)m.done();duck(false)}}
+function stopSong(){if(songEl){const m=songEl;songEl=null;if(m.stop)m.stop();else if(m.done)m.done();hush(false)}}
 function ballade(){if(!st.flags.ballade){st.flags.ballade=['zirpia_02','zirpia_03','zirpia_04','zirpia_05'][Math.floor(Math.random()*4)];save()}return st.flags.ballade}
 
 // Tag 8: Lichtfolge merken. Drei Runden mit 4, 6 und 8 Lichtern.
@@ -50,8 +50,19 @@ GAMES.irrlicht=()=>new Promise(done=>{
 function tone(f,d){const c=ac(),o=c.createOscillator(),g=c.createGain();o.type='triangle';o.frequency.value=f;const t=c.currentTime;g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(.18,t+.02);g.gain.exponentialRampToValueAtTime(.001,t+d);o.connect(g);g.connect(sfxBus);o.start(t);o.stop(t+d+.05)}
 
 // Tag 10: Im Takt bleiben. Kein Scheitern möglich, je besser, desto mehr Applaus.
+// Kleiner Schlagzeug Synthesizer für das Taktspiel
+const DRUM={noise:null};
+function drumOut(){const c=ac();return sfxBus||master||c.destination}
+function kick(t){const c=ac(),o=c.createOscillator(),g=c.createGain();o.frequency.setValueAtTime(150,t);o.frequency.exponentialRampToValueAtTime(42,t+.18);g.gain.setValueAtTime(.9,t);g.gain.exponentialRampToValueAtTime(.001,t+.32);o.connect(g);g.connect(drumOut());o.start(t);o.stop(t+.35)}
+function noiseBuf(){const c=ac();if(!DRUM.noise){const b=c.createBuffer(1,c.sampleRate*.5,c.sampleRate);const d=b.getChannelData(0);for(let i=0;i<d.length;i++)d[i]=Math.random()*2-1;DRUM.noise=b}return DRUM.noise}
+function hit(t,f,dur,vol,type){const c=ac(),n=c.createBufferSource();n.buffer=noiseBuf();const fl=c.createBiquadFilter();fl.type=type;fl.frequency.value=f;const g=c.createGain();g.gain.setValueAtTime(vol,t);g.gain.exponentialRampToValueAtTime(.001,t+dur);n.connect(fl);fl.connect(g);g.connect(drumOut());n.start(t);n.stop(t+dur+.02)}
+function snare(t){hit(t,1800,.18,.5,'bandpass');const c=ac(),o=c.createOscillator(),g=c.createGain();o.type='triangle';o.frequency.value=190;g.gain.setValueAtTime(.25,t);g.gain.exponentialRampToValueAtTime(.001,t+.1);o.connect(g);g.connect(drumOut());o.start(t);o.stop(t+.12)}
+function hat(t,v){hit(t,8000,.05,v||.18,'highpass')}
+function bass(t,f,d){const c=ac(),o=c.createOscillator(),fl=c.createBiquadFilter(),g=c.createGain();o.type='sawtooth';o.frequency.value=f;fl.type='lowpass';fl.frequency.value=500;g.gain.setValueAtTime(.0001,t);g.gain.linearRampToValueAtTime(.22,t+.02);g.gain.exponentialRampToValueAtTime(.001,t+d);o.connect(fl);fl.connect(g);g.connect(drumOut());o.start(t);o.stop(t+d+.05)}
+// spielt ab Audiozeit t0 n Schläge im Abstand iv (Sekunden); Kick auf jedem Schlag, Snare auf 2 und 4, Hi Hat dazwischen, Basslinie
+function beatLoop(t0,n,iv){const B=[55,55,65.4,49];for(let i=-4;i<n;i++){const t=t0+i*iv;if(t<ac().currentTime)continue;if(i<0){hat(t,.3);continue}kick(t);if(i%2===1)snare(t);hat(t+iv/2);hat(t+iv*.75,.08);bass(t,B[Math.floor(i/4)%4],iv*.9)}}
 GAMES.takt=()=>new Promise(async done=>{
- const area=gameShell('Im Takt bleiben','Ein Ring fliegt von außen auf die Trommel zu. Tippe genau dann auf die Trommel, wenn er den goldenen Rand erreicht und die Trommel aufleuchtet.');
+ const area=gameShell('Im Takt bleiben','Ein Ring fliegt von außen auf die Trommel zu. Tippe genau dann auf die Trommel, wenn er den weißen Rand erreicht. Die Trommel leuchtet dann auf und der Beat schlägt.');
  area.innerHTML='<div class="tk-wrap"><div class="tk-rings"></div><div class="tk-target"></div><button class="tk-drum"><img src="'+A+'ui/trommel.png" alt=""></button><div class="tk-pop"></div></div><div class="tk-score">Gleich geht es los</div>';
  const drum=area.querySelector('.tk-drum'),rings=area.querySelector('.tk-rings'),tgt=area.querySelector('.tk-target'),pop=area.querySelector('.tk-pop'),sc=area.querySelector('.tk-score');
  const beats=16,iv=700,lead=1400;let hits=0,perfect=0;const times=[];const used=new Set();
@@ -61,12 +72,13 @@ GAMES.takt=()=>new Promise(async done=>{
   if(best>=0&&bd<110){used.add(best);hits++;perfect++;say('Perfekt!','p');sfx('treffer',.3)}else if(best>=0&&bd<200){used.add(best);hits++;say('Gut!','g');sfx('treffer',.2)}else say('Daneben','d');
   sc.textContent=hits+' von '+beats+' Treffern'};
  // Einzählen
- for(const n of ['3','2','1']){say(n,'c');tone(330,.1);await sleep(iv)}
+ const c=ac();const at0=c.currentTime+3*iv/1000+lead/1000;beatLoop(at0,beats,iv/1000);hush(true);
+ for(const n of ['3','2','1']){say(n,'c');await sleep(iv)}
  const t0=performance.now()+lead;for(let i=0;i<beats;i++)times.push(t0+i*iv);
- times.forEach((t,i)=>{setTimeout(()=>{const r=el('i','tk-ring');r.style.animationDuration=lead+'ms';rings.appendChild(r);setTimeout(()=>r.remove(),lead+120)},t-lead-performance.now());
-  setTimeout(()=>{tgt.classList.remove('beat');void tgt.offsetWidth;tgt.classList.add('beat');tone(110,.12)},t-performance.now())});
+ times.forEach((t,i)=>{setTimeout(()=>{const r=el('i','tk-ring');r.style.animationDuration=lead+'ms';r.style.setProperty('--h',(i*47)%360);rings.appendChild(r);setTimeout(()=>r.remove(),lead+120)},t-lead-performance.now());
+  setTimeout(()=>{tgt.classList.remove('beat');void tgt.offsetWidth;tgt.classList.add('beat')},t-performance.now())});
  await sleep(t0+beats*iv-performance.now()+600);
- drum.onclick=null;gameEnd();toast(hits>12?'Tosender Applaus!':hits>6?'Die Schnecken wippen begeistert.':'Höflicher Applaus. Sehr langsamer Applaus.');sfx('sieg',.6);done()});
+ drum.onclick=null;hush(false);gameEnd();toast(hits>12?'Tosender Applaus!':hits>6?'Die Schnecken wippen begeistert.':'Höflicher Applaus. Sehr langsamer Applaus.');sfx('sieg',.6);done()});
 
 // Tag 11: Steinpfad im Nebelsumpf. Raster wie auf dem Druckblatt, oben Norden, unten Ufer.
 GAMES.sumpf=()=>new Promise(done=>{
@@ -99,17 +111,44 @@ GAMES.karten=()=>new Promise(done=>{
   area.querySelectorAll('[data-h]').forEach(b=>b.onclick=async()=>{const h=+b.dataset.h;const ok=h===(nx>cur?1:0);if(ok)right++;sfx('pergament',.6);const c=area.querySelector('.kt-card.back');c.classList.remove('back');c.innerHTML='<b>'+nx+'</b>';await sleep(900);cur=nx;nx=next();round++;if(round<5)draw();else finish()})};
  const finish=async()=>{gameEnd();st.flags.karten=right;save();done()};draw()});
 
-// Tag 16: Schlösser knacken. Tippen, wenn der Stift oben glänzt.
-GAMES.schloss=()=>new Promise(done=>{
- const area=gameShell('Schlösser knacken','Tippe genau dann, wenn der Stift oben glänzt. Ein Fehler setzt nur den aktuellen Stift zurück.');
- const easy=st.hero.skills.includes('finger');const locks=[3,4,5];let li=0,pin=0,errs=0;
- area.innerHTML='<div class="sl-box"><img class="sl-img" src="'+A+'ui/schloss.png" alt=""><div class="sl-pins"></div></div><div class="kt-st sl-st"></div><div class="g-row"><button class="pbtn sl-go">Jetzt!</button></div><div class="g-row sl-help"></div>';
- const pins=area.querySelector('.sl-pins');let shine=false,t=null;
- const draw=()=>{pins.innerHTML='';for(let i=0;i<locks[li];i++)pins.appendChild(el('i',i<pin?'set':i===pin?'cur':''));area.querySelector('.sl-st').textContent='Kiste '+(li+1)+' von 3';};
- const tick=()=>{clearTimeout(t);shine=!shine;const c=pins.querySelector('.cur');if(c)c.classList.toggle('shine',shine);t=setTimeout(tick,shine?(easy?620:430):700+Math.random()*700)};
- const ok=async()=>{pin++;sfx('stein',.5);if(pin>=locks[li]){sfx('truhe');pin=0;li++;if(li>=3){clearTimeout(t);gameEnd();return done()}}draw()};
- area.querySelector('.sl-go').onclick=async()=>{if(shine)return ok();sfx('falsch',.5);errs++;if(errs>=3&&!area.querySelector('.sl-hu')){const b=el('button','lnk sl-hu','Oma Hulda machen lassen');b.onclick=()=>{clearTimeout(t);gameEnd();toast('Hulda: Kindchen, gib mal her.');done()};area.querySelector('.sl-help').appendChild(b)}};
- draw();tick()});
+// Tag 16: Schlösser knacken wie ein Profi. Dietrich ansetzen, Zylinder drehen, nicht zu viel Druck.
+const LOCKSVG='<svg viewBox="0 0 300 300" class="lk-plate"><defs><radialGradient id="lkg" cx="40%" cy="35%"><stop offset="0" stop-color="#f6d27a"/><stop offset=".6" stop-color="#c8902e"/><stop offset="1" stop-color="#7a4f16"/></radialGradient></defs><path d="M150 18c52 0 92 30 104 70 14 44-6 74-6 110 0 40-46 84-98 84S52 238 52 198c0-36-20-66-6-110C58 48 98 18 150 18z" fill="url(#lkg)" stroke="#1a0f06" stroke-width="9"/><circle cx="150" cy="58" r="10" fill="#7a4f16" stroke="#1a0f06" stroke-width="6"/><circle cx="150" cy="250" r="10" fill="#7a4f16" stroke="#1a0f06" stroke-width="6"/><circle cx="84" cy="150" r="9" fill="#7a4f16" stroke="#1a0f06" stroke-width="6"/><circle cx="216" cy="150" r="9" fill="#7a4f16" stroke="#1a0f06" stroke-width="6"/></svg>';
+const COREHTML='<svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="46" fill="#b9852e" stroke="#1a0f06" stroke-width="6"/><circle cx="50" cy="50" r="36" fill="none" stroke="#e6b860" stroke-width="3"/><path d="M50 22a12 12 0 0 1 7 22l5 30H38l5-30a12 12 0 0 1 7-22z" fill="#140a03" stroke="#1a0f06" stroke-width="2"/></svg>';
+const PICKSVG='<svg viewBox="0 0 320 40" class="lk-pk"><rect x="0" y="12" width="120" height="16" rx="6" fill="#5a3415" stroke="#1a0f06" stroke-width="4"/><rect x="118" y="16" width="180" height="8" fill="#cfd6dc" stroke="#1a0f06" stroke-width="3"/><path d="M296 16 l14 -10 l4 4 l-12 14 z" fill="#cfd6dc" stroke="#1a0f06" stroke-width="3"/></svg>';
+const WRSVG='<svg viewBox="0 0 160 60" class="lk-wr"><path d="M4 8 h20 v34 h130 v12 H4z" fill="#9aa3aa" stroke="#1a0f06" stroke-width="4" stroke-linejoin="round"/></svg>';
+function lockSnd(k){const c=ac(),t=c.currentTime;if(k==='tick')hit(t,5200,.03,.25,'bandpass');if(k==='pin'){hit(t,3400,.05,.5,'bandpass');hit(t+.045,2200,.05,.35,'bandpass')}if(k==='snap'){hit(t,6500,.12,.6,'highpass');hit(t,900,.2,.3,'lowpass')}if(k==='open'){hit(t,1500,.09,.5,'bandpass');hit(t+.11,420,.25,.5,'lowpass');hit(t+.3,260,.5,.35,'lowpass')}}
+function lockpick(o){return new Promise(res=>{const STAGES=o.stages||3,SPAN=30,tol=o.easy?10:6;let picks=5,health=1,stage=0,rot=0,ang=0,hold=false,last=performance.now(),raf=0,sweet=[],openF=false,lastTick=0,shake=0;
+ for(let i=0;i<STAGES;i++){let v;do{v=Math.round(Math.random()*130-65)}while(i&&Math.abs(v-sweet[i-1])<25);sweet.push(v)}
+ const area=o.area;area.innerHTML='<div class="lk"><div class="lk-st"><div class="lk-wood"></div>'+LOCKSVG+'<div class="lk-core">'+COREHTML+'<div class="lk-wrw">'+WRSVG+'</div></div><div class="lk-pv">'+PICKSVG+'</div><div class="lk-pins">'+Array.from({length:STAGES},()=>'<i></i>').join('')+'</div><div class="lk-msg"></div><div class="lk-box">'+o.label+'</div></div><div class="lk-ui"><div class="lk-c"><span>Dietriche</span><b class="lk-n"></b></div><button class="lk-turn">Halten<br><small>zum Drehen</small></button><div class="lk-c"><span>Stifte</span><b class="lk-s"></b></div></div></div>';
+ const q=x=>area.querySelector(x);const stg=q('.lk-st'),core=q('.lk-core'),pv=q('.lk-pv'),tb=q('.lk-turn');
+ const ui=()=>{q('.lk-n').textContent=picks;q('.lk-s').textContent=stage+' / '+STAGES;area.querySelectorAll('.lk-pins i').forEach((e,i)=>e.classList.toggle('on',i<stage))};ui();
+ let px=null;const setAng=a=>{ang=Math.max(-85,Math.min(85,a))};
+ stg.addEventListener('pointerdown',e=>{px=e.clientX;try{stg.setPointerCapture(e.pointerId)}catch(_){}});stg.addEventListener('pointermove',e=>{if(px===null||openF)return;const r=stg.getBoundingClientRect();setAng(ang+(e.clientX-px)/r.width*190);px=e.clientX});
+ stg.addEventListener('pointerup',()=>px=null);stg.addEventListener('pointercancel',()=>px=null);
+ const hs=e=>{e.preventDefault();ac();hold=true;tb.classList.add('on')},he=()=>{hold=false;tb.classList.remove('on')};
+ tb.addEventListener('pointerdown',hs);tb.addEventListener('pointerup',he);tb.addEventListener('pointerleave',he);tb.addEventListener('pointercancel',he);tb.addEventListener('contextmenu',e=>e.preventDefault());
+ const msg=(t,c)=>{const m=q('.lk-msg');m.textContent=t;m.className='lk-msg on '+(c||'');clearTimeout(m._t);m._t=setTimeout(()=>m.classList.remove('on'),1600)};
+ const buzz=ms=>{try{navigator.vibrate&&navigator.vibrate(ms)}catch(e){}};
+ window.__lk={s:()=>({sweet,stage,rot,picks}),a:v=>setAng(v),h:v=>{hold=v}};
+ const loop=now=>{const dt=Math.min(.05,(now-last)/1000);last=now;if(!stg.isConnected){cancelAnimationFrame(raf);return}
+  const base=stage*SPAN,d=Math.abs(ang-sweet[stage]),qq=d<=tol?1:Math.max(0,1-(d-tol)/34),target=hold?base+SPAN*qq:base;
+  if(hold){if(rot<target)rot=Math.min(target,rot+95*dt);else rot=Math.max(target,rot-160*dt)}else rot=Math.max(base,rot-200*dt);
+  const stuck=hold&&qq<1&&rot>=target-.5;
+  if(stuck){health-=dt*(0.4+0.7*(1-qq));shake=Math.min(1,shake+dt*6);if(now-lastTick>140){buzz(12);lockSnd('tick');lastTick=now}}else shake=Math.max(0,shake-dt*5);
+  if(!hold&&d<12&&now-lastTick>260){lockSnd('tick');lastTick=now}
+  if(health<=0){picks--;health=1;rot=base;he();lockSnd('snap');buzz([60,40,120]);stg.classList.add('brk');setTimeout(()=>stg.classList.remove('brk'),500);
+   if(picks<=0){msg('Alle Dietriche verbogen. Hulda reicht dir neue.','bad');setTimeout(()=>{picks=5;ui()},1800)}else msg('Dietrich verbogen','bad');ui()}
+  if(rot>=base+SPAN-.3&&qq===1&&hold){stage++;health=1;he();lockSnd('pin');buzz(35);ui();if(stage>=STAGES){finish();return}msg('Stift gesetzt, neu ansetzen')}
+  const sx=(Math.random()-.5)*shake*3;core.style.transform='translate(-50%,-50%) rotate('+rot+'deg)';pv.style.transform='translate(-50%,-50%) rotate('+(ang+rot*.35+sx)+'deg)';
+  raf=requestAnimationFrame(loop)};
+ raf=requestAnimationFrame(loop);
+ function finish(){openF=true;core.style.transition='transform .6s cubic-bezier(.3,1.4,.5,1)';core.style.transform='translate(-50%,-50%) rotate(95deg)';lockSnd('open');sfx('truhe',.6);buzz([30,60,90]);stg.classList.add('open');msg('Offen!');setTimeout(res,1300)}
+})}
+GAMES.schloss=()=>new Promise(async done=>{
+ const area=gameShell('Huldas Kisten','Wisch über das Schloss, um den Dietrich zu bewegen. Halte den runden Knopf, um den Zylinder zu drehen. Klickt es leise, bist du nah dran. Dreht er sich kaum, liegt der Dietrich falsch: loslassen und neu ansetzen. Zu viel Druck verbiegt den Dietrich.');
+ const easy=st.hero.skills.includes('finger');const L=[2,3,3];
+ for(let i=0;i<3;i++){await lockpick({area,stages:L[i],easy,label:'Kiste '+(i+1)+' von 3'})}
+ gameEnd();done()});
 
 // Tag 15: Der Laden in Goldhafen
 GAMES.laden=()=>new Promise(done=>{
@@ -194,5 +233,25 @@ GAMES.schilder=(s)=>new Promise(done=>{const sc=$('#s-scene');const IW=810,IH=10
   sp.go.onclick=async()=>{if(walking)return;walking=true;stopVo();sfx('schritte_schnee',.7);spots.forEach(x=>x.b.classList.remove('talk'));
    if(sp.g.k==='m'){o.classList.add('out');setTimeout(()=>o.remove(),500);removeEventListener('resize',lay);return done()}
    o.style.display='none';await run(s.wrong||[]);hideBox();o.style.display='';walking=false}});
+ o.querySelector('.pg-tip').onclick=()=>{toast(HINTS[Math.min(hint,2)],7000);hint++};
+});
+
+// Tag 15: Vier Händler stehen nebeneinander. Antippen, zuhören, den Betrüger entlarven.
+GAMES.haendler=(s)=>new Promise(done=>{const sc=$('#s-scene');const IW=1080,IH=1920;
+ const SG=[{k:'bob',n:'Bob',x:.14,top:.44,bot:.86,t:'Berta betrügt nicht.'},{k:'bob2',n:'Bob der Zweite',x:.38,top:.44,bot:.86,t:'Ferdinand betrügt.'},{k:'berta',n:'Berta',x:.62,top:.44,bot:.86,t:'Einer der beiden Bobs betrügt.'},{k:'ferd',n:'Ferdinand',x:.86,top:.42,bot:.86,t:'Bob der Zweite lügt.'}];
+ const HINTS=['Genau einer betrügt, und der lügt immer. Die anderen drei sagen immer die Wahrheit. Nimm nacheinander an, jeder wäre der Betrüger.','Bob der Zweite und Ferdinand widersprechen sich direkt. Einer von beiden muss der Betrüger sein.','Wäre Ferdinand der Betrüger, müsste Berta lügen. Berta ist aber ehrlich. Also betrügt Bob der Zweite.'];
+ const o=el('div','pg hd','<div class="pg-img" style="background-image:url('+A+'img/f_markt.jpg),url('+A+'img/ort15.jpg)"></div><div class="pg-top">Tippe die Händler an</div><button class="pg-tip"><img src="'+A+'ui/tipp.png" alt="Tipp"></button>');sc.appendChild(o);
+ const box=()=>{const W=o.clientWidth,H=o.clientHeight,k=Math.max(W/IW,H/IH);return {k,ox:(W-IW*k)/2,oy:(H-IH*k)/2}};
+ let hint=0,busy=false;
+ const spots=SG.map((g,i)=>{const b=el('button','pg-spot'+(i===0?' el':i===3?' er':''),'<i class="pg-bub"></i><i class="pg-ring"></i>');o.appendChild(b);const go=el('button','pg-go hd-go','Betrüger!');o.appendChild(go);return {g,b,go}});
+ const lay=()=>{const {k,ox,oy}=box();const W=o.clientWidth;spots.forEach(({g,b,go},i)=>{const x=ox+g.x*IW*k,y0=oy+g.top*IH*k,y1=oy+g.bot*IH*k;const w=Math.min(IW*k*.2,W/4.4);b.style.left=(x-w/2)+'px';b.style.top=y0+'px';b.style.width=w+'px';b.style.height=(y1-y0)+'px';go.style.left=Math.min(W-6-W/8,Math.max(6+W/8,x))+'px';go.style.top=Math.min(o.clientHeight-70,y1+8)+'px'})};
+ lay();addEventListener('resize',lay);
+ spots.forEach(sp=>{sp.b.onclick=async()=>{if(busy)return;stopVo();spots.forEach(x=>x.b.classList.remove('talk','on'));sp.b.classList.add('on','talk');
+  sp.b.querySelector('.pg-bub').innerHTML='<b>'+sp.g.n+'</b>'+sp.g.t;sp.go.classList.add('on');
+  const a=playVo(A+'vo/h15_'+sp.g.k+'.mp3');await voDone(a);sp.b.classList.remove('talk');
+  if(spots.every(x=>x.go.classList.contains('on')))o.querySelector('.pg-top').textContent='Wer ist der Betrüger?'};
+  sp.go.onclick=async()=>{if(busy)return;busy=true;stopVo();
+   if(sp.g.k==='bob2'){sfx('richtig');o.classList.add('out');setTimeout(()=>o.remove(),500);removeEventListener('resize',lay);return done(true)}
+   sfx('falsch');o.style.display='none';await run(s.wrong||[]);hideBox();o.style.display='';busy=false}});
  o.querySelector('.pg-tip').onclick=()=>{toast(HINTS[Math.min(hint,2)],7000);hint++};
 });

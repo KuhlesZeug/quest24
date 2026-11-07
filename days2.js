@@ -95,6 +95,7 @@ DAYS[11]={end:'Heute zum Ausdrucken: das Rätselblatt Nebelsumpf.',steps:[
 DAYS[12]={end:'Halbzeit. Noch zwölf Nächte.',steps:[
  {bg:'ort12',mus:'sumpf',atmo:'trank_blubbert',acc:['frosch','rabe'],every:14},
  {s:'HEX',t:'Kommt rein, kommt rein. Ich beiße nicht. Die Hütte manchmal.'},
+ {bg:'hx1',alt:'ort12',look:1500},
  {s:'SL',t:'Hexe Holunda. Sie braut alles. Gegen Geld, gegen Gefallen oder gegen Dinge, die man lieber behalten hätte.'},
  {s:'HEX',t:'Ihr wollt zum Aschenkönig? Dann braucht ihr einen Feuerschutztrank. Ich braue ihn euch. Für einen Tausch.'},
  {if:()=>has('korken'),
@@ -106,6 +107,7 @@ DAYS[12]={end:'Halbzeit. Noch zwölf Nächte.',steps:[
  {s:'WG',note:1,wg:'wgc5',t:'Zwischenbewertung, Tag zwölf. Erzählung: lebendig. Witze: zahlreich. Zu zahlreich. Bob: Bitte erklären Sie mir Bob.'},
  {s:'SL',t:'Verstanden. Ab jetzt nur noch ernste Erzählung.'},
  {s:'SL',t:'Der Nebel lichtete sich. Die Hexe nickte weise. Der Trank glühte in der Flasche.'},
+ {bg:'hx2',alt:'ort12',look:1200},
  {s:'SL',t:'… und die Hütte hat sich hingesetzt wie ein Huhn. Entschuldigung. Das musste raus. Drei Sätze. Ich hab drei Sätze geschafft.'},
  {s:'WG',wg:'wgc4',t:'Vier wären besser gewesen.'},
  {s:'SL',t:'Halbzeit. Wir sind genau in der Mitte. Wendelgard sagt, die Mitte ist ein Anfang. Nein, das hab ich gesagt.'},{hide:1}
