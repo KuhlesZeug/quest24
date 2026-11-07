@@ -212,10 +212,5 @@ FILMS.z7={shots:[
  {s:'SL',t:'Ich lass die Musik heute einfach laufen.'}
 ]};
 FILMS.abspann={shots:[
- {img:'f_abspann',fn:'abspann'},
- {img:'f_tisch',mus:null,s:'SL',t:'In einer Zeit vor unserer Zeit … nein, warte, das ist der Einkaufszettel. Milch, Eier, Drachen …'},
- {s:'SL',t:'Würfelt Initiative! … Würfle Initiative. Sie ist allein. Ich vergesse das immer.',tm:'Würfelt Initiative! … Würfle Initiative. Er ist allein. Ich vergesse das immer.'},
- {s:'SL',t:'Der Krokodilkönig hat eine schiefe … nein. Eine königliche Krone. Er hört zu. Er hört immer zu.'},
- {sfx:'rohrpost',s:'SL',t:'Oh nein. Nicht jetzt.'},
- {s:'WG',wg:'wgc7',t:'Ich wollte nur sagen: Gute Nacht.'}
+ {img:'f_abspann',fn:'abspann'}
 ]};

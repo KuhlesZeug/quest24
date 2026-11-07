@@ -12,16 +12,16 @@ function bar(o,label,v){o.querySelector('.bg-hud').innerHTML='<span>'+label+'</s
 
 // Phase 1: Das Netz. Vharkon kreist am Himmel, tippe dorthin, wo er gleich sein wird.
 GAMES.p_netz=()=>new Promise(async done=>{const W0=phWho(0);const hard=W0.right?1:1.4;
- const o=await phShell('pn','mg_himmel','ort24',W0.name+' wirft das Netz','Vharkon kreist am Himmel. Tippe dorthin, wo er gleich sein wird. Zwei Treffer holen ihn herunter.');
+ const o=await phShell('pn','mg_himmel','ort24',W0.name+' wirft das Netz','Vharkon kreist am Himmel. Tippe dorthin, wo er gleich sein wird. Drei Treffer holen ihn herunter.');
  const dr=el('img','pn-dr');dr.src=A+'img/vh_fly.png';dr.onerror=()=>{dr.src=A+'img/g_drache_0.png'};o.appendChild(dr);
- let hits=0,throws=0,t0=performance.now(),run=true,x=.5,y=.3;bar(o,'Treffer 0 von 2 · Netze übrig 5',0);
+ let hits=0,throws=0,t0=performance.now(),run=true,x=.5,y=.3;bar(o,'Treffer 0 von 3 · Netze übrig 7',0);
  const tick=t=>{if(!run)return;const s=(t-t0)/1000*hard;x=.5+.36*Math.sin(s*.9)+.06*Math.sin(s*2.3);y=.28+.12*Math.sin(s*1.4+1);const W=o.clientWidth,H=o.clientHeight;dr.style.left=(x*W)+'px';dr.style.top=(y*H)+'px';dr.style.transform='translate(-50%,-50%) scaleX('+(Math.cos(s*.9)>0?1:-1)+')';requestAnimationFrame(tick)};requestAnimationFrame(tick);
- o.addEventListener('pointerdown',async e=>{if(!run||throws>=5||e.target.closest('.pg-top'))return;throws++;const R=o.getBoundingClientRect();const tx=(e.clientX-R.left)/R.width,ty=(e.clientY-R.top)/R.height;
+ o.addEventListener('pointerdown',async e=>{if(!run||throws>=7||e.target.closest('.pg-top'))return;throws++;const R=o.getBoundingClientRect();const tx=(e.clientX-R.left)/R.width,ty=(e.clientY-R.top)/R.height;
   const n=el('div','pn-net');n.style.left='50%';n.style.top='96%';o.appendChild(n);sfx('netz',.6);requestAnimationFrame(()=>{n.style.left=(tx*100)+'%';n.style.top=(ty*100)+'%';n.classList.add('fly')});
   await sleep(520);const d=Math.hypot((x-tx)*R.width,(y-ty)*R.height);const rad=(W0.right?95:70);
-  if(d<rad){hits++;n.classList.add('hit');sfx('treffer',.8);dr.classList.add('hurt');setTimeout(()=>dr.classList.remove('hurt'),500);toast(hits===1?'Getroffen! Noch einmal!':'Er hängt im Netz!',1500)}else{n.classList.add('miss');sfx('wind_boe',.5)}
-  setTimeout(()=>n.remove(),700);bar(o,'Treffer '+hits+' von 2 · Netze übrig '+(5-throws),hits/2);
-  if(hits>=2||throws>=5){run=false;dr.classList.add(hits>=2?'fall':'away');sfx(hits>=2?'drache':'falsch',.7);await phEnd(o,hits>=2?'Vharkon stürzt ins Netz und landet auf dem Gipfel.':'Er entwischt. Aber er ist müde geworden und landet trotzdem.');done(hits/2)}});
+  if(d<rad){hits++;n.classList.add('hit');sfx('treffer',.8);dr.classList.add('hurt');setTimeout(()=>dr.classList.remove('hurt'),500);toast(['','Getroffen! Noch zweimal!','Noch einmal! Er wird langsamer!','Er hängt im Netz!'][hits],1500)}else{n.classList.add('miss');sfx('wind_boe',.5)}
+  setTimeout(()=>n.remove(),700);bar(o,'Treffer '+hits+' von 3 · Netze übrig '+(7-throws),hits/3);
+  if(hits>=3||throws>=7){run=false;dr.classList.add(hits>=3?'fall':'away');sfx(hits>=3?'drache':'falsch',.7);await phEnd(o,hits>=3?'Vharkon stürzt ins Netz und landet auf dem Gipfel.':'Er entwischt. Aber er ist müde geworden und landet trotzdem.');done(Math.min(1,hits/3))}});
 });
 
 // Phase 2: Die Aschenschuppen. Grumbold zählt. Tippe die glühenden Schuppen von eins bis acht.
@@ -30,8 +30,9 @@ GAMES.p_glut=()=>new Promise(async done=>{const W1=phWho(1);const T=W1.right?9:6
  const pts=[];const R=()=>({x:.14+Math.random()*.72,y:.24+Math.random()*.56});for(let i=0;i<8;i++){let p,tr=0;do{p=R();tr++}while(tr<60&&pts.some(q=>Math.hypot((q.x-p.x)*1.6,q.y-p.y)<.16));pts.push(p)}
  let next=0,t0=performance.now(),run=true;const W=['Eins','Zwei','Drei','Vier','Fünf','Sechs','Sieben','Acht'];
  pts.forEach((p,i)=>{const b=el('button','pg2-s','<b>'+(i+1)+'</b>');b.style.left=(p.x*100)+'%';b.style.top=(p.y*100)+'%';o.appendChild(b);b.onpointerdown=e=>{e.preventDefault();if(!run)return;if(i!==next){b.classList.add('nope');sfx('falsch',.4);setTimeout(()=>b.classList.remove('nope'),300);return}next++;b.classList.add('ok');sfx('feuerball',.45);const w=el('div','pg2-w',W[i]+(i===7?'!':'.'));w.style.left=b.style.left;w.style.top=b.style.top;o.appendChild(w);setTimeout(()=>w.remove(),900);if(next===8)fin(true)}});
- const fin=async ok=>{if(!run)return;run=false;const t=(performance.now()-t0)/1000;await phEnd(o,ok?'Acht! Grumbold hat bis acht gezählt. Die Schuppen sind offen.':'Die Asche ist zäh. Aber ein paar Schuppen sind gebrochen.');done(ok?Math.max(.5,1-Math.max(0,t-T*.5)/T):next/8)};
- const tk=()=>{if(!run)return;const left=T-(performance.now()-t0)/1000;bar(o,'Zeit',left/T);if(left<=0)return fin(false);requestAnimationFrame(tk)};tk()});
+ const fin=async ok=>{if(!run)return;run=false;const t=(performance.now()-t0)/1000;await phEnd(o,ok?'Acht! Grumbold hat bis acht gezählt. Die Schuppen sind offen.':'Die Asche ist zäh. Aber ein paar Schuppen sind gebrochen.');done(ok?Math.max(.4,1-Math.max(0,t-TT*.5)/TT-tries*.15):next/8)};
+ let TT=T,tries=0;const again=()=>{tries++;TT=T*(1+.3*Math.min(2,tries));sfx('falsch',.5);toast(tries>1?'Zu langsam. Grumbold holt tief Luft. Noch einmal, du hast jetzt mehr Zeit.':'Zu langsam! Die Asche schließt sich wieder. Noch einmal von eins.',3200);next=0;o.querySelectorAll('.pg2-s').forEach(b=>b.classList.remove('ok'));setTimeout(()=>{t0=performance.now();run=true;tk()},1600)};
+ const tk=()=>{if(!run)return;const left=TT-(performance.now()-t0)/1000;bar(o,'Zeit',left/TT);if(left<=0){run=false;return again()}requestAnimationFrame(tk)};tk()});
 
 // Phase 3: Der Aschesturm. Zirpia spielt das Wiegenlied auf den vier Saiten ihrer Walnusslaute.
 function pluck(f,vol){const c=ac(),t=c.currentTime;const o=c.createOscillator(),g=c.createGain(),fl=c.createBiquadFilter();o.type='triangle';o.frequency.setValueAtTime(f,t);fl.type='lowpass';fl.frequency.setValueAtTime(3200,t);fl.frequency.exponentialRampToValueAtTime(700,t+.6);g.gain.setValueAtTime(vol||.35,t);g.gain.exponentialRampToValueAtTime(.001,t+1.1);o.connect(fl);fl.connect(g);g.connect(sfxBus);o.start(t);o.stop(t+1.2)}
@@ -80,20 +81,21 @@ GAMES.p_schatten=()=>new Promise(async done=>{const W3=phWho(3);const fast=W3.ri
  const map=(u,v)=>{const W=o.clientWidth,H=o.clientHeight,sc=Math.max(W/IW,H/IH);return [(W-IW*sc)/2+u*IW*sc,(H-IH*sc)/2+v*IH*sc,sc]};
  const at=q=>{const d=q*TOT;let i=1;while(i<L.length-1&&L[i]<d)i++;const f=(d-L[i-1])/(L[i]-L[i-1]||1);const u=P[i-1][0]+(P[i][0]-P[i-1][0])*f,v=P[i-1][1]+(P[i][1]-P[i-1][1])*f;const ang=Math.atan2((P[i][1]-P[i-1][1])*IH,(P[i][0]-P[i-1][0])*IW)*180/Math.PI;return [u,v,ang]};
  const top=W3.w==='na';const cat=el('div','ps2-cat'+(top?' top':''),'<img src="'+A+'img/'+(top?'na_top':'r_'+(W3.w==='held'?st.hero.cls+'_'+st.hero.look:W3.w)+'_0')+'.png" alt="">');o.appendChild(cat);const ci=cat.firstChild;
- const goal=el('div','ps2-goal');o.appendChild(goal);
+ const goal=el('div','ps2-goal');o.appendChild(goal);const alarm=el('div','ps2-alarm','');o.appendChild(alarm);
+ const WALK=[0,1,2,3].map(i=>A+'img/na_walk_'+i+'.png');let walkOk=false;if(top){const ti=new Image();ti.onload=()=>{walkOk=true;WALK.slice(1).forEach(u=>{const x=new Image();x.src=u})};ti.src=WALK[0]}
  const eg=o.querySelector('.ps2-eyeglow');
  const place=()=>{const [x,y]=map(PS_EYE[0],PS_EYE[1]);eg.style.left=x+'px';eg.style.top=y+'px';const g=map(P[P.length-1][0],P[P.length-1][1]);goal.style.left=g[0]+'px';goal.style.top=g[1]+'px'};place();addEventListener('resize',place);
  const btn=el('div','ps2-hold','Gedrückt halten zum Schleichen');o.appendChild(btn);
  let hold=false,pos=0,state='zu',tState=performance.now(),dur=2.2+Math.random()*1.6,caught=0,run=true,last=performance.now(),fr=0;
  const down=e=>{e.preventDefault();hold=true;btn.classList.add('on')},up=()=>{hold=false;btn.classList.remove('on')};o.addEventListener('pointerdown',down);addEventListener('pointercancel',up);addEventListener('pointerup',up);
  const tick=t=>{if(!run)return;const dt=Math.min(.05,(t-last)/1000);last=t;const el0=(t-tState)/1000;
-  if(state==='zu'&&el0>dur){state='warn';tState=t;o.classList.add('warn');sfx('drachenknurren',.35)}
-  else if(state==='warn'&&el0>.75/fast){state='auf';tState=t;o.classList.remove('warn');o.classList.add('auf')}
-  else if(state==='auf'&&el0>1.3){state='zu';tState=t;dur=(1.6+Math.random()*1.8)/fast;o.classList.remove('auf')}
-  if(hold){pos+=dt*.075;fr++;
+  if(state==='zu'&&el0>dur){state='warn';tState=t;o.classList.add('warn');sfx('drachenknurren',.8);alarm.textContent='Er regt sich …';try{navigator.vibrate&&navigator.vibrate(80)}catch(e){}}
+  else if(state==='warn'&&el0>.9/fast){state='auf';tState=t;o.classList.remove('warn');o.classList.add('auf');sfx('drache',.5);alarm.textContent='Auge auf! Nicht bewegen!';try{navigator.vibrate&&navigator.vibrate([60,40,60])}catch(e){}}
+  else if(state==='auf'&&el0>1.4){state='zu';tState=t;dur=(1.6+Math.random()*1.8)/fast;o.classList.remove('auf');alarm.textContent=''}
+  if(hold){pos+=dt*.075;fr++;if(walkOk&&fr%7===0)ci.src=WALK[(fr/7|0)%4];
    if(state==='auf'){caught++;hold=false;btn.classList.remove('on');pos=Math.max(0,pos-.15);sfx('katze',.6);toast(['Erwischt! Zurück in den Schatten.','Fast! Noch mal leise.','Er blinzelt nur. Weiter.'][Math.min(2,caught-1)],1400);o.classList.add('hit');setTimeout(()=>o.classList.remove('hit'),400)}}
   pos=Math.min(1,pos);const [u,v,ang]=at(pos);const [x,y,sc]=map(u,v);const sz=Math.max(72,Math.min(110,IW*sc*.1));
-  cat.style.width=sz+'px';cat.style.transform='translate('+x+'px,'+y+'px) translate(-50%,-50%) rotate('+(top?ang+90:0)+'deg)';ci.style.transform=hold?'translateY('+(Math.sin(fr*.5)*2)+'px) scale('+(1+Math.sin(fr*.5)*.03)+',1)':'none';
+  cat.style.width=sz+'px';cat.style.transform='translate('+x+'px,'+y+'px) translate(-50%,-50%) rotate('+(top?ang+90:0)+'deg)';ci.style.transform=hold?'translateX('+(Math.sin(fr*.25)*2)+'px) rotate('+(Math.sin(fr*.25)*4)+'deg)':'none';if(!hold&&walkOk&&ci.src!==WALK[1]&&state!=='zu')ci.src=WALK[1];
   cat.classList.toggle('hide',!hold&&state!=='zu');bar(o,'Weg zum Herzen',pos);
   if(pos>=1){run=false;removeEventListener('pointerup',up);removeEventListener('pointercancel',up);removeEventListener('resize',place);phEnd(o,'Geschafft. Der Schattenschlüssel öffnet die Kruste über dem Herzen.').then(()=>done(Math.max(.3,1-caught*.2)));return}
   requestAnimationFrame(tick)};requestAnimationFrame(tick)});

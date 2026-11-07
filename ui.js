@@ -54,7 +54,7 @@ async function playDay(d,again){const D=DAYS[d];if(!D){toast('Dieser Tag wird ge
  show('#s-scene');SC.id='d'+String(d).padStart(2,'0');if(!D._n)D._n=numberSteps(SC.id,D.steps)||1;SC.abort=0;SC.wgPrev=null;$('#s-scene').classList.remove('real');$('#sc-bg').innerHTML='';const fg=$('#sc-fig');if(fg)fg.classList.remove('on');$('#sc-title').textContent='Tag '+d+' · '+DAYN[d];renderHud();
  await run(D.steps);if(SC.abort){SC.abort=0;return goMap()}
  hideBox();if(!again){st.done[d]=Date.now();save()}
- await countdownCard(d);goMap()}
+ if(d===24&&!again){goMap();return}await countdownCard(d);goMap()}
 async function countdownCard(d){const n=nights();const o=$('#card');o.innerHTML='<div class="cd-card"><div class="cd-big"><img class="cd-body" src="'+A+'ui/kerze.png" alt=""><img class="cd-flame" src="'+A+'ui/flamme.png" alt=""></div><h3>'+(n?'Noch '+n+' '+(n===1?'Nacht':'Nächte')+' bis zur Lichternacht':'Lichternacht!')+'</h3><p>'+(DAYS[d].end?T(DAYS[d].end):'Morgen geht die Reise weiter.')+'</p><button class="pbtn">Zur Karte</button></div>';
  o.classList.add('on');sfx('kerze',.6);await new Promise(r=>o.querySelector('button').onclick=r);o.classList.remove('on')}
 

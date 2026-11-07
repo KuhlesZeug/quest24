@@ -171,7 +171,7 @@ img{display:block;max-width:100%}
 .bt-r{font-family:var(--sc);font-size:.9rem}
 .bt-foes{position:relative;flex:1;display:flex;justify-content:center;align-items:flex-end;gap:6px;padding:34px 6px 0;min-height:0;overflow:hidden}
 .bt-f{position:relative;flex:1;max-width:46%;display:flex;flex-direction:column;align-items:center;transition:transform .2s}
-.bt-f.boss{max-width:78%}
+.bt-f.boss{max-width:100%}
 .bt-fi{width:min(86%,26vh);margin:0 auto;aspect-ratio:1;background-size:contain;background-position:center bottom;background-repeat:no-repeat;filter:drop-shadow(0 6px 10px rgba(0,0,0,.6))}
 .bt-f.down{opacity:.25;filter:grayscale(1)}
 .bt-f.hit .bt-fi{animation:shake .35s}
@@ -884,3 +884,39 @@ img{display:block;max-width:100%}
 .pl2 .pl-fb{top:auto;bottom:calc(150px + env(safe-area-inset-bottom))}
 .pl2 .pl-btns.pl3 button{top:auto;left:auto;transform:none;width:auto}
 .pl2 .pl-btns.pl3 button.on{transform:translateY(3px)}
+.bz .bz-t .bz-sp{height:70px}.bz .bz-t{width:52px}
+/* Schlachtplan besser lesbar */
+.plt-row{background:rgba(255,248,228,.9);border:2px solid rgba(90,43,18,.55);border-radius:10px;box-shadow:0 2px 6px rgba(0,0,0,.35)}
+.plt-n{font-size:1.08rem;color:#2a1508;font-weight:700;letter-spacing:.01em}
+.plt-slot span{font-size:.92rem;color:#2a1508;font-weight:700}
+.plt-slot em{opacity:.8;color:#5a2b12;font-weight:700}
+.plt-h{display:inline-block;align-self:center;padding:2px 16px;border-radius:10px;background:rgba(255,248,228,.9);color:#5a2b12;font-size:1.3rem;border:2px solid rgba(90,43,18,.55)}
+.plt-tok span{background:rgba(255,248,228,.92);padding:1px 6px;border-radius:8px;color:#2a1508;font-size:.74rem}
+/* Schleichspiel: Aufwachen deutlich zeigen */
+.ps2-alarm{position:absolute;left:50%;top:44%;transform:translate(-50%,-50%) scale(.6);z-index:9;padding:10px 22px;border-radius:16px;font-family:var(--sc);font-size:1.5rem;color:#fff3c4;text-shadow:0 2px 4px #000;background:rgba(120,30,0,.75);border:3px solid #ffb347;opacity:0;transition:opacity .15s,transform .15s;pointer-events:none;white-space:nowrap}
+.ps2.warn .ps2-alarm{opacity:.9;transform:translate(-50%,-50%) scale(.85);background:rgba(90,50,0,.7);border-color:#ffd76a;animation:psAl .3s infinite alternate}
+.ps2.auf .ps2-alarm{opacity:1;transform:translate(-50%,-50%) scale(1.05)}
+@keyframes psAl{to{transform:translate(-50%,-50%) scale(.9)}}
+.ps2.warn::before{content:"";position:absolute;inset:0;z-index:4;pointer-events:none;box-shadow:inset 0 0 60px 20px rgba(255,170,40,.55);animation:psEdge .3s infinite alternate}
+.ps2.auf::before{content:"";position:absolute;inset:0;z-index:4;pointer-events:none;box-shadow:inset 0 0 90px 40px rgba(220,40,0,.75)}
+@keyframes psEdge{to{box-shadow:inset 0 0 30px 8px rgba(255,170,40,.25)}}
+.ps2.warn .pg-img{animation:psShake .12s infinite}
+@keyframes psShake{0%{transform:translate(0,0)}25%{transform:translate(2px,-1px)}50%{transform:translate(-2px,1px)}75%{transform:translate(1px,2px)}100%{transform:translate(0,0)}}
+.ps2.warn .ps2-eyeglow{opacity:.8;width:180px;height:180px}
+.ps2.auf .ps2-eyeglow{width:240px;height:240px}
+/* Abspann: laufende Mitwirkende und Logo */
+.credits{position:absolute;inset:0;z-index:20;overflow:hidden;pointer-events:none;background:linear-gradient(180deg,rgba(0,0,0,.55),rgba(0,0,0,.25) 30%,rgba(0,0,0,.25) 70%,rgba(0,0,0,.6));transition:opacity 1.1s}
+.credits.out{opacity:0}
+.cr-in{position:absolute;left:8%;right:8%;top:100%;text-align:center}
+.cr-row{margin:0 0 30px}
+.cr-row i{display:block;font-family:var(--sc);font-style:normal;color:var(--gold);font-size:.9rem;letter-spacing:.06em;text-shadow:0 2px 6px #000}
+.cr-row b{display:block;font-weight:600;color:#fff;font-size:1.12rem;line-height:1.35;text-shadow:0 2px 8px #000,0 0 2px #000}
+.cr-row.big{margin:0 0 54px}
+.cr-row.big i{font-size:1.8rem;color:#ffe9a8}
+.cr-row.big b{font-size:1.2rem;font-family:var(--sc)}
+.logo-end{display:flex;flex-direction:column;align-items:center;justify-content:center;background:radial-gradient(circle at 50% 45%,#2a1a08,#000 70%);transition:opacity 1.4s}
+.logo-end img{width:78%;max-width:380px;animation:logoIn 5s ease-out forwards;filter:drop-shadow(0 0 24px rgba(255,200,90,.6))}
+.logo-end p{font-family:var(--sc);color:#ffe9a8;font-size:1.3rem;margin-top:18px;opacity:0;animation:fadeInL 1.6s ease 1.6s forwards;text-shadow:0 0 12px rgba(255,200,90,.7)}
+.logo-end.gone{opacity:0}
+@keyframes logoIn{0%{opacity:0;transform:scale(.86)}35%{opacity:1}100%{opacity:1;transform:scale(1)}}
+@keyframes fadeInL{to{opacity:1}}
