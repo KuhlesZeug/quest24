@@ -25,6 +25,7 @@ async function playFilm(key){const F=FILMS[key];if(!F)return;show('#s-film');con
  sub.classList.remove('on');stopVo();await sleep(400)}
 
 // Der große Auftritt: Würfel rollt, kritische 20, Lichtschlag, Logo
+const DRF=[0,1,2,3].map(i=>{const im=new Image();im.src=A+'ui/dr_s_'+i+'.png';return im});
 async function titleReveal(f,stop){const w=t=>stop()?Promise.resolve():sleep(t);
  const o=el('div','ttl','<div class="ttl-bg" style="background-image:url('+A+'img/f_intro5.jpg)"><i class="ttl-glow"></i></div><div class="ttl-flash"></div><div class="ttl-rays"></div><div class="ttl-embers"></div><div class="ttl-logo"><div class="lg"><img class="lg-base" src="'+A+'ui/logo_leer.png" alt=""><img class="lg-dr" src="'+A+'ui/logo_drache.png" alt=""><i class="lg-glow"></i><img class="lg-fl" src="'+A+'ui/flamme.png" alt=""></div><div class="ttl-sub"></div></div>');
  f.appendChild(o);[...f.children].forEach(x=>{if(x!==o)x.classList.remove('on')});
@@ -42,8 +43,9 @@ async function titleReveal(f,stop){const w=t=>stop()?Promise.resolve():sleep(t);
  await w(2400);
  // Totale: der kleine Drache auf dem Schild dreht den Kopf, holt Luft und spuckt Feuer zu uns herunter
  const lg=o.querySelector('.lg'),dr=o.querySelector('.lg-dr');const ds=el('img','lg-ds');ds.src=A+'ui/dr_s_0.png';lg.appendChild(ds);
- [1,2,3].forEach(i=>{const im=new Image();im.src=A+'ui/dr_s_'+i+'.png'});
- dr.style.opacity=0;ds.classList.add('on');await w(500);
+ try{await Promise.all(DRF.map(i=>i.decode()))}catch(e){}
+ // weiche Überblendung vom gemalten Logo Drachen in die bewegten Bilder
+ dr.style.transition='opacity .45s';ds.classList.add('on');dr.style.opacity=0;await w(650);
  ds.src=A+'ui/dr_s_1.png';ds.className='lg-ds on look';sfx('drachenknurren',.6);await w(1000);
  ds.src=A+'ui/dr_s_2.png';ds.className='lg-ds on breath';sfx('wind_boe',.7);await w(1150);
  ds.src=A+'ui/dr_s_3.png';ds.className='lg-ds on spit';sfx('feuerball',1);sfx('feuer_entfacht',.8);

@@ -506,7 +506,7 @@ img{display:block;max-width:100%}
 @keyframes trdraw{to{stroke-dashoffset:0}}
 
 /* Drache auf dem Logo als Einzelbilder */
-.lg-ds{position:absolute;left:37.4%;top:51%;height:56%;width:auto;translate:-50% -96%;opacity:0;transition:opacity .25s;transform-origin:50% 100%}
+.lg-ds{position:absolute;left:37.4%;top:51%;height:56%;width:auto;translate:-50% -96%;opacity:0;transition:opacity .45s;transform-origin:50% 100%}
 .lg-ds.on{opacity:1}
 .lg-ds.look{animation:dslook .35s ease-out}
 @keyframes dslook{0%{transform:rotate(-3deg)}60%{transform:rotate(2deg) scale(1.03)}100%{transform:none}}
