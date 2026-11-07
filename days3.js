@@ -2,14 +2,17 @@
 WHO.BOB2={n:'Bob der Zweite',p:'p_bob'};
 
 DAYS[13]={end:'Heute zum Ausdrucken: Teil 2 der Landkarte.',steps:[
- {bg:'ort13',mus:'sumpf',atmo:'nebelsumpf',acc:['frosch','rabe'],every:12},
+ {bg:'kr1',alt:'ort13',mus:'sumpf',atmo:'nebelsumpf',acc:['frosch','rabe'],every:12},
  {s:'KROK',t:'Halt. Dies ist meine Furt. Wer hinüber will, zahlt. Oder kämpft. Oder zahlt und kämpft, das hatten wir auch schon.'},
+ {bg:'kr2',look:1200},
  {s:'SL',t:'Der Krokodilkönig. Er hat sich selbst gekrönt. Niemand hat ihm widersprochen. Aus naheliegenden Gründen.'},
+ {bg:'kr3',look:1200},
  {s:'ZI',t:'Deine Krone ist schief.'},
+ {bg:'kr4',look:1000},
  {s:'KROK',t:'Sie ist nicht schief. Sie sitzt … königlich.'},
  {s:'SL',t:'Würfelt Initiative!'},
  {fight:'krok'},
- {bg:'ort13_leer',mus:'sumpf'},
+ {bg:'kr5',alt:'ort13_leer',mus:'sumpf'},
  {s:'KROK',t:'Ihr dürft sagen, dass ich tapfer war.'},
  {gold:30},{loot:1},
  {film:'z3'},{hide:1}
@@ -24,12 +27,15 @@ FILMS.z3={shots:[
 ]};
 
 DAYS[14]={end:'Heute zum Ausdrucken: Oma Huldas Gefährtenbogen.',steps:[
- {bg:'ort14',mus:'hafen',atmo:'lagerfeuer',acc:['pferd','wolf'],every:16},
+ {bg:'hu1',alt:'ort14',mus:'hafen',atmo:'lagerfeuer',acc:['pferd','wolf'],every:16},
  {s:'SL',t:'Eine arme alte Frau, gefangen von Banditen! Wir müssen …'},
+ {bg:'hu2',look:1500},
  {s:'SL',t:'Moment. Warum weinen die Banditen?'},
+ {bg:'hu3',look:1200},
  {s:'KNO',t:'Bitte. Bitte nehmt sie mit. Wir haben sie entführt, um Lösegeld zu kriegen. Dann hat sie Karten vorgeschlagen.'},
  {s:'HU',t:'Kindchen, ihr wolltet doch spielen.'},
  {s:'KNO',t:'Sie hat unser ganzes Gold. Unsere Stiefel. Und Gerds Zähne. Die waren nicht mal echt.'},
+ {bg:'hu4',look:1000},
  {s:'HU',t:'Ich lass euch nur gehen, wenn ihr mir eine Revanche anbietet. Ich bin ja kein Unmensch.'},
  {s:'SL',t:'Die Rettung ist also eine Verhandlung. Mit den Banditen. Für die Banditen.'},
  {s:'SL',t:'Knorz will wenigstens einmal gewinnen. Du spielst für die Banditen. Tipp in fünf Runden, ob die nächste Karte höher oder tiefer ist. Aber nicht zu oft richtig.'},
@@ -42,6 +48,7 @@ DAYS[14]={end:'Heute zum Ausdrucken: Oma Huldas Gefährtenbogen.',steps:[
  {s:'GR',t:'Ich habe noch nie einen Schal gehabt.'},
  {s:'HU',t:'Bis heute Abend hast du einen. Rot. Steht dir.'},
  {s:'ZI',t:'Und ich? Bekomme ich auch etwas?'},
+ {bg:'hu5',look:1000},
  {s:'HU',t:'Du bekommst einen Fingerhut. Als Hut. Der passt dir.'},
  {s:'ZI',t:'Ein Krönchen!'},
  {s:'SL',t:'Und so wächst die Gruppe. Ein Golem, eine Grille und eine Oma. Ich hab das nicht so geplant. Es ist besser, als ich es geplant hatte.'},
