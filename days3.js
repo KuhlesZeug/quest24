@@ -135,7 +135,7 @@ DAYS[18]={end:'Heute zum Ausdrucken: das Rätselblatt Eisbrücke mit den Figuren
  {s:'SL',t:'Das Irrlicht bleibt also im Glas. Es ist schon beleidigt. Man sieht es.'},
  {s:'SL',t:'Und jetzt das Wichtigste: Die Gruppe darf sich auf keinen Fall aufteilen. Teilt niemals die Gruppe.'},
  {s:'SL',t:'Außer hier. Hier müsst ihr. Tut mir leid.'},
- {code:{id:'bruecke',k:'Die Eisbrücke',q:'Wie oft muss die Laterne mindestens über die Brücke getragen werden, bis alle vier drüben sind?<br><small>Die Regeln und Figuren stehen auf deinem Druckblatt.</small>',ph:'Zahl',h:['__5__'],
+ {code:{id:'bruecke',k:'Die Eisbrücke',q:'Wie oft muss die Laterne mindestens über die Brücke getragen werden, bis alle vier drüben sind?<br><small>Die Regeln und Figuren stehen auf deinem Druckblatt.</small>',ph:'Zahl',h:['4445dfc1947ace4ae6d3233a48f8d5271c099bc44e6bfeb38a087acc40f72359','9a098e82ab550682a1fc998410e715c0bb7c1773cdccea7541ba4bd434d222a3'],
   hints:['Grumbold ist so schwer, dass er nur mit einer einzigen Figur zusammen gehen kann. Mit wem?','Grumbold und Zirpia gehen in der Mitte hinüber, nicht am Anfang und nicht am Ende.','Zwei hin, einer zurück, Grumbold mit Zirpia hin, Zirpia zurück, die letzten zwei hin. Die Antwort ist 5.'],
   wrongSteps:[{sfx:'eis_knackt'},{s:'ZI',t:'Das war eine Note. Ein tiefes C. Und jetzt ein noch tieferes.'},{s:'SL',t:'Zurück! Alle zurück! Wir zählen nochmal.'}]}},
  {sfx:'schritte'},

@@ -66,7 +66,7 @@ DAYS[10]={end:'Heute zum Ausdrucken: das Notenblatt Wiegenlied als Itemkarte.',s
  {s:'SL',t:'Das ist der Moment, in dem eine wahre Heldin hilft. Oder ein Held. Mit Reimen.'},
  {s:'SL',t:'Das stand so in meinen Notizen, ich kann nichts dafür.'},
  {s:'SL',t:'Nimm das Druckblatt Zirpias Liedtext. Fünf Wörter fehlen. Ihre Anfangsbuchstaben ergeben, was das Publikum am Ende rufen soll.'},
- {code:{id:'reim',k:'Zirpias Liedtext',q:'Was ruft das Publikum am Ende?',ph:'Lösungswort',h:['__BRAVO__'],
+ {code:{id:'reim',k:'Zirpias Liedtext',q:'Was ruft das Publikum am Ende?',ph:'Lösungswort',h:['4d2e386e4c1b352b8645333b94558367a13d666cca2804f3a6bbcc25a8898a1c'],
   hints:['Sortiere die fünfzehn Wörter zuerst danach, auf welche Zeile sie sich reimen. Dann bleiben pro Zeile nur drei übrig.','Achte auf kleine Wörter im Text: ein ganzer, duftende rote, verliebt.','Bär, Rosen, angeschaut, vorbei, Ohr. Das Lösungswort ist BRAVO.']}},
  {s:'ZI',t:'Bravo! Das ist es! Das ist das schönste Wort der Welt!'},
  {s:'SL',t:'Jetzt fehlt nur noch der Takt. Tippe im Takt der Trommel mit.'},
