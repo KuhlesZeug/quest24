@@ -527,7 +527,7 @@ img{display:block;max-width:100%}
 .fs.fit.pan .bg{animation:kbfit 14s ease-in-out forwards}
 @keyframes kbfit{from{transform:scale(1)}to{transform:scale(1.06)}}
 /* Gegner stehen auf dem Boden der Arena */
-.bt-foes{transform:translateY(7vh)}
+.bt-foes{transform:translateY(5vh);z-index:3}
 .bt-fi{position:relative}
 .bt-f::before{content:"";position:absolute;left:18%;right:18%;top:calc(min(86%,26vh) - 14px);height:18px;border-radius:50%;background:radial-gradient(ellipse,rgba(0,0,0,.55),transparent 70%);z-index:-1}
-.bt-foes.many{transform:translateY(13vh)}
+.bt-foes.many{transform:translateY(9vh)}
