@@ -39,7 +39,7 @@ DAYS[8]={end:'Ein Irrlicht leuchtet jetzt im Glas. Es kichert manchmal.',steps:[
 
 DAYS[9]={end:'Heute zum Ausdrucken: Zirpias Gefährtenbogen.',steps:[
  {bg:'ort09',mus:'mine',atmo:'spinnennest',acc:['tropfen'],every:12},
- {hide:1},{fn:async()=>{const p=playSong('zirpia_01',.9,16);for(const [img,ms] of [['f_zi3',2600],['f_zi1',2700],['zi5',2600],['f_zi4',2600],['zi6',2700],['f_zi2',2600]]){setBg(A+'img/'+img+'.jpg');await sleep(ms)}}},
+ {hide:1},{fn:async()=>{let u=null;const p=playSong('zirpia_01',.9,16,()=>{u=songSubs('zirpia_01',16)});for(const [img,ms] of [['f_zi3',2600],['f_zi1',2700],['zi5',2600],['f_zi4',2600],['zi6',2700],['f_zi2',2600]]){setBg(A+'img/'+img+'.jpg');await sleep(ms)}await p;if(u)u();}},
  {bg:'f_zi3'},
  {s:'SL',t:'Hörst du das? Irgendwer singt der Spinnenkönigin ein Liebeslied.'},
  {s:'SL',t:'Gewagt.'},

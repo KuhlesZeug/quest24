@@ -120,10 +120,10 @@ function numberSteps(id,steps){let n=0;const walk=a=>{(a||[]).forEach(s=>{if(s.s
 async function songShow(name,imgs,o){const cur=$('#sc-bg .on');const prev=cur?cur.dataset.src:null;let skip=false;
  const hint=el('div','song-hint','Tippen zum Weiterspielen');$('#s-scene').appendChild(hint);setTimeout(()=>hint.classList.add('on'),1600);
  let i=0;const next=()=>{if(!imgs.length||skip||i>=imgs.length)return;setBg(A+'img/'+imgs[i]+'.jpg');i++};
- let sk=null;const p=st.sound?playSong(name,o.v??.9,o.max):new Promise(r=>{sk=r;setTimeout(r,Math.max(1,imgs.length)*2600)});next();
+ let sk=null,unsub=null;const p=st.sound?playSong(name,o.v??.9,o.max,()=>{unsub=songSubs(name,o.max)}):new Promise(r=>{sk=r;setTimeout(r,Math.max(1,imgs.length)*2600)});next();
  const per=(o.per||0)||null;const dur=st.sound?await songDur(name,o.max):Math.max(1,imgs.length)*2.6;const step=per||Math.max(3500,dur*1000/Math.max(1,imgs.length));
  const tm=setInterval(next,step);
- SC.tap=()=>{skip=true;stopSong();if(sk)sk()};await p;SC.tap=null;clearInterval(tm);hint.remove();if(prev&&!o.keep)setBg(prev)}
+ SC.tap=()=>{skip=true;stopSong();if(sk)sk()};await p;if(unsub)unsub();SC.tap=null;clearInterval(tm);hint.remove();if(prev&&!o.keep)setBg(prev)}
 const SDUR={zirpia_01:21.8,zirpia_02:82,zirpia_03:96.8,zirpia_04:93,zirpia_05:78.4,zirpia_06:27.5,zirpia_07:28,zirpia_08:13,zirpia_09:27.3,zirpia_10:27.2,zirpia_11:50.5,zirpia_12:30,zirpia_13:92.8};
 async function songDur(n,max){const d=SDUR[n]||30;return max?Math.min(d,max):d}
 

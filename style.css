@@ -642,3 +642,5 @@ img{display:block;max-width:100%}
 @keyframes zgfall{to{transform:translateY(520px) rotate(540deg);opacity:0}}
 .bz .bz-t .bz-sp{height:76px}.bz .bz-t{width:60px}.bz .bz-t b{font-size:.62rem}.bz .bz-t span{font-size:.6rem}
 .bz-lamp{pointer-events:none}
+.song-sub{bottom:calc(64px + env(safe-area-inset-bottom));z-index:6;pointer-events:none;font-size:1.02rem}
+.song-sub i{color:var(--gold)}

@@ -32,6 +32,10 @@ function playSong(name,vol,max,onStart){stopSong();if(!st.sound)return Promise.r
    me.stop=()=>{try{g.gain.setTargetAtTime(0,AC.currentTime,.05);s.stop(AC.currentTime+.2)}catch(e){}end()};
    me._w=setTimeout(end,(b.duration+1.5)*1000);
    if(max)t=setTimeout(()=>{g.gain.setTargetAtTime(0,AC.currentTime,.5);setTimeout(()=>{try{s.stop()}catch(e){}end()},2200)},max*1000)})})}
+// Untertitel zu Zirpias Liedern, Start im onStart von playSong
+function songSubs(name,max){const L=(typeof SLYR!=='undefined'&&SLYR[name])||[];const host=document.querySelector('#s-scene')||document.body;const d=el('div','film-sub song-sub');host.appendChild(d);const tm=[];const lim=(max||999)+.6;
+ L.forEach(([a,b,t])=>{if(a>=lim)return;tm.push(setTimeout(()=>{d.innerHTML='<i>Zirpia singt</i>'+t;d.classList.add('on')},a*1000));tm.push(setTimeout(()=>d.classList.remove('on'),Math.min(b,lim)*1000))});
+ return ()=>{tm.forEach(clearTimeout);d.classList.remove('on');setTimeout(()=>d.remove(),500)}}
 function stopSong(){if(songEl){const m=songEl;songEl=null;if(m.stop)m.stop();else if(m.done)m.done();hush(false)}}
 function ballade(){if(!st.flags.ballade){st.flags.ballade=['zirpia_02','zirpia_03','zirpia_04','zirpia_05'][Math.floor(Math.random()*4)];save()}return st.flags.ballade}
 
