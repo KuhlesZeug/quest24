@@ -658,9 +658,9 @@ img{display:block;max-width:100%}
 .bt-back{position:sticky;bottom:-10px;display:block;width:100%;margin-top:8px;padding:10px;border-radius:10px;border:2px solid var(--wood);background:#6b4321;color:#fff3d6;font-family:var(--sc);font-size:1rem}
 @keyframes sheetUp{from{transform:translateY(40px);opacity:0}to{transform:none;opacity:1}}
 /* Rohrpost: deutlich vor dem Bild, mit Abdunklung, Lichtkranz und Banner */
-.rohr-ov{position:absolute;inset:0;z-index:40;pointer-events:none;background:radial-gradient(circle at 50% 30%,rgba(0,0,0,.15),rgba(0,0,0,.6) 70%);animation:fade .35s}
+.rohr-ov{position:absolute;inset:0;z-index:40;pointer-events:none;background:radial-gradient(circle at 50% 40%,rgba(30,18,8,.82),rgba(8,5,2,.95) 70%);animation:fade .35s}
 .rohr-ov.out{transition:opacity .5s;opacity:0}
-.rohr-ov .rohr{top:14%;width:190px;z-index:2}
+.rohr-ov .rohr{top:30%;width:190px;z-index:2}
 .rohr .rp-glow{position:absolute;left:50%;top:50%;width:260px;height:260px;transform:translate(-50%,-50%);border-radius:50%;background:radial-gradient(circle,rgba(255,214,110,.75),rgba(255,180,60,.25) 45%,transparent 70%);animation:rpPulse 1.1s ease-in-out infinite;z-index:-1}
 .rohr img{position:relative;display:block;width:100%;filter:drop-shadow(0 8px 14px rgba(0,0,0,.8))}
 .rohr .rp-tag{display:none}
@@ -768,7 +768,7 @@ img{display:block;max-width:100%}
 .card.gbg::before{content:"";position:absolute;inset:0;background:inherit;filter:blur(3px) saturate(.9);z-index:-1}
 .card.gbg>.c-card{box-shadow:0 18px 50px rgba(0,0,0,.75),0 0 0 3px rgba(60,35,15,.6)}
 .pl-neck{position:absolute;left:24%;right:24%;top:0;bottom:0;z-index:3;background:repeating-linear-gradient(180deg,transparent 0 96px,rgba(230,190,90,.85) 96px 100px),linear-gradient(90deg,#3a2210,#6b4321 12%,#8a5a2e 50%,#6b4321 88%,#3a2210);border-left:4px solid #1a0f06;border-right:4px solid #1a0f06;box-shadow:0 0 30px rgba(0,0,0,.7)}
-.pn-dr{width:56%}
+.pn-dr{width:46%}
 /* Wiegenlied wie ein Gitarrenspiel: Griffbrett der Walnusslaute in Perspektive, farbige Töne, Ringe mit Flammen */
 .pl .pl-neck,.pl .pl-str,.pl .pl-line{display:none}
 .pl-stage{position:absolute;left:0;right:0;top:16%;bottom:15%;perspective:520px;perspective-origin:50% 0;z-index:4}
@@ -814,3 +814,73 @@ img{display:block;max-width:100%}
 .bt-act .bt-btns:not(.list) .bt-b{padding:8px 6px}
 .bt-act .bt-btns:not(.list) .bt-b b{font-size:.92rem}
 .sw-m{filter:drop-shadow(0 0 0 transparent)}
+
+/* Schlachtplan auf Nachtigalls Tisch */
+.plt .plt-sheet{position:absolute;left:14%;right:14%;top:calc(64px + env(safe-area-inset-top));display:flex;flex-direction:column;gap:6px;z-index:3;font-family:var(--sc);color:#3b2312}
+.plt-h{text-align:center;font-size:1.35rem;color:#5a2b12;margin-bottom:2px;text-shadow:0 1px 0 rgba(255,255,255,.4)}
+.plt-row{display:flex;align-items:center;justify-content:space-between;gap:6px;min-height:52px;padding:4px 6px 4px 10px;border:0;border-bottom:2px dashed rgba(90,43,18,.45);background:rgba(255,246,220,.35);border-radius:8px;font:inherit;color:inherit;text-align:left}
+.plt-row.aim{background:rgba(255,226,140,.55);box-shadow:0 0 0 2px rgba(201,138,40,.7)}
+.plt-n{font-size:1rem;line-height:1.15;flex:1}
+.plt-slot{display:flex;align-items:center;gap:6px;min-width:96px;justify-content:flex-end;font-size:.85rem}
+.plt-slot em{font-style:normal;opacity:.55;padding:6px 10px;border:2px dashed rgba(90,43,18,.5);border-radius:20px}
+.plt-slot i,.plt-tok i{display:block;width:40px;height:40px;border-radius:50%;background:center 20%/cover;border:3px solid #5a2b12;box-shadow:0 2px 4px rgba(0,0,0,.4)}
+.plt-row.set .plt-slot i{animation:popUp .35s}
+.plt-tray{position:absolute;left:4%;right:4%;bottom:calc(200px + env(safe-area-inset-bottom));display:flex;justify-content:space-between;z-index:4}
+.plt-tok{display:flex;flex-direction:column;align-items:center;gap:3px;width:19%;border:0;background:none;padding:0;font-family:var(--sc);font-size:.72rem;color:#ffe9b8;text-shadow:0 1px 3px #000}
+.plt-tok i{width:58px;height:58px;border-color:#e9c98a;transition:transform .2s}
+.plt-tok.sel i{transform:translateY(-8px) scale(1.12);border-color:#ffd76a;box-shadow:0 0 16px #ffcf5a}
+.plt-tok.used i{filter:grayscale(.7) brightness(.7)}
+.plt-foot{position:absolute;left:0;right:0;bottom:calc(84px + env(safe-area-inset-bottom));display:flex;flex-direction:column;align-items:center;gap:8px;z-index:5}
+.plt-hb{display:flex;gap:8px}
+.plt-tip{font-family:var(--sc);font-size:.85rem;padding:6px 12px;border-radius:16px;border:2px solid var(--wood);background:rgba(255,246,220,.9);color:#5a2b12}
+.plt-tip.open{background:#ffe9a8}.plt-tip:disabled{opacity:.45}
+.plt .plt-help{bottom:calc(10px + env(safe-area-inset-bottom))}
+
+/* Windböe als gemalte Wirbel */
+.sw-g{width:26%}
+.sw-g::before{display:none}
+.sw-g img{display:block;width:100%;animation:swGust 1.4s ease-in-out infinite;filter:drop-shadow(0 0 6px rgba(200,230,255,.6))}
+@keyframes swGust{0%,100%{transform:rotate(-6deg) scale(1)}50%{transform:rotate(6deg) scale(1.06)}}
+
+/* Schleichspiel in Draufsicht */
+.ps2 .ps2-auf{opacity:0;transition:opacity .18s}
+.ps2.auf .ps2-auf{opacity:1}
+.ps2.warn .pg-img{animation:psBreath .5s ease-in-out infinite}
+@keyframes psBreath{50%{transform:scale(1.008)}}
+.ps2-eyeglow{position:absolute;width:120px;height:120px;transform:translate(-50%,-50%);border-radius:50%;background:radial-gradient(circle,rgba(255,190,60,.55),rgba(255,140,30,0) 70%);opacity:0;transition:opacity .2s;pointer-events:none;z-index:3}
+.ps2.warn .ps2-eyeglow{opacity:.45;animation:psFlick .25s infinite alternate}
+.ps2.auf .ps2-eyeglow{opacity:1}
+.ps2.auf::after{content:"";position:absolute;inset:0;background:radial-gradient(circle at 30% 20%,rgba(255,170,40,.10),rgba(60,15,0,.12) 70%);pointer-events:none;z-index:4}
+@keyframes psFlick{to{opacity:.15}}
+.ps2-cat{position:absolute;left:0;top:0;z-index:6;pointer-events:none;transition:opacity .2s}
+.ps2-cat img{display:block;width:100%;filter:drop-shadow(0 0 2px #fff) drop-shadow(0 0 3px rgba(255,240,200,.9)) drop-shadow(0 6px 6px rgba(0,0,0,.85))}
+.ps2-cat.hide{opacity:.55}
+.ps2-goal{position:absolute;width:70px;height:70px;transform:translate(-50%,-50%);border-radius:50%;border:3px dashed rgba(255,215,106,.8);box-shadow:0 0 18px rgba(255,200,80,.6);animation:psGoal 1.6s ease-in-out infinite;z-index:5;pointer-events:none}
+@keyframes psGoal{0%,100%{transform:translate(-50%,-50%) scale(.85);opacity:.7}50%{transform:translate(-50%,-50%) scale(1.1);opacity:1}}
+
+.ps2-hold{position:absolute;left:50%;top:calc(96px + env(safe-area-inset-top));transform:translateX(-50%);z-index:8;padding:8px 16px;border-radius:20px;background:rgba(20,12,6,.7);border:2px solid var(--wood);color:#ffe9b8;font-family:var(--sc);font-size:.95rem;white-space:nowrap;pointer-events:none;transition:opacity .3s}
+.ps2-hold.on{opacity:.35}
+.ps2 .bg-help{animation:helpOut .8s ease 6s forwards}
+.ps2{touch-action:none;-webkit-user-select:none;user-select:none}
+/* Schlachtplan: Figuren direkt unter dem Plan, Paws frei */
+.plt .plt-sheet{top:calc(100px + env(safe-area-inset-top));gap:5px}
+.plt-row{min-height:48px}
+.plt-tray{position:static;margin-top:10px;display:flex;justify-content:space-between}
+.plt-foot{bottom:calc(14px + env(safe-area-inset-bottom))}
+.plt-hb{position:absolute;left:0;right:0;justify-content:center;top:calc(58px + env(safe-area-inset-top))}
+.plt .plt-help{animation:helpOut .8s ease 6s forwards;bottom:calc(84px + env(safe-area-inset-bottom))}
+.plt-tok{color:#3b2312;text-shadow:0 1px 0 rgba(255,250,235,.6);font-weight:700}
+
+/* Lautenspiel: ein großer Knopf pro Saite */
+.pl2 .pl-btns.pl3{left:6px;right:6px;bottom:calc(14px + env(safe-area-inset-bottom));height:auto;display:grid;grid-template-columns:repeat(4,1fr);gap:8px;z-index:20}
+.pl2 .pl-btns.pl3 button{position:relative;height:74px;border-radius:18px;border:3px solid #2a170a;background:linear-gradient(180deg,rgba(40,24,12,.92),rgba(20,12,6,.95));box-shadow:0 4px 0 #120a04,0 0 14px var(--c);touch-action:none}
+.pl3 button i{position:absolute;left:50%;top:50%;width:42px;height:42px;transform:translate(-50%,-50%);border-radius:50%;background:radial-gradient(circle at 35% 30%,#fff 0 12%,var(--c) 14% 62%,rgba(0,0,0,.6) 64%);border:3px solid #fff8;box-shadow:0 0 12px var(--c)}
+.pl3 button.g{--c:#3fd14b}.pl3 button.r{--c:#ea4434}.pl3 button.y{--c:#f6c945}.pl3 button.b{--c:#3b8ff0}
+.pl3 button.on{transform:translateY(3px);box-shadow:0 1px 0 #120a04,0 0 26px var(--c);background:linear-gradient(180deg,rgba(80,50,20,.95),rgba(40,24,12,.95))}
+.pl3 button.on i{background:radial-gradient(circle at 35% 30%,#fff 0 30%,var(--c) 32% 70%,rgba(0,0,0,.4) 72%)}
+.pl3-guide{position:absolute;width:3px;transform-origin:50% 0;margin-left:-1.5px;z-index:5;pointer-events:none;background:linear-gradient(180deg,var(--c),rgba(255,255,255,0));opacity:.55}
+.pl3-guide.g{--c:#3fd14b}.pl3-guide.r{--c:#ea4434}.pl3-guide.y{--c:#f6c945}.pl3-guide.b{--c:#3b8ff0}
+.pl2 .bg-help{bottom:auto;top:calc(96px + env(safe-area-inset-top))}
+.pl2 .pl-fb{top:auto;bottom:calc(150px + env(safe-area-inset-bottom))}
+.pl2 .pl-btns.pl3 button{top:auto;left:auto;transform:none;width:auto}
+.pl2 .pl-btns.pl3 button.on{transform:translateY(3px)}

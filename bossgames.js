@@ -36,7 +36,7 @@ GAMES.p_glut=()=>new Promise(async done=>{const W1=phWho(1);const T=W1.right?9:6
 // Phase 3: Der Aschesturm. Zirpia spielt das Wiegenlied auf den vier Saiten ihrer Walnusslaute.
 function pluck(f,vol){const c=ac(),t=c.currentTime;const o=c.createOscillator(),g=c.createGain(),fl=c.createBiquadFilter();o.type='triangle';o.frequency.setValueAtTime(f,t);fl.type='lowpass';fl.frequency.setValueAtTime(3200,t);fl.frequency.exponentialRampToValueAtTime(700,t+.6);g.gain.setValueAtTime(vol||.35,t);g.gain.exponentialRampToValueAtTime(.001,t+1.1);o.connect(fl);fl.connect(g);g.connect(sfxBus);o.start(t);o.stop(t+1.2)}
 GAMES.p_lied=()=>new Promise(async done=>{const W2=phWho(2);const dur=W2.right?1.9:1.45;
- const o=await phShell('pl pl2','mg_laute','ort24',W2.name+' spielt das Wiegenlied','Die Töne gleiten über die Saiten der Walnusslaute auf dich zu. Tippe die Saite, sobald ein Ton im Ring der gleichen Farbe liegt.');
+ const o=await phShell('pl pl2','mg_laute','ort24',W2.name+' spielt das Wiegenlied','Die Töne gleiten über die Saiten der Walnusslaute auf dich zu. Drück unten den Knopf in der gleichen Farbe, sobald ein Ton im Ring liegt.');
  const C=['g','r','y','b'];const F=[262,330,392,523];
  // Saiten im Bild (Anteile der Bildbreite und Bildhöhe, gemessen an mg_laute 1536x2720): x = a + k*y
  const IW=1536,IH=2720,Y0=.31,Y1=.80;const S=[[.464,.4,.396,.8],[.487,.4,.463,.8],[.511,.4,.536,.8],[.536,.4,.607,.8]].map(([x0,y0,x1,y1])=>{const k=(x1-x0)/(y1-y0);return y=>x0+k*(y-y0)});
@@ -44,13 +44,17 @@ GAMES.p_lied=()=>new Promise(async done=>{const W2=phWho(2);const dur=W2.right?1
  const pt=(si,y)=>{const m=map();return {x:m.ox+S[si](y)*m.iw,y:m.oy+y*m.ih}};
  const rings=C.map((c,i)=>{const r=el('div','pl2-ring '+c,'<b></b>');o.appendChild(r);return r});
  const placeRings=()=>rings.forEach((r,i)=>{const p=pt(i,Y1);r.style.left=p.x+'px';r.style.top=p.y+'px'});placeRings();addEventListener('resize',placeRings);
- o.insertAdjacentHTML('beforeend','<div class="pl-btns">'+C.map((c,i)=>'<button data-s="'+i+'"></button>').join('')+'</div><div class="pl-streak"></div>');
+ o.insertAdjacentHTML('beforeend','<div class="pl-btns pl3">'+C.map((c,i)=>'<button class="'+c+'" data-s="'+i+'"><i></i></button>').join('')+'</div><div class="pl-streak"></div>');
+ // Leitlinie von jedem Ring zu seinem Knopf, damit klar ist, welcher Knopf zu welcher Saite gehört
+ const guides=C.map(c=>{const g=el('div','pl3-guide '+c);o.appendChild(g);return g});
+ const placeGuides=()=>{const R=o.getBoundingClientRect();const bs=[...o.querySelectorAll('.pl-btns button')];guides.forEach((g,i)=>{const p=pt(i,Y1);const b=bs[i].getBoundingClientRect();const bx=b.left+b.width/2-R.left,by=b.top+b.height*.2-R.top;const dx=bx-p.x,dy=by-p.y;g.style.left=p.x+'px';g.style.top=p.y+'px';g.style.height=Math.hypot(dx,dy)+'px';g.style.transform='rotate('+(Math.atan2(-dx,dy)*180/Math.PI)+'deg)'})};
+ requestAnimationFrame(placeGuides);addEventListener('resize',placeGuides);
  // Wiegenlied: Saite und Zeitpunkt in Schlägen
  const SONG=[[2,0],[1,1],[0,2],[1,3],[2,4],[2,5],[2,6],[1,8],[1,9],[1,10],[2,12],[3,13],[3,14],[2,16],[1,17],[0,18],[1,19],[2,20],[2,21],[2,22],[1,23],[1,24],[2,25],[1,26],[0,28]];
  const beat=.55,lead=2.2;let t0=null,hits=0,streak=0,run=true;const notes=SONG.map(([s,b])=>({s,t:b*beat+lead,el:null,done:false}));
  notes.forEach(n=>{n.el=el('div','pl-gem '+C[n.s]);n.el.style.opacity=0;o.appendChild(n.el)});
  const flame=si=>{const r=rings[si];r.classList.remove('fire');void r.offsetWidth;r.classList.add('fire')};
- const press=si=>{if(!run||t0===null)return;const now=(performance.now()-t0)/1000;const r=rings[si];r.classList.add('on');setTimeout(()=>r.classList.remove('on'),130);
+ const press=si=>{if(!run||t0===null)return;const now=(performance.now()-t0)/1000;const r=rings[si];r.classList.add('on');setTimeout(()=>r.classList.remove('on'),130);const bb=o.querySelectorAll('.pl-btns button')[si];bb.classList.add('on');setTimeout(()=>bb.classList.remove('on'),130);
   let best=null;notes.forEach(n=>{if(!n.done&&n.s===si&&Math.abs(n.t-now)<.25&&(!best||Math.abs(n.t-now)<Math.abs(best.t-now)))best=n});
   if(best){best.done=true;hits++;streak++;pluck(F[si]);best.el.classList.add('hit');flame(si);const fb=el('div','pl-fb',Math.abs(best.t-now)<.09?'Perfekt':'Gut');o.appendChild(fb);setTimeout(()=>fb.remove(),600)}else{streak=0;pluck(F[si]*.94,.12)}
   o.querySelector('.pl-streak').textContent=streak>2?streak+' in Folge':''};
@@ -69,21 +73,32 @@ GAMES.p_lied=()=>new Promise(async done=>{const W2=phWho(2);const dur=W2.right?1
 
 // Phase 4: Der Schatten. Nachtigall schleicht über Vharkons Rücken. Halten zum Schleichen, loslassen, wenn das Auge aufgeht.
 GAMES.p_schatten=()=>new Promise(async done=>{const W3=phWho(3);const fast=W3.right?1:1.35;
- const o=await phShell('ps','mg_ruecken','ort24',W3.name+' schleicht durch den Schatten','Halte gedrückt, um zu schleichen. Lass sofort los, wenn Vharkons Auge aufgeht. Erreiche sein Herz.');
- const eye=el('div','ps-eye','<img class="c" src="'+A+'img/vh_eye_zu.png" alt=""><img class="a" src="'+A+'img/vh_eye_auf.png" alt="">');o.appendChild(eye);
- const cat=el('img','ps-cat');cat.src=A+'img/r_'+(W3.w==='held'?st.hero.cls+'_'+st.hero.look:W3.w)+'_0.png';o.appendChild(cat);
- const btn=el('button','pbtn big ps-go','Schleichen');o.appendChild(btn);
+ // Draufsicht: Vharkon schläft eingerollt, Nachtigall schleicht über Schwanz und Rücken bis zur Brust. Das Auge gehört zum Bild (zweites Bild mit offenem Auge).
+ const o=await phShell('ps2','mg_schleich_zu','mg_ruecken',W3.name+' schleicht zum Herzen','Halte gedrückt, um zu schleichen. Lass sofort los, wenn Vharkons Auge aufgeht. Erreiche sein Herz.');
+ const ok2=await phImgOk(A+'img/mg_schleich_auf.jpg');o.querySelector('.pg-img').insertAdjacentHTML('afterend','<div class="pg-img ps2-auf" style="background-image:url('+A+'img/'+(ok2?'mg_schleich_auf':'mg_schleich_zu')+'.jpg)"></div><div class="ps2-eyeglow"></div>');
+ const IW=PS_IMG[0],IH=PS_IMG[1];const P=PS_PATH;const L=[0];for(let i=1;i<P.length;i++)L.push(L[i-1]+Math.hypot((P[i][0]-P[i-1][0])*IW,(P[i][1]-P[i-1][1])*IH));const TOT=L[L.length-1];
+ const map=(u,v)=>{const W=o.clientWidth,H=o.clientHeight,sc=Math.max(W/IW,H/IH);return [(W-IW*sc)/2+u*IW*sc,(H-IH*sc)/2+v*IH*sc,sc]};
+ const at=q=>{const d=q*TOT;let i=1;while(i<L.length-1&&L[i]<d)i++;const f=(d-L[i-1])/(L[i]-L[i-1]||1);const u=P[i-1][0]+(P[i][0]-P[i-1][0])*f,v=P[i-1][1]+(P[i][1]-P[i-1][1])*f;const ang=Math.atan2((P[i][1]-P[i-1][1])*IH,(P[i][0]-P[i-1][0])*IW)*180/Math.PI;return [u,v,ang]};
+ const top=W3.w==='na';const cat=el('div','ps2-cat'+(top?' top':''),'<img src="'+A+'img/'+(top?'na_top':'r_'+(W3.w==='held'?st.hero.cls+'_'+st.hero.look:W3.w)+'_0')+'.png" alt="">');o.appendChild(cat);const ci=cat.firstChild;
+ const goal=el('div','ps2-goal');o.appendChild(goal);
+ const eg=o.querySelector('.ps2-eyeglow');
+ const place=()=>{const [x,y]=map(PS_EYE[0],PS_EYE[1]);eg.style.left=x+'px';eg.style.top=y+'px';const g=map(P[P.length-1][0],P[P.length-1][1]);goal.style.left=g[0]+'px';goal.style.top=g[1]+'px'};place();addEventListener('resize',place);
+ const btn=el('div','ps2-hold','Gedrückt halten zum Schleichen');o.appendChild(btn);
  let hold=false,pos=0,state='zu',tState=performance.now(),dur=2.2+Math.random()*1.6,caught=0,run=true,last=performance.now(),fr=0;
- const down=e=>{e.preventDefault();hold=true;btn.classList.add('on')},up=()=>{hold=false;btn.classList.remove('on')};btn.addEventListener('pointerdown',down);addEventListener('pointerup',up);
+ const down=e=>{e.preventDefault();hold=true;btn.classList.add('on')},up=()=>{hold=false;btn.classList.remove('on')};o.addEventListener('pointerdown',down);addEventListener('pointercancel',up);addEventListener('pointerup',up);
  const tick=t=>{if(!run)return;const dt=Math.min(.05,(t-last)/1000);last=t;const el0=(t-tState)/1000;
-  if(state==='zu'&&el0>dur){state='warn';tState=t;eye.className='ps-eye warn';sfx('drachenknurren',.35)}
-  else if(state==='warn'&&el0>.75/fast){state='auf';tState=t;eye.className='ps-eye auf'}
-  else if(state==='auf'&&el0>1.3){state='zu';tState=t;dur=(1.6+Math.random()*1.8)/fast;eye.className='ps-eye'}
-  if(hold){pos+=dt*.085;if(++fr%6===0)cat.src=cat.src.replace(/_\d\.png$/,'_'+(1+(fr/6|0)%3)+'.png');
-   if(state==='auf'){caught++;hold=false;btn.classList.remove('on');pos=Math.max(0,pos-.18);sfx('katze',.6);toast(['Erwischt! Zurück in den Schatten.','Fast! Noch mal leise.','Er blinzelt nur. Weiter.'][Math.min(2,caught-1)],1400);o.classList.add('hit');setTimeout(()=>o.classList.remove('hit'),400)}}
-  pos=Math.min(1,pos);cat.style.top=(86-pos*62)+'%';bar(o,'Weg zum Herzen',pos);
-  if(pos>=1){run=false;removeEventListener('pointerup',up);phEnd(o,'Geschafft. Der Schattenschlüssel öffnet die Kruste über dem Herzen.').then(()=>done(Math.max(.3,1-caught*.2)));return}
+  if(state==='zu'&&el0>dur){state='warn';tState=t;o.classList.add('warn');sfx('drachenknurren',.35)}
+  else if(state==='warn'&&el0>.75/fast){state='auf';tState=t;o.classList.remove('warn');o.classList.add('auf')}
+  else if(state==='auf'&&el0>1.3){state='zu';tState=t;dur=(1.6+Math.random()*1.8)/fast;o.classList.remove('auf')}
+  if(hold){pos+=dt*.075;fr++;
+   if(state==='auf'){caught++;hold=false;btn.classList.remove('on');pos=Math.max(0,pos-.15);sfx('katze',.6);toast(['Erwischt! Zurück in den Schatten.','Fast! Noch mal leise.','Er blinzelt nur. Weiter.'][Math.min(2,caught-1)],1400);o.classList.add('hit');setTimeout(()=>o.classList.remove('hit'),400)}}
+  pos=Math.min(1,pos);const [u,v,ang]=at(pos);const [x,y,sc]=map(u,v);const sz=Math.max(72,Math.min(110,IW*sc*.1));
+  cat.style.width=sz+'px';cat.style.transform='translate('+x+'px,'+y+'px) translate(-50%,-50%) rotate('+(top?ang+90:0)+'deg)';ci.style.transform=hold?'translateY('+(Math.sin(fr*.5)*2)+'px) scale('+(1+Math.sin(fr*.5)*.03)+',1)':'none';
+  cat.classList.toggle('hide',!hold&&state!=='zu');bar(o,'Weg zum Herzen',pos);
+  if(pos>=1){run=false;removeEventListener('pointerup',up);removeEventListener('pointercancel',up);removeEventListener('resize',place);phEnd(o,'Geschafft. Der Schattenschlüssel öffnet die Kruste über dem Herzen.').then(()=>done(Math.max(.3,1-caught*.2)));return}
   requestAnimationFrame(tick)};requestAnimationFrame(tick)});
+// Bildmaße und Weg über den Drachenkörper (relativ zum Bild, unten Schwanz, oben Brust)
+const PS_IMG=[1536,2720];const PS_EYE=[.34,.225];const PS_PATH=[[.72,.86],[.5,.9],[.3,.88],[.17,.8],[.2,.72],[.38,.66],[.52,.58],[.55,.48],[.5,.4],[.57,.31]];
 
 // Phase 5: Das Herz. Halte die Sonnenkerze ruhig in der warmen Zone, bis die Asche schmilzt.
 GAMES.p_herz=()=>new Promise(async done=>{const W4=phWho(4);const zone=W4.right?.26:.18;

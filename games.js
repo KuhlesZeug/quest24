@@ -177,7 +177,7 @@ GAMES.sturm=(s)=>new Promise(done=>{const sc=$('#s-scene');const L=[.14,.38,.62,
  o.querySelectorAll('.sw-lane').forEach(e=>e.addEventListener('pointerdown',ev=>{ev.preventDefault();move(+e.dataset.l)}));
  let sx=null;o.addEventListener('touchstart',e=>{sx=e.touches[0].clientX},{passive:true});o.addEventListener('touchend',e=>{if(sx===null)return;const dx=e.changedTouches[0].clientX-sx;if(Math.abs(dx)>40)move(Math.max(0,Math.min(3,lane+(dx>0?1:-1))));sx=null},{passive:true});
  const spawn=()=>{n++;o.querySelector('.sw-c').textContent='Böe '+Math.min(n,total)+' von '+total;let ls=[Math.floor(Math.random()*4)];if(n>6&&Math.random()<.45){let b;do{b=Math.floor(Math.random()*4)}while(b===ls[0]);ls.push(b)}if(n>12&&Math.random()<.3){let c;do{c=Math.floor(Math.random()*4)}while(ls.includes(c));ls.push(c)}
-  ls.forEach(l=>{const w=el('div','sw-g','<svg viewBox="0 0 100 140"><path d="M20 20c30-14 60 6 40 26s-44 4-30-12" /><path d="M14 64c34-16 70 4 48 28s-50 6-34-14"/><path d="M26 104c26-10 52 4 36 22"/></svg>');o.appendChild(w);const warn=el('div','sw-warn');warn.style.left=(L[l]*100)+'%';o.appendChild(warn);setTimeout(()=>warn.remove(),900);gusts.push({w,l,y:-.18,hit:false})});sfx('wind_boe',.45)};
+  ls.forEach(l=>{const w=el('div','sw-g','<img src="'+A+'img/sw_gust.png" alt="">');o.appendChild(w);const warn=el('div','sw-warn');warn.style.left=(L[l]*100)+'%';o.appendChild(warn);setTimeout(()=>warn.remove(),900);gusts.push({w,l,y:-.18,hit:false})});sfx('wind_boe',.45)};
  const lay=()=>place();addEventListener('resize',lay);place();
  const tick=t=>{if(!run)return;const dt=Math.min(.05,(t-last)/1000);last=t;spawnT-=dt;const W=o.clientWidth,H=o.clientHeight;if(bg.classList.contains('tile'))bg.style.backgroundPositionY=((t/30)%(W*16/9))+'px';
   if(spawnT<=0&&n<total){spawn();spawnT=Math.max(1.05,1.9-n*.05)}
@@ -193,14 +193,25 @@ GAMES.sturm=(s)=>new Promise(done=>{const sc=$('#s-scene');const L=[.14,.38,.62,
 
 // Tag 23: Schlachtplan. Wer geht in welcher Phase voran, mit welchem Gegenstand?
 const PHASEN=[['Der Drache erhebt sich','hu','stahlnetz'],['Die Aschenschuppen','gr','glutstein'],['Der Aschesturm','zi','wiegenlied'],['Der Schatten','na','schattenschluessel'],['Das Herz','held','sonnenkerze']];
-GAMES.plan=()=>new Promise(done=>{
- const area=gameShell('Der Schlachtplan','Trag ein, was auf deinem Druckblatt steht: Wer geht in welcher Phase voran?');
- const who=[['held',heroName()],['gr','Grumbold'],['zi','Zirpia'],['hu','Oma Hulda'],['na','Nachtigall']];const plan=st.flags.plan||{};
- area.innerHTML=PHASEN.map((p,i)=>'<div class="pl-row"><b>'+(i+1)+'. '+p[0]+'</b><select data-i="'+i+'"><option value="">Wer?</option>'+who.map(w=>'<option value="'+w[0]+'"'+(plan[i]===w[0]?' selected':'')+'>'+esc(w[1])+'</option>').join('')+'</select></div>').join('')+'<div class="hints pl-h"></div><button class="pbtn big pl-go">Plan festlegen</button>';
- const tips=['Jeder Gefährte hat genau einen besonderen Gegenstand bekommen. Wer hat welchen?','Lies Nachtigalls Hinweise: Welcher Gegenstand passt zu welcher Phase?','Hulda mit dem Netz, Grumbold mit dem Glutstein, Zirpia mit dem Wiegenlied, Nachtigall mit dem Schattenschlüssel, du mit Sonnenkerze und Herzjuwel.'];let nt=0;const hb=area.querySelector('.pl-h');
- const dH=()=>{hb.innerHTML=tips.map((t,i)=>'<button class="hint'+(i<nt?' open':'')+'"><span>'+(i===2?'Lösung':'Tipp '+(i+1))+'</span>'+(i<nt?t:i===nt?'Antippen zum Aufdecken':'')+'</button>').join('');[...hb.children].forEach((b,i)=>b.onclick=()=>{if(i===nt){nt++;dH();readAloud(tips[i])}})};dH();
- area.querySelector('.pl-go').onclick=async()=>{const p={};area.querySelectorAll('select').forEach(s=>p[s.dataset.i]=s.value);if(Object.values(p).some(v=>!v))return toast('Bitte jede Phase besetzen.');
-  st.flags.plan=p;save();const ok=PHASEN.every((x,i)=>p[i]===x[1]);gameEnd();if(!ok)await say('SL','Bist du sicher? Ich frag ja nur.',A+'vo/d23_plan.mp3');done()}});
+GAMES.plan=()=>new Promise(done=>{hideBox();
+ // Nachtigall legt den Plan auf den Tisch: Figur antippen, dann die Phase, in der sie vorangeht
+ const who=[['held',heroName(),heroImg()],['gr','Grumbold',A+'img/k_gr.jpg'],['zi','Zirpia',A+'img/k_zi.jpg'],['hu','Oma Hulda',A+'img/k_hu.jpg'],['na','Nachtigall',A+'img/k_na.jpg']];
+ const W=Object.fromEntries(who.map(w=>[w[0],w]));const plan={...(st.flags.plan||{})};let sel=null;
+ const help='Tippe eine Figur an und dann die Phase, in der sie vorangeht. Trag ein, was auf deinem Druckblatt steht.';
+ const o=el('div','pg plt','<div class="pg-img" style="background-image:url('+A+'img/plan_tisch.jpg),url('+A+'img/ort23.jpg)"></div><div class="pg-top">Der Schlachtplan</div>'
+  +'<div class="plt-sheet"><div class="plt-h">Lichternacht</div>'+PHASEN.map((p,i)=>'<button class="plt-row" data-i="'+i+'"><span class="plt-n">'+(i+1)+'. '+esc(p[0])+'</span><span class="plt-slot"></span></button>').join('')
+  +'<div class="plt-tray">'+who.map(w=>'<button class="plt-tok" data-k="'+w[0]+'"><i style="background-image:url('+w[2]+')"></i><span>'+esc(w[1])+'</span></button>').join('')+'</div></div>'
+  +'<div class="plt-hb"></div><div class="plt-foot"><button class="pbtn big pl-go">Plan festlegen</button></div><div class="bg-help plt-help">'+help+'</div>');
+ $('#s-scene').appendChild(o);setTimeout(()=>readAloud(help),400);
+ const tips=['Jeder Gefährte hat genau einen besonderen Gegenstand bekommen. Wer hat welchen?','Lies Nachtigalls Hinweise: Welcher Gegenstand passt zu welcher Phase?','Hulda mit dem Netz, Grumbold mit dem Glutstein, Zirpia mit dem Wiegenlied, Nachtigall mit dem Schattenschlüssel, du mit Sonnenkerze und Herzjuwel.'];let nt=0;
+ const hb=o.querySelector('.plt-hb');const dH=()=>{hb.innerHTML=tips.map((t,i)=>'<button class="plt-tip'+(i<nt?' open':'')+'"'+(i>nt?' disabled':'')+'>'+(i===2?'Lösung':'Tipp '+(i+1))+'</button>').join('');[...hb.children].forEach((b,i)=>b.onclick=()=>{if(i>nt)return;if(i===nt){nt++;dH()}toast(tips[i],6000);readAloud(tips[i])})};dH();
+ const draw=()=>{o.querySelectorAll('.plt-row').forEach(r=>{const k=plan[r.dataset.i];const sl=r.querySelector('.plt-slot');sl.innerHTML=k?'<i style="background-image:url('+W[k][2]+')"></i><span>'+esc(W[k][1])+'</span>':'<em>Wer?</em>';r.classList.toggle('set',!!k);r.classList.toggle('aim',!!sel)});
+  const used=Object.values(plan);o.querySelectorAll('.plt-tok').forEach(t=>{t.classList.toggle('sel',t.dataset.k===sel);t.classList.toggle('used',used.includes(t.dataset.k))})};
+ o.querySelectorAll('.plt-tok').forEach(t=>t.onclick=()=>{sfx('ui_klick',.5);sel=sel===t.dataset.k?null:t.dataset.k;draw()});
+ o.querySelectorAll('.plt-row').forEach(r=>r.onclick=()=>{const i=r.dataset.i;if(sel){Object.keys(plan).forEach(j=>{if(plan[j]===sel)delete plan[j]});plan[i]=sel;sel=null;sfx('pergament',.5)}else if(plan[i]){delete plan[i];sfx('ui_klick',.4)}else{toast('Tippe zuerst unten eine Figur an.');return}draw()});
+ draw();
+ o.querySelector('.pl-go').onclick=async()=>{if(PHASEN.some((x,i)=>!plan[i]))return toast('Bitte jede Phase besetzen.');
+  const p={};PHASEN.forEach((x,i)=>p[i]=plan[i]);st.flags.plan=p;save();sfx('buch_zu',.6);const ok=PHASEN.every((x,i)=>p[i]===x[1]);o.classList.add('out');await sleep(500);o.remove();if(!ok)await say('SL','Bist du sicher? Ich frag ja nur.',A+'vo/d23_plan.mp3');done()}});
 
 // Tag 24: Schlüsselprobe einer Phase im Drachenkampf
 // Schnelle Reaktion im Drachenkampf: Ring fliegt auf das Ziel, rechtzeitig tippen gibt Bonus

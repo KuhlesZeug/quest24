@@ -66,7 +66,10 @@ let curVo=null;
 // Stimmen laufen über Web Audio: einmal freigeschaltet, spielen sie auch ohne Berührung zuverlässig bis zum Ende
 let voBus=null;
 function voOut(){ac();if(!voBus){voBus=AC.createGain();voBus.gain.value=1;voBus.connect(master)}return voBus}
-function loadVo(src){return fetch(src).then(r=>{if(!r.ok)throw 0;return r.arrayBuffer()}).then(a=>new Promise((ok,no)=>ac().decodeAudioData(a,ok,no))).catch(()=>null)}
+// Stimmen vorab laden, damit sie ohne Verzögerung starten (kleiner Zwischenspeicher)
+const VOC=new Map();function loadVo(src){if(VOC.has(src))return VOC.get(src);const p=fetch(src).then(r=>{if(!r.ok)throw 0;return r.arrayBuffer()}).then(a=>new Promise((ok,no)=>ac().decodeAudioData(a,ok,no))).catch(()=>null);VOC.set(src,p);if(VOC.size>40)VOC.delete(VOC.keys().next().value);return p}
+function preVo(src){if(src&&st.sound&&AC)loadVo(src)}
+function preSfx(list){if(!st.sound||!AC)return;list.forEach(n=>{n=SFXA[n]||n;loadBuf(A+'sfx/'+n+'_a.mp3').then(b=>{if(!b)loadBuf(A+'sfx/'+n+'.mp3')});loadBuf(A+'sfx/'+n+'_b.mp3')})}
 // Aufgaben und Tipps vorlesen: Datei über einen Hash des bereinigten Textes (a/vo/x/x_<fnv>.mp3)
 function hintNorm(s){return String(s||'').replace(/<br\s*\/?>/g,' ').replace(/<[^>]+>/g,'').replace(/\s+/g,' ').trim()}
 function fnv32(s){let h=0x811c9dc5;for(let i=0;i<s.length;i++){h^=s.charCodeAt(i);h=Math.imul(h,0x01000193)>>>0}return ('0000000'+h.toString(16)).slice(-8)}

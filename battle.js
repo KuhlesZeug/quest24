@@ -124,7 +124,11 @@ function render(){const fo=$('#bt-foes');fo.innerHTML='';fo.classList.toggle('ma
 function fitFoes(){const fo=$('#bt-foes');if(!fo)return;const n=Math.max(1,B.foes.length);const h=fo.clientHeight,w=fo.clientWidth;if(!h)return;const byH=h-86,byW=(w-12)/n*.92;fo.style.setProperty('--fsz',Math.round(Math.max(80,Math.min(byH,byW,300)))+'px')}
 function spriteSrc(u,p){return A+'img/b_'+(u.hero?st.hero.cls+'_'+st.hero.look:u.id)+'_'+p+'.png'}
 function poseFor(u,p,ms){u.pose=p;clearTimeout(u._pt);if(B)render();u._pt=setTimeout(()=>{u.pose=0;if(B)render()},ms)}
-function preloadSprites(){B.party.forEach(u=>{for(let p=0;p<4;p++){const i=new Image();i.src=spriteSrc(u,p)}});markPick()}
+const PRE=[];function preImg(src){const i=new Image();i.decoding='async';i.src=src;PRE.push(i);if(PRE.length>200)PRE.shift()}
+function preloadSprites(){B.party.forEach(u=>{for(let p=0;p<4;p++)preImg(spriteSrc(u,p))});
+ B.foes.forEach(f=>{for(let p=0;p<4;p++)preImg(A+'img/'+f.img+'_'+p+'.png')});
+ Object.values(PROJ).flat().forEach(n=>preImg(A+'ui/'+n+'.png'));['hit','magic','smoke'].forEach(k=>{for(let i=0;i<4;i++)preImg(A+'ui/fx_'+k+'_'+i+'.png')});
+ preSfx([...new Set(Object.values(PSFX))].concat(['falsch','treffer','sieg','niederlage','patzer','kritisch','wuerfel','trank','au','ui_klick']));markPick()}
 function pick(sel,filter){return new Promise(r=>{B.picking={sel,filter,r};markPick()})}
 // Auswahl übersteht jedes Neuzeichnen: Markierung wird nach render erneut gesetzt, Klick über den Container
 function markPick(){const P=B&&B.picking;if(!P)return;$$(P.sel).forEach(e=>{const ok=P.filter(e);e.classList.toggle('pickable',ok);e.onclick=ok?()=>{const Q=B.picking;if(!Q)return;B.picking=null;$$(Q.sel).forEach(x=>{x.classList.remove('pickable');x.onclick=null});Q.r(e)}:null})}

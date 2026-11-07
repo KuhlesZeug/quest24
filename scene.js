@@ -62,7 +62,9 @@ async function choice(opts){hideBox();const c=$('#sc-choices');c.innerHTML='';c.
  return new Promise(r=>{opts.forEach((o,i)=>{if(o.need&&!o.need())return;const b=el('button','ch-btn',T(o.t));b.onclick=()=>{sfx('ui_klick',.7);c.classList.remove('on');c.innerHTML='';r(i)};c.appendChild(b)})})}
 
 // Einzelne Schritte ausführen
-async function run(steps,ctx){ctx=ctx||{};for(let i=0;i<steps.length;i++){const s=steps[i];if(SC.abort)return;if(SC.wgPrev&&s.s!=='WG'&&!s.note){if(s.bg){SC.wgPrev=null;$('#s-scene').classList.remove('real')}else wgBack()}SC.nextBg=!!(steps[i+1]&&steps[i+1].bg)||(i===steps.length-1);await step(s,ctx)}}
+async function run(steps,ctx){ctx=ctx||{};for(let i=0;i<steps.length;i++){const s=steps[i];if(SC.abort)return;if(SC.wgPrev&&s.s!=='WG'&&!s.note){if(s.bg){SC.wgPrev=null;$('#s-scene').classList.remove('real')}else wgBack()}SC.nextBg=!!(steps[i+1]&&steps[i+1].bg)||(i===steps.length-1);preStep(steps,i);await step(s,ctx)}}
+// Die nächsten Stimmen, Geräusche und Bilder schon laden, während die aktuelle Zeile läuft
+function preStep(steps,i){for(let j=i;j<Math.min(steps.length,i+4);j++){const n=steps[j];if(!n)continue;if(n.s&&n._vo&&n.s!=='HELD'&&!n.novo){const male=n.tm&&st.hero&&!st.hero.f;preVo(A+'vo/'+n._vo+(male?'m':'')+'.mp3')}if(n.sfx)preSfx([n.sfx]);if(n.bg&&j>i){const im=new Image();im.src=A+'img/'+n.bg+'.jpg'}}}
 // Meisterin Wendelgard: Schnitt aus der Geschichte an den echten Spieltisch
 const WGC=['wgc1','wgc2','wgc3','wgc4','wgc5','wgc6','wgc7','wgc8','wgc9','wgc10'];let wgI=0;
 function wgCut(img){const cur=$('#sc-bg .on');if(!SC.wgPrev)SC.wgPrev=cur?cur.dataset.src:null;img=img||WGC[(wgI++)%WGC.length];sfx('pergament',.5);setBg(A+'img/'+img+'.jpg',true);$('#s-scene').classList.add('real')}
@@ -77,7 +79,7 @@ async function step(s,ctx){
  if(s.sfx)sfx(s.sfx,s.v);
  if(s.wait)await sleep(s.wait);
  if(s.s){const male=s.tm&&st.hero&&!st.hero.f;const vo=s.s==='HELD'||s.novo?null:A+'vo/'+s._vo+(male?'m':'')+'.mp3';
-  if(s.note){sfx('rohrpost');await rohrpost();await sleep(900)}
+  if(s.note){sfx('rohrpost');await rohrpost()}
   if(s.s==='WG')wgCut(s.wg);
   await say(s.s,male?s.tm:s.t,vo,s.e)}
  if(s.choice){const i=await choice(s.choice);const o=s.choice[i];if(o.flag)flag(o.flag);if(o.go)await run(o.go,ctx)}
@@ -104,7 +106,7 @@ const flag=f=>{st.flags[f]=1;save()};
 const has=id=>st.inv.some(x=>x.id===id);
 
 // Rohrpost von Wendelgard: Zettel fällt ins Bild
-async function rohrpost(){const o=el('div','rohr-ov');const n=el('div','rohr');n.innerHTML='<div class="rp-glow"></div><img src="'+A+'ui/rohrpost.png" alt=""><div class="rp-ban">Feedback</div>';o.appendChild(n);$('#s-scene').appendChild(o);await sleep(800);setTimeout(()=>{o.classList.add('out');setTimeout(()=>o.remove(),600)},2700)}
+async function rohrpost(){const o=el('div','rohr-ov');const n=el('div','rohr');n.innerHTML='<div class="rp-glow"></div><img src="'+A+'ui/rohrpost.png" alt=""><div class="rp-ban">Feedback</div>';o.appendChild(n);$('#s-scene').appendChild(o);hideBox();await sleep(2300);o.classList.add('out');await sleep(550);o.remove()}
 
 // Probe: W20 plus Wert gegen Ziel
 const STATN={str:'Stärke',dex:'Geschick',wis:'Weisheit'};
