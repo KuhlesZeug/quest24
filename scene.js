@@ -103,4 +103,4 @@ async function probe(p){hideBox();const bonus=(st.hero[p.stat]||0)+(p.bonus?p.bo
 function itemBonus(p){let b=0;if(p.tag)st.inv.forEach(x=>{const I=ITEMS[x.id];if(I&&I.bonus&&I.bonus[p.tag])b+=I.bonus[p.tag]});return b}
 
 // Sprechzeilen fest durchnummerieren (auch in Verzweigungen), damit jede Zeile ihre Aufnahme hat
-function numberSteps(id,steps){let n=0;const walk=a=>{(a||[]).forEach(s=>{if(s.s)s._vo=id+'_'+String(++n).padStart(3,'0');['ok','fail','then','else'].forEach(k=>walk(s[k]));if(s.choice)s.choice.forEach(o=>walk(o.go));if(s.code){walk(s.code.wrongSteps)}})};walk(steps);return n}
+function numberSteps(id,steps){let n=0;const walk=a=>{(a||[]).forEach(s=>{if(s.s)s._vo=id+'_'+String(++n).padStart(3,'0');['ok','fail','then','else','wrong'].forEach(k=>walk(s[k]));if(s.choice)s.choice.forEach(o=>walk(o.go));if(s.code){walk(s.code.wrongSteps)}})};walk(steps);return n}

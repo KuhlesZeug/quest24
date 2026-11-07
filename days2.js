@@ -39,10 +39,13 @@ DAYS[8]={end:'Ein Irrlicht leuchtet jetzt im Glas. Es kichert manchmal.',steps:[
 
 DAYS[9]={end:'Heute zum Ausdrucken: Zirpias Gefährtenbogen.',steps:[
  {bg:'ort09',mus:'mine',atmo:'spinnennest',acc:['tropfen'],every:12},
- {fn:()=>playSong('zirpia_01',.9)},
+ {hide:1},{fn:async()=>{const p=playSong('zirpia_01',.9,16);for(const [img,ms] of [['f_zi3',3600],['f_zi1',3800],['f_zi4',3400],['f_zi2',3600]]){setBg(A+'img/'+img+'.jpg');await sleep(ms)}}},
+ {bg:'f_zi3'},
  {s:'SL',t:'Hörst du das? Irgendwer singt der Spinnenkönigin ein Liebeslied.'},
  {s:'SL',t:'Gewagt.'},
+ {bg:'f_zi1'},
  {s:'ZI',t:'Endlich! Publikum! Hallo! Ich bin Zirpia von Wiesengrund, die größte Bardin des Königreichs. Ich hänge hier nur kurz. Künstlerisch.'},
+ {bg:'f_zi2'},
  {s:'SPK',t:'Sie singt seit drei Tagen. Ich will sie nicht mal mehr essen. Ich will nur Ruhe.'},
  {s:'SL',t:'Würfelt Initiative!'},
  {fight:'spinne'},
