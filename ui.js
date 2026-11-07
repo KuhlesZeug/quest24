@@ -13,7 +13,12 @@ function renderHud(){const h=$('#hud');if(!h)return;const n=nights();
  $('#hb-inv').onclick=openInv;$('#hb-party').onclick=openParty;$('#hb-log').onclick=openLog;$('#hb-snd').onclick=()=>{setSound(!st.sound);renderHud()}}
 
 function goMap(){stopVo();SC.abort=0;show('#s-map');renderHud();renderMap();music(A+'mus/karte.mp3',.4);atmo(A+'atmo/bergwind.mp3',.35);accents(null)}
-function renderMap(){const m=$('#map-in');m.querySelectorAll('.wp,.token').forEach(e=>e.remove());const nd=nextDay();
+function renderMap(){const m=$('#map-in');m.querySelectorAll('.wp,.token,.trail').forEach(e=>e.remove());const nd=nextDay();
+ // Gezeichneter Weg: geschafft als feste Spur, kommend gestrichelt
+ const last=Object.keys(st.done).length?Math.max(...Object.keys(st.done).map(Number)):1;
+ const pts=d=>WP.slice(1,d+1).map(p=>(p[0]*23.52).toFixed(1)+','+(p[1]*17.6).toFixed(1)).join(' ');
+ const sv=document.createElementNS('http://www.w3.org/2000/svg','svg');sv.setAttribute('class','trail');sv.setAttribute('viewBox','0 0 2352 1760');sv.setAttribute('preserveAspectRatio','none');
+ sv.innerHTML='<polyline class="tr-all" points="'+pts(24)+'"/><polyline class="tr-done" points="'+pts(last)+'"/>';m.appendChild(sv);
  for(let d=1;d<=24;d++){const p=WP[d];const done=!!st.done[d],open=unlocked(d);
   const b=el('button','wp'+(done?' done':open?' open':' lock')+(d===nd&&open?' cur':''),'<img src="'+A+'ui/'+(done?'siegel':'marke')+'.png" alt=""><b>'+d+'</b>');
   b.style.left=p[0]+'%';b.style.top=p[1]+'%';b.onclick=()=>tapDay(d);m.appendChild(b)}
@@ -24,7 +29,7 @@ function renderMap(){const m=$('#map-in');m.querySelectorAll('.wp,.token').forEa
 // Mini Figur auf der Karte: steht, rennt von Punkt zu Punkt und bleibt stehen
 const RUNF={schurke_1:[1,3],schurke_2:[1,3]};
 // Steht neben dem Wegpunkt, auf der Seite weg vom nächsten Punkt, damit keine Zahl verdeckt wird
-function standBeside(tk,d){const n=WP[Math.min(24,d+1)],c=WP[d];const right=n&&n!==c?n[0]>=c[0]:true;tk.style.setProperty('--dx',(right?-34:34)+'px');tk.classList.toggle('left',!right)}
+function standBeside(tk,d){const n=WP[Math.min(24,d+1)],c=WP[d];const right=n&&n!==c?n[0]>=c[0]:true;tk.style.setProperty('--dx',(right?-48:48)+'px');tk.classList.toggle('left',!right)}
 function runImg(i){const h=st.hero;return h?A+'img/r_'+h.cls+'_'+h.look+'_'+i+'.png':A+'img/r_krieger_1_0.png'}
 async function runTo(d){const tk=$('.token');if(!tk)return;const m=$('#map-in'),sc=$('#map'),sp=tk.querySelector('.tk-sp');
  const x0=parseFloat(tk.style.left),y0=parseFloat(tk.style.top),x1=WP[d][0],y1=WP[d][1];
@@ -33,7 +38,7 @@ async function runTo(d){const tk=$('.token');if(!tk)return;const m=$('#map-in'),
  const h=st.hero,fr=(h&&RUNF[h.cls+'_'+h.look])||[1,2,3];let k=0;const iv=setInterval(()=>{sp.style.backgroundImage='url('+runImg(fr[k++%fr.length])+')'},115);
  tk.style.transition='left '+ms+'ms linear,top '+ms+'ms linear,transform .35s ease-out';requestAnimationFrame(()=>{tk.style.left=x1+'%';tk.style.top=y1+'%'});
  sc.scrollTo({left:Math.max(0,x1/100*W-sc.clientWidth/2),behavior:'smooth'});
- sfx('schritte',.6);await sleep(ms);clearInterval(iv);tk.classList.remove('run');standBeside(tk,d);sp.style.backgroundImage='url('+runImg(0)+')';await sleep(500)}
+ sfx('schritte',.6);const pl=$('.tr-done');if(pl){const seg=document.createElementNS('http://www.w3.org/2000/svg','line');seg.setAttribute('class','tr-run');seg.setAttribute('x1',x0*23.52);seg.setAttribute('y1',y0*17.6);seg.setAttribute('x2',x1*23.52);seg.setAttribute('y2',y1*17.6);seg.style.setProperty('--len',Math.hypot((x1-x0)*23.52,(y1-y0)*17.6));seg.style.animationDuration=ms+'ms';pl.parentNode.appendChild(seg)}await sleep(ms);clearInterval(iv);tk.classList.remove('run');standBeside(tk,d);sp.style.backgroundImage='url('+runImg(0)+')';await sleep(500)}
 function lockMsg(d){const b=berlin();return b.month===12?'Wegpunkt '+d+' öffnet sich am '+d+'. Dezember.':'Das Abenteuer beginnt am 1. Dezember.'}
 async function tapDay(d){sfx('ui_klick',.6);
  if(!unlocked(d)){await rollPercent({title:'Tageswurf',sub:'Noch nicht',locked:'Nachtigall: Geduld ist auch eine Tugend. Angeblich.'});return}

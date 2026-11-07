@@ -79,7 +79,7 @@ img{display:block;max-width:100%}
 .wp.lock{filter:grayscale(.85) brightness(.8);opacity:.75}
 .wp.cur{animation:pulse 1.4s ease-in-out infinite}
 @keyframes pulse{0%,100%{transform:translate(-50%,-50%) scale(1)}50%{transform:translate(-50%,-50%) scale(1.18)}}
-.token{position:absolute;width:72px;height:86px;transform:translate(calc(-50% + var(--dx,0px)),-88%);z-index:3;pointer-events:none;transition:none}
+.token{position:absolute;width:72px;height:86px;transform:translate(calc(-50% + var(--dx,0px)),-88%);z-index:6;pointer-events:none;transition:none}
 .token .tk-sp{position:absolute;inset:0;background-size:contain;background-repeat:no-repeat;background-position:center bottom;filter:drop-shadow(0 0 1.5px #fff8e0) drop-shadow(0 0 1.5px #fff8e0) drop-shadow(0 3px 3px rgba(0,0,0,.55));transform-origin:50% 100%;animation:tkidle 2.2s ease-in-out infinite}
 .token.left .tk-sp{transform:scaleX(-1)}
 .token .tk-sh{position:absolute;left:18%;right:18%;bottom:-4px;height:10px;border-radius:50%;background:radial-gradient(ellipse,rgba(40,25,10,.55),transparent 70%)}
@@ -446,7 +446,7 @@ img{display:block;max-width:100%}
 @keyframes drinhale{to{transform:scale(1.03,1.08) translateY(-2%)}}
 @keyframes drspit{0%{transform:scale(1.03,1.08) translateY(-2%)}30%{transform:scale(.97,.95) translate(-2%,1%)}100%{transform:none}}
 .fball{position:absolute;z-index:8;width:0;height:0;pointer-events:none}
-.fball img{position:absolute;left:0;top:0;max-width:none;width:min(130vw,700px);translate:-50% -50%;transform:scale(.5) rotate(-20deg);opacity:.9;transition:transform .9s cubic-bezier(.5,0,.8,.6),opacity .2s;filter:drop-shadow(0 0 30px #ff8a1a)}
+.fball img{position:absolute;left:0;top:0;max-width:none;width:min(130vw,700px);translate:-50% -50%;transform:scale(.06) rotate(-20deg);opacity:.95;transition:transform 1.05s cubic-bezier(.55,0,.85,.55),opacity .2s;filter:drop-shadow(0 0 30px #ff8a1a)}
 .fball.go img{transform:scale(5) rotate(30deg);opacity:1}
 .fball::after{content:"";position:fixed;inset:0;background:radial-gradient(circle,#fff7d6,#ffb13b 45%,#ff6a00);opacity:0;transition:opacity .25s .85s}
 .fball.go::after{opacity:1}
@@ -492,3 +492,20 @@ img{display:block;max-width:100%}
 @keyframes drglow{from{transform:scale(1.02)}to{transform:scale(1.16);filter:brightness(1.25)}}
 .drf.rush{animation:drrush .45s ease-in forwards}
 @keyframes drrush{from{transform:scale(1)}to{transform:scale(1.9);filter:brightness(1.4)}}
+/* Weg auf der Karte */
+.trail{position:absolute;inset:0;width:100%;height:100%;z-index:2;pointer-events:none;overflow:visible}
+.trail polyline{fill:none;stroke-linecap:round;stroke-linejoin:round}
+.tr-all{stroke:#fff6dc;stroke-width:12;stroke-dasharray:3 22;filter:drop-shadow(0 0 2px #3a2410) drop-shadow(0 0 1px #3a2410)}
+.tr-done{stroke:#c0391f;stroke-width:13;stroke-dasharray:26 14;filter:drop-shadow(0 2px 2px rgba(0,0,0,.45))}
+.tr-run{stroke:#c0391f;stroke-width:13;filter:drop-shadow(0 2px 2px rgba(0,0,0,.45));stroke-linecap:round;stroke-dasharray:var(--len) var(--len);stroke-dashoffset:var(--len);animation:trdraw linear forwards}
+@keyframes trdraw{to{stroke-dashoffset:0}}
+
+/* Drache auf dem Logo als Einzelbilder */
+.lg-ds{position:absolute;left:37.4%;top:51%;height:56%;width:auto;translate:-50% -96%;opacity:0;transition:opacity .25s;transform-origin:50% 100%}
+.lg-ds.on{opacity:1}
+.lg-ds.look{animation:dslook .35s ease-out}
+@keyframes dslook{0%{transform:rotate(-3deg)}60%{transform:rotate(2deg) scale(1.03)}100%{transform:none}}
+.lg-ds.breath{animation:dsbreath 1.1s ease-in forwards}
+@keyframes dsbreath{to{transform:scale(1.08,1.12) translateY(-2%)}}
+.lg-ds.spit{animation:dsspit .4s ease-out}
+@keyframes dsspit{0%{transform:scale(1.1) translate(2%,-2%)}40%{transform:scale(.96) translate(-2%,2%)}100%{transform:none}}

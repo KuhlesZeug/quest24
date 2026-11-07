@@ -38,17 +38,17 @@ async function titleReveal(f,stop){const w=t=>stop()?Promise.resolve():sleep(t);
  sfx('drache',.5);o.classList.add('s5');
  const t='Der Hort des Aschenkönigs',sb=o.querySelector('.ttl-sub');for(const c of t){if(stop())break;sb.innerHTML+=c===' '?' ':'<span>'+c+'</span>';await sleep(55)}
  await w(2400);
- // Nahaufnahme: der kleine Drache dreht den Kopf, holt Luft und spuckt Feuer auf uns zu
- const dv=el('div','drv');o.appendChild(dv);const fr=[1,2,3,5,6].map(i=>{const d=el('div','drf','');d.style.backgroundImage='url('+A+'img/f_dr'+i+'.jpg)';dv.appendChild(d);return d});
- const showF=i=>fr.forEach((d,k)=>d.classList.toggle('on',k===i));
- o.classList.add('zoomin');await w(450);dv.classList.add('on');showF(0);await w(900);
- showF(1);fr[1].classList.add('turn');sfx('drachenknurren',.6);await w(1000);
- showF(2);fr[2].classList.add('inhale');sfx('wind_boe',.7);await w(1100);
- showF(3);fr[3].classList.add('glow');sfx('feuer_entfacht',.7);await w(650);
- showF(4);fr[4].classList.add('rush');sfx('feuerball',1);await w(420);
- const fb=el('div','fball','<img src="'+A+'ui/feuerball.png" alt="">');const R=f.getBoundingClientRect();fb.style.left=(R.width/2)+'px';fb.style.top=(R.height/2)+'px';f.appendChild(fb);
+ // Totale: der kleine Drache auf dem Schild dreht den Kopf, holt Luft und spuckt Feuer zu uns herunter
+ const lg=o.querySelector('.lg'),dr=o.querySelector('.lg-dr');const ds=el('img','lg-ds');ds.src=A+'ui/dr_s_0.png';lg.appendChild(ds);
+ [1,2,3].forEach(i=>{const im=new Image();im.src=A+'ui/dr_s_'+i+'.png'});
+ dr.style.opacity=0;ds.classList.add('on');await w(500);
+ ds.src=A+'ui/dr_s_1.png';ds.className='lg-ds on look';sfx('drachenknurren',.6);await w(1000);
+ ds.src=A+'ui/dr_s_2.png';ds.className='lg-ds on breath';sfx('wind_boe',.7);await w(1150);
+ ds.src=A+'ui/dr_s_3.png';ds.className='lg-ds on spit';sfx('feuerball',1);sfx('feuer_entfacht',.8);
+ const r=ds.getBoundingClientRect(),R=f.getBoundingClientRect();
+ const fb=el('div','fball','<img src="'+A+'ui/feuerball.png" alt="">');fb.style.left=(r.left-R.left+r.width*.17)+'px';fb.style.top=(r.top-R.top+r.height*.8)+'px';f.appendChild(fb);
  requestAnimationFrame(()=>requestAnimationFrame(()=>fb.classList.add('go')));
- await w(1000);o.remove();music(A+'mus/intro.mp3',.45);fb.classList.add('gone');setTimeout(()=>fb.remove(),1300)}
+ await w(1150);o.remove();music(A+'mus/intro.mp3',.45);fb.classList.add('gone');setTimeout(()=>fb.remove(),1300)}
 
 // Lebendiger Himmel über den gemalten Bildern
 function skyFx(d,kind,o){const L=el('div','sky '+kind);d.appendChild(L);o=o||{};if(o.clip)L.style.clipPath='polygon('+o.clip+')';
