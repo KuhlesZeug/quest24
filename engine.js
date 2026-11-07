@@ -45,16 +45,16 @@ function makeLooper(busName){let cur=null;
   const old=cur;if(old){old.g.gain.setTargetAtTime(0,AC.currentTime,.7);setTimeout(()=>{try{old.s.stop()}catch(e){}},3500)}
   cur=null;if(!src)return;const b=await loadBuf(src);if(!b)return;const s=AC.createBufferSource();s.buffer=b;s.loop=true;const g=AC.createGain();g.gain.value=0;s.connect(g);g.connect(busName==='mus'?musBus:atmoBus);s.start();g.gain.setTargetAtTime(vol??.5,AC.currentTime,1.1);cur={src,s,g}}}
 const music=makeLooper('mus');
-const atmo=makeLooper('atmo');
+const atmo0=makeLooper('atmo');const ATMOV={bergwind:.45,aschenland:.42,sturm:.5};function atmo(src,vol){const k=src&&src.split('/').pop().replace('.mp3','');return atmo0(src,(vol??.6)*(ATMOV[k]||1))}
 let HUSH=0;let DUCKED=false;
 function duck(on){DUCKED=on;if(!musBus)return;musBus.gain.setTargetAtTime(HUSH?0:on?.22:.55,AC.currentTime,HUSH?.6:.25);atmoBus.gain.setTargetAtTime(HUSH?.12:on?.45:.7,AC.currentTime,.25)}
 // Lieder und Taktspiel: Hintergrundmusik ganz ausblenden
 function hush(on){HUSH=on?1:0;duck(DUCKED)}
 // Effekte: a und b Fassung abwechselnd, damit nichts mechanisch klingt
-const SFXV={};const SFXA={glocke_fern:'glocke',tuer_knarzt:'tavernentuer',holz_knarzt:'tavernentuer'};
+const SFXV={};const SFXG={wind_boe:.35,donner:.55};const SFXA={glocke_fern:'glocke',tuer_knarzt:'tavernentuer',holz_knarzt:'tavernentuer'};
 async function sfx(name,vol){if(!st.sound)return;ac();name=SFXA[name]||name;const v=SFXV[name]=(SFXV[name]||0)+1;const ab=v%2?'a':'b';
  let b=await loadBuf(A+'sfx/'+name+'_'+ab+'.mp3');if(!b)b=await loadBuf(A+'sfx/'+name+'.mp3');if(!b)return;
- const s=AC.createBufferSource();s.buffer=b;s.playbackRate.value=.97+Math.random()*.06;const g=AC.createGain();g.gain.value=vol??1;s.connect(g);g.connect(sfxBus);s.start();const h={s,g};SFXON.add(h);s.onended=()=>SFXON.delete(h);return h}
+ const s=AC.createBufferSource();s.buffer=b;s.playbackRate.value=.97+Math.random()*.06;const g=AC.createGain();g.gain.value=(vol??1)*(SFXG[name]||1);s.connect(g);g.connect(sfxBus);s.start();const h={s,g};SFXON.add(h);s.onended=()=>SFXON.delete(h);return h}
 // Laufende Geräusche sanft beenden, wenn die Szene wechselt
 const SFXON=new Set();function stopSfx(t){if(!AC)return;SFXON.forEach(h=>{try{h.g.gain.setTargetAtTime(0,AC.currentTime,(t||.25)/3);h.s.stop(AC.currentTime+(t||.25))}catch(e){}});SFXON.clear()}
 // Zufällige Akzente zur Atmo (Eule, Knistern, Tropfen)
@@ -67,6 +67,10 @@ let curVo=null;
 let voBus=null;
 function voOut(){ac();if(!voBus){voBus=AC.createGain();voBus.gain.value=1;voBus.connect(master)}return voBus}
 function loadVo(src){return fetch(src).then(r=>{if(!r.ok)throw 0;return r.arrayBuffer()}).then(a=>new Promise((ok,no)=>ac().decodeAudioData(a,ok,no))).catch(()=>null)}
+// Aufgaben und Tipps vorlesen: Datei über einen Hash des bereinigten Textes (a/vo/x/x_<fnv>.mp3)
+function hintNorm(s){return String(s||'').replace(/<br\s*\/?>/g,' ').replace(/<[^>]+>/g,'').replace(/\s+/g,' ').trim()}
+function fnv32(s){let h=0x811c9dc5;for(let i=0;i<s.length;i++){h^=s.charCodeAt(i);h=Math.imul(h,0x01000193)>>>0}return ('0000000'+h.toString(16)).slice(-8)}
+function readAloud(t){const n=hintNorm(t);if(!n||n.includes('{'))return null;return playVo(A+'vo/x/x_'+fnv32(n)+'.mp3')}
 function stopVo(){if(curVo){const a=curVo;curVo=null;a.stop();const u=a._ui;u&&u(false);duck(false)}}
 function playVo(src,ui){stopVo();if(!src||!st.sound)return null;ac();const a={ended:false,_err:0,_ui:ui,s:null};
  a.stop=()=>{a.ended=true;clearTimeout(a._t);if(a.s){try{a.s.stop()}catch(e){}}};

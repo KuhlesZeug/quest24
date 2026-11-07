@@ -71,6 +71,7 @@ const FOES={
  spinne:{t:'Die Spinnenkönigin',bg:'arena_spinne',mus:'boss',foes:[{n:'Spinnenkönigin',img:'g_spinne',hp:24,el:'natur',def:11,boss:1,acts:[{n:'Giftbiss',min:3,max:4},{n:'Netzwurf',web:1}]},{n:'Spinnling',img:'g_spinnling',hp:5,el:'natur',def:9,acts:[{n:'Zwicken',min:1,max:2}]},{n:'Spinnling',img:'g_spinnling',hp:5,el:'natur',def:9,acts:[{n:'Zwicken',min:1,max:2}]}]},
  krok:{t:'Der Krokodilkönig',bg:'arena_krok',mus:'boss',foes:[{n:'Krokodilkönig',img:'g_krok',hp:30,el:'erde',def:12,boss:1,acts:[{n:'Schnappen',min:4,max:5},{n:'Schlammrolle',all:2,warn:1}]}]},
  eis:{t:'Der Eiswächter',bg:'arena_eis',mus:'boss',foes:[{n:'Eiswächter',img:'g_eis',hp:36,el:'eis',def:13,boss:1,acts:[{n:'Eiszapfen',min:5,max:5},{n:'Frosthauch',all:2,warn:1,cold:1}]}]},
+ drache:{t:'Vharkon, der Aschenkönig',bg:'arena_drache',mus:'boss',phases:[.8,.6,.4,.2,0],foes:[{n:'Vharkon',img:'g_drache',hp:60,el:'feuer',def:12,boss:1,acts:[{n:'Klauenhieb',min:3,max:5},{n:'Kalter Ascheatem',all:2,warn:1,cold:1},{n:'Ascheregen',blind:2,warn:1}]}]},
  asche:{t:'Die Aschenwächter',bg:'arena_asche',mus:'boss',foes:[{n:'Aschenwächter',img:'g_asche',hp:22,el:'feuer',def:13,acts:[{n:'Aschenschlag',min:4,max:4},{n:'Aschewolke',blind:2,warn:1}]},{n:'Aschenwächter',img:'g_asche',hp:22,el:'feuer',def:13,acts:[{n:'Aschenschlag',min:4,max:4},{n:'Aschewolke',blind:2,warn:1}]}]}
 };
 
@@ -96,7 +97,8 @@ async function fight(key){window.FIGHTKEY=key;const F=FOES[key];let tries=0;
   const again=await choice([{t:'Noch einmal antreten'+(tries>=1?' (mit Tipp)':'')}]);}}
 
 async function battle(F,key,tries){const ov=$('#battle');ov.innerHTML='';ov.classList.add('on');music(A+'mus/'+(F.mus||'kampf')+'.mp3',.5);
- B={F,key,round:0,foes:F.foes.map((f,i)=>({...f,i,max:f.hp,skip:0,minus:0,poison:0,intent:null})),party:partyUnits(),used:{},buff:{},first:true,log:[]};
+ B={F,key,phI:F.phases?(st.flags.dph||0):0,round:0,foes:F.foes.map((f,i)=>({...f,i,max:f.hp,skip:0,minus:0,poison:0,intent:null})),party:partyUnits(),used:{},buff:{},first:true,log:[]};
+ if(F.phases&&B.phI){const f=B.foes.find(x=>x.boss);if(f)f.hp=Math.max(1,Math.ceil(F.phases[B.phI-1]*f.max)-2)}
  if(st.hero.skills.includes('waldsegen'))B.party.forEach(p=>p.hp=Math.min(p.max,p.hp+3));
  ov.innerHTML='<div class="bt-bg" style="background-image:url('+A+'img/'+F.bg+'.jpg)"></div><div class="bt-top"><div class="bt-t">'+esc(F.t)+'</div><div class="bt-r" id="bt-r"></div></div><div class="bt-foes" id="bt-foes"></div><div class="bt-log" id="bt-log"></div><div class="bt-party" id="bt-party"></div><div class="bt-act" id="bt-act"></div>';
  preloadSprites();sfx('schwert_ziehen');if(tries&&TIPS[key])blog('Tipp: '+TIPS[key],1);
@@ -104,7 +106,7 @@ async function battle(F,key,tries){const ov=$('#battle');ov.innerHTML='';ov.clas
  while(true){B.round++;$('#bt-r').textContent='Runde '+B.round;planFoes();render();
   for(const u of B.party){if(u.hp<=0)continue;if(u.web){u.web=0;blog(u.n+' hängt im Netz fest und setzt aus.');render();await sleep(900);continue}
    if(u.pause){u.pause=0;blog(u.n+' holt Luft.');continue}
-   await partyTurn(u);render();if(B.foes.every(f=>f.hp<=0))return win();}
+   await partyTurn(u);render();await phaseCheck();if(B.foes.every(f=>f.hp<=0))return win();}
   for(const f of B.foes){if(f.hp<=0)continue;if(f.poison>0){f.poison--;hurtFoe(f,2,null,'Gift');if(f.hp<=0)continue}
    if(f.skip){f.skip--;blog(f.n+' setzt aus.');render();await sleep(700);continue}
    await foeTurn(f);render();if(B.party[0].hp<=0&&B.party.every(p=>p.hp<=0))return lose();if(B.party.every(p=>p.hp<=0))return lose()}
@@ -117,8 +119,9 @@ function blog(t,tip){const l=$('#bt-log');if(!l)return;const p=el('div',tip?'tip
 function planFoes(){B.foes.forEach(f=>{if(f.hp<=0)return;if(f.warned){f.intent=f.warned;f.warned=null;return}
  const a=f.acts[(B.round+f.i)%f.acts.length];if(a.warn&&!f.intent?.warn){f.intent={n:'holt aus',pre:a};f.warned=a;return}f.intent=a})}
 function render(){const fo=$('#bt-foes');fo.innerHTML='';fo.classList.toggle('many',B.foes.length>=3);B.foes.forEach(f=>{const d=el('div','bt-f'+(f.hp<=0?' down':'')+(f.boss?' boss':''),'<div class="bt-fi" style="background-image:url('+A+'img/'+f.img+'_'+(f.hp<=0?3:(f.fr||0))+'.png)"></div><div class="bt-hp"><i style="width:'+Math.max(0,f.hp/f.max*100)+'%"></i></div><div class="bt-fn">'+esc(f.n)+' <span class="el el-'+f.el+'"></span></div>'+(f.hp>0&&f.intent?'<div class="bt-int">'+esc(f.intent.pre?f.intent.pre.n+' kommt':f.intent.n)+'</div>':''));d.dataset.i=f.i;fo.appendChild(d)});
- const pa=$('#bt-party');pa.innerHTML='';const vw=Math.min(innerWidth,480);pa.style.setProperty('--pw',Math.round(Math.min(150,innerHeight*.17/1.35*1.35,(vw-16)/(B.party.length+(B.party.some(p=>p.id==='gr')?.25:0))*(B.party.length>2?1.18:1)-6))+'px');B.party.forEach((u,k)=>{const pose=u.hp<=0?3:(u.pose||0);const d=el('div','bt-u'+(u.id==='gr'?' big':'')+(u.id==='hu'||u.id==='zi'?' small':'')+(u.hp<=0?' down':'')+(B.cur===u?' cur':'')+(pose===1?' atk':'')+(pose===2?' hurt':''),'<div class="bt-sp" style="background-image:url('+spriteSrc(u,pose)+')"></div><div class="bt-hp p"><i style="width:'+Math.max(0,u.hp/u.max*100)+'%"></i></div><div class="bt-un"><span class="bt-mini" style="background-image:url('+(u.hero?heroImg():A+'img/p_'+u.id+'_'+(u.hp<=0?8:(u.face??0))+'.jpg')+')"></span>'+u.hp+'/'+u.max+'</div>');d.dataset.k=k;pa.appendChild(d)});markPick()}
+ fitFoes();const pa=$('#bt-party');pa.innerHTML='';const vw=Math.min(innerWidth,480);pa.style.setProperty('--pw',Math.round(Math.min(150,innerHeight*.17/1.35*1.35,(vw-16)/(B.party.length+(B.party.some(p=>p.id==='gr')?.25:0))*(B.party.length>2?1.18:1)-6))+'px');B.party.forEach((u,k)=>{const pose=u.hp<=0?3:(u.pose||0);const d=el('div','bt-u'+(u.id==='gr'?' big':'')+(u.id==='hu'||u.id==='zi'?' small':'')+(u.hp<=0?' down':'')+(B.cur===u?' cur':'')+(pose===1?' atk':'')+(pose===2?' hurt':''),'<div class="bt-sp" style="background-image:url('+spriteSrc(u,pose)+')"></div><div class="bt-hp p"><i style="width:'+Math.max(0,u.hp/u.max*100)+'%"></i></div><div class="bt-un"><span class="bt-mini" style="background-image:url('+(u.hero?heroImg():A+'img/p_'+u.id+'_'+(u.hp<=0?8:(u.face??0))+'.jpg')+')"></span>'+u.hp+'/'+u.max+'</div>');d.dataset.k=k;pa.appendChild(d)});markPick()}
 // Rückansicht im Kampf: 0 bereit, 1 Angriff, 2 getroffen, 3 besiegt
+function fitFoes(){const fo=$('#bt-foes');if(!fo)return;const n=Math.max(1,B.foes.length);const h=fo.clientHeight,w=fo.clientWidth;if(!h)return;const byH=h-86,byW=(w-12)/n*.92;fo.style.setProperty('--fsz',Math.round(Math.max(80,Math.min(byH,byW,300)))+'px')}
 function spriteSrc(u,p){return A+'img/b_'+(u.hero?st.hero.cls+'_'+st.hero.look:u.id)+'_'+p+'.png'}
 function poseFor(u,p,ms){u.pose=p;clearTimeout(u._pt);if(B)render();u._pt=setTimeout(()=>{u.pose=0;if(B)render()},ms)}
 function preloadSprites(){B.party.forEach(u=>{for(let p=0;p<4;p++){const i=new Image();i.src=spriteSrc(u,p)}});markPick()}
@@ -126,13 +129,20 @@ function pick(sel,filter){return new Promise(r=>{B.picking={sel,filter,r};markPi
 // Auswahl übersteht jedes Neuzeichnen: Markierung wird nach render erneut gesetzt, Klick über den Container
 function markPick(){const P=B&&B.picking;if(!P)return;$$(P.sel).forEach(e=>{const ok=P.filter(e);e.classList.toggle('pickable',ok);e.onclick=ok?()=>{const Q=B.picking;if(!Q)return;B.picking=null;$$(Q.sel).forEach(x=>{x.classList.remove('pickable');x.onclick=null});Q.r(e)}:null})}
 async function partyTurn(u){B.cur=u;render();const act=$('#bt-act');
- const opts=[{k:'atk',t:u.hit}];u.skills.forEach(s=>{const S=SK[s];if(!S||S.passive)return;if(S.once&&B.used[u.id+s])return;opts.push({k:'sk',s,t:S.n,d:S.d})});
- const pots=st.inv.filter(x=>ITEMS[x.id]&&ITEMS[x.id].use);if(pots.length)opts.push({k:'item',t:'Gegenstand'});
- act.innerHTML='<div class="bt-who">'+esc(u.n)+' ist dran</div>';const row=el('div','bt-btns');act.appendChild(row);
- const ch=await new Promise(r=>opts.forEach(o=>{const b=el('button','bt-b'+(o.k==='sk'?' sk':''),'<b>'+esc(o.t)+'</b>'+(o.d?'<span>'+esc(o.d)+'</span>':''));b.onclick=()=>{sfx('ui_klick',.6);r(o)};row.appendChild(b)}));
- act.innerHTML='<div class="bt-who">'+esc(ch.k==='atk'?'Wähle ein Ziel':ch.t)+'</div>';
+ const sks=[];u.skills.forEach(s=>{const S=SK[s];if(!S||S.passive)return;if(S.once&&B.used[u.id+s])return;sks.push({k:'sk',s,t:S.n,d:S.d})});
+ const pots=st.inv.filter(x=>ITEMS[x.id]&&ITEMS[x.id].use);
+ const choose=(title,opts,cls,back)=>new Promise(r=>{act.className='bt-act'+(cls?' '+cls:'');act.innerHTML='<div class="bt-who">'+esc(title)+'</div>';const row=el('div','bt-btns'+(cls?' list':''));act.appendChild(row);
+  opts.forEach(o=>{const b=el('button','bt-b'+(o.k==='sk'?' sk':'')+(o.it?' it':''),(o.it?'<img src="'+A+'items/'+o.it.id+'.png" alt="">':'')+'<b>'+esc(o.t)+'</b>'+(o.d?'<span>'+esc(o.d)+'</span>':''));b.onclick=()=>{sfx('ui_klick',.6);r(o)};row.appendChild(b)});
+  if(back){const b=el('button','bt-back','Zurück');b.onclick=()=>{sfx('ui_klick',.5);r(null)};act.appendChild(b)}});
+ let ch=null;
+ while(!ch){const main=[{k:'atk',t:u.hit}];if(sks.length)main.push({k:'skm',t:'Fähigkeiten',d:sks.length+' zur Auswahl'});if(pots.length)main.push({k:'itm',t:'Gegenstand',d:pots.length+' im Gepäck'});
+  const m=await choose(u.n+' ist dran',main);
+  if(m.k==='atk'){ch=m;break}
+  if(m.k==='skm'){const s=await choose('Fähigkeit wählen',sks,'sheet',1);if(s)ch=s;continue}
+  if(m.k==='itm'){const it=await choose('Gegenstand wählen',pots.map(x=>({k:'item',it:x,t:ITEMS[x.id].n,d:ITEMS[x.id].d})),'sheet',1);if(it)ch=it;continue}}
+ act.className='bt-act';act.innerHTML='<div class="bt-who">'+esc(ch.k==='atk'?'Wähle ein Ziel':ch.t)+'</div>';
  if(ch.k==='atk'){const f=await pickFoe();await attack(u,f,{});}
- else if(ch.k==='item'){await useItemBattle(u)}
+ else if(ch.k==='item'){await useItemBattle(u,ch.it)}
  else await useSkill(u,ch.s);
  act.innerHTML='';B.cur=null}
 async function pickFoe(){const alive=B.foes.filter(f=>f.hp>0);if(alive.length===1)return alive[0];const e=await pick('#bt-foes .bt-f',e=>B.foes[+e.dataset.i].hp>0);return B.foes[+e.dataset.i]}
@@ -164,7 +174,7 @@ async function shoot(u,f,kind,miss){const ov=$('#battle');const ue=$('#bt-party 
  p.remove();if(!miss){const fxk=kind==='feuer'?'hit':kind==='eis'||kind==='blitz'||kind==='stern'||kind==='noten'||kind==='natur'?'magic':kind==='bombe'?'smoke':'hit';fx(fxk,fe)}}
 // Mehrere Ziele auf einmal
 async function shootAll(u,kind){const al=B.foes.filter(f=>f.hp>0);await Promise.all(al.map((f,i)=>sleep(i*120).then(()=>shoot(u,f,kind,false))))}
-function hurtFoe(f,d,u,why,m){f.hp=Math.max(0,f.hp-d);sfx('treffer',.8);blog((u?u.n:why)+' trifft '+f.n+': '+d+' Schaden'+(m>1?', super effektiv':m<1?', nicht sehr wirksam':''));render();
+function hurtFoe(f,d,u,why,m){f.hp=Math.max(0,f.hp-d);if(B&&B.F.phases&&f.boss){const th=B.F.phases[B.phI];if(th!==undefined&&th>0)f.hp=Math.max(f.hp,Math.ceil(th*f.max))}sfx('treffer',.8);blog((u?u.n:why)+' trifft '+f.n+': '+d+' Schaden'+(m>1?', super effektiv':m<1?', nicht sehr wirksam':''));render();
  f.fr=2;setTimeout(()=>{f.fr=0;if(B)render()},450);render();const e=$('#bt-foes .bt-f[data-i="'+f.i+'"]');if(e){fx('hit',e.querySelector('.bt-fi'));e.classList.add('hit');const n=el('div','dmg',''+d);e.appendChild(n);setTimeout(()=>e.classList.remove('hit'),400)}if(f.hp<=0)blog(f.n+' ist besiegt.')}
 async function foeTurn(f){const a=f.intent;if(!a||a.pre){blog(f.n+' holt aus. Achtung, nächste Runde kommt '+a.pre.n+'.');await sleep(800);return}
  const alive=B.party.filter(p=>p.hp>0&&!p.hidden);if(!alive.length)return;
@@ -224,9 +234,7 @@ async function useSkill(u,s){const S=SK[s];if(S.once)B.used[u.id+s]=1;sfx('zaube
  }
  render();await sleep(500)}
 function pickElem(){return new Promise(r=>{const act=$('#bt-act');const row=el('div','bt-btns el-pick');act.appendChild(row);['feuer','natur','erde','blitz','eis'].forEach(e=>{const b=el('button','bt-b','<span class="el el-'+e+'"></span><b>'+ELEM[e]+'</b>');b.onclick=()=>{row.remove();r(e)};row.appendChild(b)})})}
-async function useItemBattle(u){const pots=st.inv.filter(x=>ITEMS[x.id]&&ITEMS[x.id].use);const act=$('#bt-act');const row=el('div','bt-btns its');act.appendChild(row);
- const it=await new Promise(r=>pots.forEach(x=>{const I=ITEMS[x.id];const b=el('button','bt-b it','<img src="'+A+'items/'+x.id+'.png" alt=""><b>'+esc(I.n)+'</b><span>'+esc(I.d)+'</span>');b.onclick=()=>r(x);row.appendChild(b)}));
- row.remove();const I=ITEMS[it.id];const U=I.use;
+async function useItemBattle(u,it){const I=ITEMS[it.id];const U=I.use;
  if(U.heal){const a=U.all?null:await pickAlly();(U.all?B.party.filter(p=>p.hp>0):[a]).forEach(p=>{p.hp=Math.min(p.max,p.hp+U.heal);fx('heal',$('#bt-party .bt-u[data-k="'+B.party.indexOf(p)+'"]'),110)});sfx('trank')}
  if(U.next)(U.all?B.party:[u]).forEach(p=>p.next=(p.next||0)+U.next);
  if(U.blind){const f=await pickFoe();f.minus=2}
@@ -237,6 +245,10 @@ const FUMBLE={ratten:'Du rutschst auf einem Käse aus. Es ist immer ein Käse.',
 let effSaid={};
 function superEff(u,f){if(effSaid[B.key])return;effSaid[B.key]=1;blog(ELEM[u.el||'feuer']+' gegen '+ELEM[f.el]+': super effektiv!',1)}
 function critLine(){blog('Natürliche Zwanzig! Der Spielleiter muss sich kurz setzen.',1)}
+async function phaseCheck(){const F=B&&B.F;if(!F||!F.phases)return;const f=B.foes.find(x=>x.boss);if(!f)return;
+ while(B.phI<F.phases.length&&f.hp<=Math.ceil(F.phases[B.phI]*f.max)){const i=B.phI;const ov=$('#battle');ov.classList.remove('on');ov.style.visibility='hidden';
+  if(window.PHASE_RUN)await window.PHASE_RUN(i);B.phI++;st.flags.dph=B.phI<F.phases.length?B.phI:0;save();ov.style.visibility='';ov.classList.add('on');music(A+'mus/boss.mp3',.5);
+  const nt=F.phases[B.phI];f.hp=nt===undefined?0:Math.max(0,Math.min(f.hp,Math.ceil(F.phases[i]*f.max))-2);render();if(nt!==undefined)blog('Phase '+(B.phI+1)+' von '+F.phases.length+': '+PHASEN[B.phI][0],1)}}
 async function win(){render();sfx('sieg');await sleep(900);$('#battle').classList.remove('on');B=null;effSaid={};return true}
 async function lose(){blog('Die Gruppe ist am Boden.');sfx('niederlage');await sleep(1600);$('#battle').classList.remove('on');B=null;return false}
 async function tutorial(){st.flags.tut_done=1;save();const t=el('div','bt-tut','<h3>So funktioniert der Kampf</h3><p>Du bist dran: Tippe auf einen Angriff und dann auf einen Gegner.</p><p>Du würfelst mit dem W20 und zählst deinen Wert dazu. Erreichst du das Ziel, triffst du. Der Schaden wird mit dem W10 bestimmt.</p><p>Über jedem Gegner steht, was er als Nächstes vorhat. Eine 20 ist ein kritischer Treffer, eine 1 ein Patzer.</p><button class="pbtn">Verstanden</button>');$('#battle').appendChild(t);await new Promise(r=>t.querySelector('button').onclick=r);t.remove()}

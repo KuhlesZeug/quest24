@@ -83,8 +83,8 @@ async function step(s,ctx){
  if(s.choice){const i=await choice(s.choice);const o=s.choice[i];if(o.flag)flag(o.flag);if(o.go)await run(o.go,ctx)}
  if(s.probe){const r=await probe(s.probe);await run(r?s.ok||[]:s.fail||[],ctx)}
  if(s.code){const r=await codeInput(s.code);await run(r?s.ok||[]:s.fail||[],ctx)}
- if(s.fight){hideBox();const r=await fight(s.fight);if(!r)SC.abort=1;else{$('#sc-bg').innerHTML=''}}
- if(s.game){hideBox();await GAMES[s.game](s)}
+ if(s.fight){hideBox();window.PHASE_RUN=s.phases?async i=>{const st0=SC.wgPrev;await run(s.phases[i]||[]);hideBox()}:null;const r=await fight(s.fight);window.PHASE_RUN=null;if(!r)SC.abort=1;else{$('#sc-bg').innerHTML=''}}
+ if(s.game){hideBox();window.GAMEKEY=s.game;await GAMES[s.game](s);window.GAMEKEY=null}
  if(s.item){hideBox();await gainItem(s.item,s.n)}
  if(s.drop)dropItem(s.drop);
  if(s.gold){addGold(s.gold)}
@@ -93,7 +93,7 @@ async function step(s,ctx){
  if(s.learn){hideBox();await learnSkill(s.learn)}
  if(s.levelup){hideBox();await levelUp(s.levelup)}
  if(s.loot){hideBox();await lootRoll()}
- if(s.film){hideBox();await playFilm(s.film)}
+ if(s.film){hideBox();await playFilm(s.film);if(!SC.abort)show('#s-scene')}
  if(s.song){hideBox();await songShow(s.song,s.imgs||[],Object.assign({},s,{keep:s.keep||SC.nextBg}))}
  if(s.flag)flag(s.flag);
  if(s.if){const t=typeof s.if==='function'?s.if():st.flags[s.if];await run(t?s.then||[]:s.else||[],ctx)}
@@ -104,7 +104,7 @@ const flag=f=>{st.flags[f]=1;save()};
 const has=id=>st.inv.some(x=>x.id===id);
 
 // Rohrpost von Wendelgard: Zettel fällt ins Bild
-async function rohrpost(){const n=el('div','rohr');n.innerHTML='<img src="'+A+'ui/rohrpost.png" alt=""><span class="rp-tag">Feedback</span>';$('#s-scene').appendChild(n);await sleep(700);setTimeout(()=>{n.classList.add('out');setTimeout(()=>n.remove(),600)},2600)}
+async function rohrpost(){const o=el('div','rohr-ov');const n=el('div','rohr');n.innerHTML='<div class="rp-glow"></div><img src="'+A+'ui/rohrpost.png" alt=""><div class="rp-ban">Feedback</div>';o.appendChild(n);$('#s-scene').appendChild(o);await sleep(800);setTimeout(()=>{o.classList.add('out');setTimeout(()=>o.remove(),600)},2700)}
 
 // Probe: W20 plus Wert gegen Ziel
 const STATN={str:'Stärke',dex:'Geschick',wis:'Weisheit'};
@@ -114,7 +114,7 @@ async function probe(p){hideBox();const bonus=(st.hero[p.stat]||0)+(p.bonus?p.bo
 function itemBonus(p){let b=0;if(p.tag)st.inv.forEach(x=>{const I=ITEMS[x.id];if(I&&I.bonus&&I.bonus[p.tag])b+=I.bonus[p.tag]});return b}
 
 // Sprechzeilen fest durchnummerieren (auch in Verzweigungen), damit jede Zeile ihre Aufnahme hat
-function numberSteps(id,steps){let n=0;const walk=a=>{(a||[]).forEach(s=>{if(s.s)s._vo=id+'_'+String(++n).padStart(3,'0');['ok','fail','then','else','wrong'].forEach(k=>walk(s[k]));if(s.choice)s.choice.forEach(o=>walk(o.go));if(s.code){walk(s.code.wrongSteps)}})};walk(steps);return n}
+function numberSteps(id,steps){let n=0;const walk=a=>{(a||[]).forEach(s=>{if(s.s)s._vo=id+'_'+String(++n).padStart(3,'0');['ok','fail','then','else','wrong'].forEach(k=>walk(s[k]));if(s.choice)s.choice.forEach(o=>walk(o.go));if(s.code){walk(s.code.wrongSteps)}if(s.phases)s.phases.forEach(walk);})};walk(steps);return n}
 
 // Zirpias Auftritt: Lied läuft, Bilder der Vorstellung wechseln, Tippen beendet
 async function songShow(name,imgs,o){const cur=$('#sc-bg .on');const prev=cur?cur.dataset.src:null;let skip=false;

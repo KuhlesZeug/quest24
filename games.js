@@ -1,7 +1,9 @@
 // Minispiele. Alle Grafiken gemalt (a/ui), Lichtstrahlen und Bewegung im Code.
 const GAMES={};
-function gameShell(title,help){const o=$('#card');o.innerHTML='<div class="c-card game"><div class="cc-k">Minispiel</div><h3>'+title+'</h3><p class="g-help">'+help+'</p><div class="g-area"></div><div class="g-foot"></div></div>';o.classList.add('on');return o.querySelector('.g-area')}
-function gameEnd(){$('#card').classList.remove('on')}
+// Eigene Kulisse je Minispiel: passend zum Ort, abgedunkelt und weichgezeichnet, damit die Karte gut lesbar bleibt
+const GBG={spiegel:'ort05',irrlicht:'ort08',takt:'ort10',sumpf:'ort11',trank:'hx1',karten:'ort14',schloss:'ort16',laden:'f_markt',plan:'ort23',schatz:'ort01',becher:'f_wirt1'};
+function gameShell(title,help){const cd=$('#card');const k=window.GAMEKEY;cd.classList.toggle('gbg',!!(k&&GBG[k]));if(k&&GBG[k])cd.style.setProperty('--gbg','url('+A+'img/'+GBG[k]+'.jpg)');if(!/Reim/.test(help))setTimeout(()=>readAloud(help),350);const o=$('#card');o.innerHTML='<div class="c-card game"><div class="cc-k">Minispiel</div><h3>'+title+'</h3><p class="g-help">'+help+'</p><div class="g-area"></div><div class="g-foot"></div></div>';o.classList.add('on');return o.querySelector('.g-area')}
+function gameEnd(){const cd=$('#card');cd.classList.remove('on');setTimeout(()=>{if(!cd.classList.contains('on'))cd.classList.remove('gbg')},400)}
 
 // Tag 4: Licht in den Stollen. Spiegel drehen, bis das Licht in die Kammer fällt.
 GAMES.spiegel=()=>new Promise(done=>{
@@ -99,11 +101,11 @@ GAMES.sumpf=()=>new Promise(done=>{
 // Tag 12: Trank brauen. Zutaten in der richtigen Reihenfolge in den Kessel.
 GAMES.trank=()=>new Promise(done=>{
  const Z=[['schleim','Schneckenschleim'],['feder','Eulenfeder'],['frost','Frostbeere'],['glut','Glutpilz']];const SOL=['schleim','feder','frost','glut'];
- const area=gameShell('Trank brauen','Holundas Reim:<br><i>Der Glutpilz kommt direkt nach der Frostbeere.<br>Die Eulenfeder kommt nicht zuerst und nicht zuletzt.<br>Der Schneckenschleim kommt irgendwann vor der Frostbeere.</i>');
+ const area=gameShell('Trank brauen','Holundas Reim:<br><i>Die Frostbeere, kalt wie Eis,<br>gleich danach der Glutpilz, heiß.<br>Die Eulenfeder, leicht und sacht,<br>wird nicht zuerst, nicht zuletzt gebracht.<br>Der Schneckenschleim, so zäh und alt,<br>muss vor die Beere, sonst knallt\'s halt.</i>');
  area.innerHTML='<div class="tr-kessel"><img src="'+A+'ui/kessel.png" alt=""><div class="tr-in"></div></div><div class="tr-row"></div><div class="hints tr-h"></div>';
  const row=area.querySelector('.tr-row'),inn=area.querySelector('.tr-in');let got=[];
  const tips=['Frostbeere und Glutpilz gehören zusammen. Wo im Kessel kann dieses Paar stehen?','Vor der Frostbeere muss noch Platz für den Schneckenschleim sein.','Frostbeere und Glutpilz kommen ganz zum Schluss: Schneckenschleim, Eulenfeder, Frostbeere, Glutpilz.'];let nt=0;
- const hb=area.querySelector('.tr-h');const drawH=()=>{hb.innerHTML=tips.map((t,i)=>'<button class="hint'+(i<nt?' open':'')+'"><span>'+(i===2?'Lösung':'Tipp '+(i+1))+'</span>'+(i<nt?t:i===nt?'Antippen zum Aufdecken':'')+'</button>').join('');[...hb.children].forEach((b,i)=>b.onclick=()=>{if(i===nt){nt++;drawH()}})};drawH();
+ const hb=area.querySelector('.tr-h');const drawH=()=>{hb.innerHTML=tips.map((t,i)=>'<button class="hint'+(i<nt?' open':'')+'"><span>'+(i===2?'Lösung':'Tipp '+(i+1))+'</span>'+(i<nt?t:i===nt?'Antippen zum Aufdecken':'')+'</button>').join('');[...hb.children].forEach((b,i)=>b.onclick=()=>{if(i===nt){nt++;drawH();readAloud(tips[i])}})};drawH();
  const draw=()=>{row.innerHTML='';Z.forEach(([k,n])=>{if(got.includes(k))return;const b=el('button','tr-z','<img src="'+A+'ui/z_'+k+'.png" alt=""><span>'+n+'</span>');b.onclick=()=>add(k);row.appendChild(b)});inn.innerHTML=got.map((k,i)=>'<span>'+(i+1)+'. '+Z.find(z=>z[0]===k)[1]+'</span>').join('')};
  const add=async k=>{got.push(k);sfx('platsch',.4);draw();if(got.length===4){if(got.join()===SOL.join()){sfx('zauber');await sleep(900);gameEnd();done()}else{sfx('puff');await sleep(500);gameEnd();await say('HEX','Das wächst raus. Meistens.',A+'vo/d12_puff.mp3');got=[];$('#card').classList.add('on');draw()}}};draw()});
 
@@ -156,19 +158,38 @@ GAMES.schloss=()=>new Promise(async done=>{
 
 // Tag 15: Der Laden in Goldhafen
 GAMES.laden=()=>new Promise(done=>{
- const W=[['htklein',6],['htmittel',12],['htgross',20],['mut',8],['rauch',10],['wetzstein',9],['stange',5]];
- const area=gameShell('Der Markt von Goldhafen','Tippe an, was du kaufen möchtest.');
- const draw=()=>{area.innerHTML='<div class="inv-gold">'+UI('gold')+' '+st.gold+' Gold</div><div class="shop">'+W.map(([id,p])=>'<button class="shop-it" data-id="'+id+'" data-p="'+p+'"'+(st.gold<p?' disabled':'')+'><img src="'+A+'items/'+id+'.png" alt=""><b>'+ITEMS[id].n+'</b><span>'+p+' Gold</span></button>').join('')+'</div><button class="pbtn big shop-done">Fertig</button>';
-  area.querySelectorAll('.shop-it').forEach(b=>b.onclick=()=>{const p=+b.dataset.p,id=b.dataset.id;if(st.gold<p)return;st.gold-=p;const ex=st.inv.find(x=>x.id===id);if(ex)ex.n=(ex.n||1)+1;else st.inv.push({id,n:1});save();sfx('muenzen',.7);toast(ITEMS[id].n+' gekauft');draw();renderHud()});
+ const W=[['htklein',6],['htmittel',12],['htgross',20],['mut',8],['rauch',10],['wetzstein',9],['stange',5]];const sold=st.flags.ladenSold||(st.flags.ladenSold=[]);
+ const area=gameShell('Der Markt von Goldhafen','Tippe an, was du kaufen möchtest. Jede Ware gibt es nur einmal.');
+ const draw=()=>{const left=W.filter(([id])=>!sold.includes(id));area.innerHTML='<div class="inv-gold">'+UI('gold')+' '+st.gold+' Gold</div><div class="shop">'+(left.length?left.map(([id,p])=>'<button class="shop-it" data-id="'+id+'" data-p="'+p+'"'+(st.gold<p?' disabled':'')+'><img src="'+A+'items/'+id+'.png" alt=""><b>'+ITEMS[id].n+'</b><span>'+p+' Gold</span></button>').join(''):'<p class="shop-leer">Ausverkauft. Bob ist sehr zufrieden.</p>')+'</div><button class="pbtn big shop-done">Fertig</button>';
+  area.querySelectorAll('.shop-it').forEach(b=>b.onclick=()=>{const p=+b.dataset.p,id=b.dataset.id;if(st.gold<p||b.classList.contains('weg'))return;st.gold-=p;const ex=st.inv.find(x=>x.id===id);if(ex)ex.n=(ex.n||1)+1;else st.inv.push({id,n:1});sold.push(id);save();sfx('muenzen',.7);toast(ITEMS[id].n+' gekauft');renderHud();b.classList.add('weg');setTimeout(draw,520)});
   area.querySelector('.shop-done').onclick=()=>{gameEnd();done()}};draw()});
 
-// Tag 20: Der Sturm. Böen kommen von links oder rechts, rechtzeitig ducken.
-GAMES.sturm=()=>new Promise(async done=>{
- const area=gameShell('Der Sturm','Schneewirbel kündigen jede Böe an. Tippe auf Ducken, sobald die Böe kommt, dann duckt sich die Gruppe hinter Grumbold.');
- area.innerHTML='<div class="st-field"><div class="st-wh l"></div><img class="st-gr" src="'+A+'img/p_gr_5.jpg" alt=""><div class="st-wh r"></div></div><div class="kt-st st-c">Böe 1 von 10</div><button class="pbtn big st-duck">Ducken</button>';
- const f=area.querySelector('.st-field');let miss=0,ducked=false;area.querySelector('.st-duck').onclick=()=>{ducked=true;f.classList.add('duck');setTimeout(()=>f.classList.remove('duck'),500)};
- for(let i=0;i<10;i++){area.querySelector('.st-c').textContent='Böe '+(i+1)+' von 10';const side=Math.random()<.5?'l':'r';const wh=area.querySelector('.st-wh.'+side);wh.classList.add('on');await sleep(miss>=3?1500:1000);ducked=false;sfx('wind_boe',.7);f.classList.add('gust-'+side);await sleep(miss>=3?750:520);if(!ducked){miss++;toast('Zirpia: Ich fliiiege!');}wh.classList.remove('on');f.classList.remove('gust-'+side);await sleep(600)}
- gameEnd();done()});
+// Tag 20: Der Sturm. Die Gruppe läuft in einer Reihe hinter Grumbold den Grat hinauf. Windböen fegen von oben durch vier Spuren, tippe eine Spur an, um auszuweichen.
+GAMES.sturm=(s)=>new Promise(done=>{const sc=$('#s-scene');const L=[.14,.38,.62,.86];
+ const mem=['gr','hu','zi','na'].filter(k=>k==='gr'||(st.party||[]).includes(k));const line=[...mem.map(k=>({k,src:A+'img/b_'+k+'_0.png'})),{k:'held',src:A+'img/b_'+st.hero.cls+'_'+st.hero.look+'_0.png'}];
+ const o=el('div','pg sw','<div class="sw-bg"></div><div class="sw-lanes">'+L.map((x,i)=>'<div class="sw-lane" data-l="'+i+'" style="left:'+(x*100)+'%"></div>').join('')+'</div><div class="pg-top">Weiche den Windböen aus</div><div class="sw-hud"><span class="sw-c">Böe 0 von 18</span><span class="sw-life"></span></div><div class="sw-help">Tippe eine Spur an. Die ganze Gruppe folgt Grumbold.</div>');sc.appendChild(o);
+ const bg=o.querySelector('.sw-bg');{const im=new Image();im.onload=()=>{bg.style.backgroundImage='url('+A+'img/sw_grat.jpg)';bg.classList.add('tile')};im.onerror=()=>{bg.style.backgroundImage='url('+A+'img/ort20.jpg)'};im.src=A+'img/sw_grat.jpg'}o.appendChild(el('div','sw-snow'));
+ const P=line.map((m,i)=>{const d=el('div','sw-m'+(i===0?' lead':''),'<img src="'+m.src+'" alt="">');o.appendChild(d);return {d,lane:1,y:.5+i*.095,sc:i===0?1.25:.78+i*.04}});
+ let lane=1,lives=3,hits=0,n=0,total=18,speed=.42,run=true,gusts=[],last=performance.now(),spawnT=0,inv=0;
+ const life=()=>{o.querySelector('.sw-life').innerHTML='<i class="on"></i><i class="'+(lives>1?'on':'')+'"></i><i class="'+(lives>2?'on':'')+'"></i>'};life();
+ const place=()=>{const W=o.clientWidth,H=o.clientHeight;P.forEach((p,i)=>{const s=Math.min(W*.22,H*.12)*p.sc;p.d.style.width=s+'px';p.d.style.left=(L[p.lane]*W)+'px';p.d.style.top=(p.y*H)+'px';p.d.style.zIndex=10+i})};
+ const move=l=>{if(!run||l===lane)return;lane=l;sfx('schritte_schnee',.4);P.forEach((p,i)=>setTimeout(()=>{p.lane=l;place()},i*90))};
+ o.querySelectorAll('.sw-lane').forEach(e=>e.addEventListener('pointerdown',ev=>{ev.preventDefault();move(+e.dataset.l)}));
+ let sx=null;o.addEventListener('touchstart',e=>{sx=e.touches[0].clientX},{passive:true});o.addEventListener('touchend',e=>{if(sx===null)return;const dx=e.changedTouches[0].clientX-sx;if(Math.abs(dx)>40)move(Math.max(0,Math.min(3,lane+(dx>0?1:-1))));sx=null},{passive:true});
+ const spawn=()=>{n++;o.querySelector('.sw-c').textContent='Böe '+Math.min(n,total)+' von '+total;let ls=[Math.floor(Math.random()*4)];if(n>6&&Math.random()<.45){let b;do{b=Math.floor(Math.random()*4)}while(b===ls[0]);ls.push(b)}if(n>12&&Math.random()<.3){let c;do{c=Math.floor(Math.random()*4)}while(ls.includes(c));ls.push(c)}
+  ls.forEach(l=>{const w=el('div','sw-g','<svg viewBox="0 0 100 140"><path d="M20 20c30-14 60 6 40 26s-44 4-30-12" /><path d="M14 64c34-16 70 4 48 28s-50 6-34-14"/><path d="M26 104c26-10 52 4 36 22"/></svg>');o.appendChild(w);const warn=el('div','sw-warn');warn.style.left=(L[l]*100)+'%';o.appendChild(warn);setTimeout(()=>warn.remove(),900);gusts.push({w,l,y:-.18,hit:false})});sfx('wind_boe',.45)};
+ const lay=()=>place();addEventListener('resize',lay);place();
+ const tick=t=>{if(!run)return;const dt=Math.min(.05,(t-last)/1000);last=t;spawnT-=dt;const W=o.clientWidth,H=o.clientHeight;if(bg.classList.contains('tile'))bg.style.backgroundPositionY=((t/30)%(W*16/9))+'px';
+  if(spawnT<=0&&n<total){spawn();spawnT=Math.max(1.05,1.9-n*.05)}
+  gusts.forEach(g=>{g.y+=speed*dt*(1+n*.02);g.w.style.left=(L[g.l]*W)+'px';g.w.style.top=(g.y*H)+'px';
+   if(!g.hit&&g.l===P[0].lane&&g.y>P[0].y-.09&&g.y<P[0].y+.02&&inv<=0){g.hit=true;hits++;lives--;inv=.9;life();sfx('wind_boe',.9);o.classList.add('hit');setTimeout(()=>o.classList.remove('hit'),450);toast(['Zirpia: Ich fliiiege!','Hulda: Meine Frisur!','Nachtigall: Ich hasse Wetter.','Grumbold: Ich stehe. Ich stehe noch.'][hits%4],1800)}});
+  inv-=dt;gusts=gusts.filter(g=>{if(g.y>1.1){g.w.remove();return false}return true});
+  if(lives<=0){run=false;fin(false);return}
+  if(n>=total&&!gusts.length){run=false;fin(true);return}
+  requestAnimationFrame(tick)};
+ const fin=async ok=>{removeEventListener('resize',lay);gusts.forEach(g=>g.w.remove());if(ok){sfx('richtig');toast(hits?'Geschafft! Nur '+hits+(hits===1?' Böe':' Böen')+' erwischt.':'Geschafft! Keine einzige Böe hat euch erwischt.',4000);await sleep(900);o.classList.add('out');setTimeout(()=>o.remove(),500);done(hits)}
+  else{sfx('falsch',.6);toast('Grumbold: Noch einmal. Ich stelle mich breiter hin.',3500);await sleep(1800);lives=3;hits=0;n=0;speed=Math.max(.3,speed-.05);gusts=[];spawnT=1.2;life();run=true;last=performance.now();requestAnimationFrame(tick)}};
+ setTimeout(()=>{last=performance.now();spawnT=1.4;requestAnimationFrame(tick)},900)});
 
 // Tag 23: Schlachtplan. Wer geht in welcher Phase voran, mit welchem Gegenstand?
 const PHASEN=[['Der Drache erhebt sich','hu','stahlnetz'],['Die Aschenschuppen','gr','glutstein'],['Der Aschesturm','zi','wiegenlied'],['Der Schatten','na','schattenschluessel'],['Das Herz','held','sonnenkerze']];
@@ -177,7 +198,7 @@ GAMES.plan=()=>new Promise(done=>{
  const who=[['held',heroName()],['gr','Grumbold'],['zi','Zirpia'],['hu','Oma Hulda'],['na','Nachtigall']];const plan=st.flags.plan||{};
  area.innerHTML=PHASEN.map((p,i)=>'<div class="pl-row"><b>'+(i+1)+'. '+p[0]+'</b><select data-i="'+i+'"><option value="">Wer?</option>'+who.map(w=>'<option value="'+w[0]+'"'+(plan[i]===w[0]?' selected':'')+'>'+esc(w[1])+'</option>').join('')+'</select></div>').join('')+'<div class="hints pl-h"></div><button class="pbtn big pl-go">Plan festlegen</button>';
  const tips=['Jeder Gefährte hat genau einen besonderen Gegenstand bekommen. Wer hat welchen?','Lies Nachtigalls Hinweise: Welcher Gegenstand passt zu welcher Phase?','Hulda mit dem Netz, Grumbold mit dem Glutstein, Zirpia mit dem Wiegenlied, Nachtigall mit dem Schattenschlüssel, du mit Sonnenkerze und Herzjuwel.'];let nt=0;const hb=area.querySelector('.pl-h');
- const dH=()=>{hb.innerHTML=tips.map((t,i)=>'<button class="hint'+(i<nt?' open':'')+'"><span>'+(i===2?'Lösung':'Tipp '+(i+1))+'</span>'+(i<nt?t:i===nt?'Antippen zum Aufdecken':'')+'</button>').join('');[...hb.children].forEach((b,i)=>b.onclick=()=>{if(i===nt){nt++;dH()}})};dH();
+ const dH=()=>{hb.innerHTML=tips.map((t,i)=>'<button class="hint'+(i<nt?' open':'')+'"><span>'+(i===2?'Lösung':'Tipp '+(i+1))+'</span>'+(i<nt?t:i===nt?'Antippen zum Aufdecken':'')+'</button>').join('');[...hb.children].forEach((b,i)=>b.onclick=()=>{if(i===nt){nt++;dH();readAloud(tips[i])}})};dH();
  area.querySelector('.pl-go').onclick=async()=>{const p={};area.querySelectorAll('select').forEach(s=>p[s.dataset.i]=s.value);if(Object.values(p).some(v=>!v))return toast('Bitte jede Phase besetzen.');
   st.flags.plan=p;save();const ok=PHASEN.every((x,i)=>p[i]===x[1]);gameEnd();if(!ok)await say('SL','Bist du sicher? Ich frag ja nur.',A+'vo/d23_plan.mp3');done()}});
 
@@ -245,7 +266,7 @@ GAMES.schilder=(s)=>new Promise(done=>{const sc=$('#s-scene');const IW=1080,IH=1
   sp.go.onclick=async()=>{if(walking)return;walking=true;stopVo();sfx('schritte_schnee',.7);spots.forEach(x=>x.b.classList.remove('talk'));
    if(sp.g.k==='m'){o.classList.add('out');setTimeout(()=>o.remove(),500);removeEventListener('resize',lay);return done()}
    o.style.display='none';await run(s.wrong||[]);hideBox();o.style.display='';walking=false}});
- o.querySelector('.pg-tip').onclick=()=>{toast(HINTS[Math.min(hint,2)],7000);hint++};
+ o.querySelector('.pg-tip').onclick=()=>{const h=HINTS[Math.min(hint,2)];toast(h,7000);readAloud(h);hint++};
 });
 
 // Tag 15: Vier Händler stehen nebeneinander. Antippen, zuhören, den Betrüger entlarven.
@@ -265,20 +286,20 @@ GAMES.haendler=(s)=>new Promise(done=>{const sc=$('#s-scene');const IW=1080,IH=1
   sp.go.onclick=async()=>{if(busy)return;busy=true;stopVo();
    if(sp.g.k==='bob2'){sfx('richtig');o.classList.add('out');setTimeout(()=>o.remove(),500);removeEventListener('resize',lay);return done(true)}
    sfx('falsch');o.style.display='none';await run(s.wrong||[]);hideBox();o.style.display='';busy=false}});
- o.querySelector('.pg-tip').onclick=()=>{toast(HINTS[Math.min(hint,2)],7000);hint++};
+ o.querySelector('.pg-tip').onclick=()=>{const h=HINTS[Math.min(hint,2)];toast(h,7000);readAloud(h);hint++};
 });
 
 // Tag 18: Die Eisbrücke. Seitenansicht, Figuren mit der Laterne hinüberschicken.
 GAMES.bruecke=(s)=>new Promise(done=>{const sc=$('#s-scene');
  const h=st.hero;const P=[{k:'held',n:heroName(),w:50,img:heroImg(),run:A+'img/r_'+h.cls+'_'+h.look+'_'},{k:'gr',n:'Grumbold',w:90,img:A+'img/p_gr.jpg',run:A+'img/r_gr_'},{k:'hu',n:'Oma Hulda',w:30,img:A+'img/p_hu.jpg',run:A+'img/r_hu_'},{k:'zi',n:'Zirpia',w:5,img:A+'img/p_zi.jpg',run:A+'img/r_zi_'}];
- const side={held:0,gr:0,hu:0,zi:0};let lamp=0,sel=new Set(),moves=0,busy=false;const BY=.465;
+ const side={held:0,gr:0,hu:0,zi:0};let lamp=0,sel=new Set(),moves=0,busy=false;const BY=.465,FEET=.455;
  const o=el('div','pg bz','<div class="pg-img" style="background-image:url('+A+'img/f_brueckespiel.jpg),url('+A+'img/ort18.jpg)"></div><div class="bz-crack"></div><div class="pg-top">Wer geht mit der Laterne hinüber?</div><div class="bz-info"><b class="bz-w">0 von 100 Stein</b><span class="bz-m">Überquerungen: 0</span></div><button class="pbtn bz-go">Losgehen</button><button class="pg-tip"><img src="'+A+'ui/tipp.png" alt="Tipp"></button><div class="bz-rule">Die Brücke trägt höchstens 100 Stein. Wer geht, nimmt die Laterne mit. Grumbold trägt die Laterne nie allein und bleibt nie allein im Dunkeln.</div>');sc.appendChild(o);
  const lampEl=el('img','bz-lamp');lampEl.src=A+'items/laterne.png';o.appendChild(lampEl);
- const T=P.map(p=>{const t=el('button','bz-t','<i style="background-image:url('+p.img+')"></i><img class="bz-sp" src="'+p.run+'0.png" alt=""><b>'+esc(p.n)+'</b><span>'+p.w+' Stein</span>');const sp=t.querySelector('.bz-sp');sp.onload=()=>t.classList.add('has-sp');sp.onerror=()=>sp.remove();t._sp=sp;t._run=p.run;o.appendChild(t);t.onclick=()=>{if(busy||side[p.k]!==lamp)return;sel.has(p.k)?sel.delete(p.k):sel.size<3&&sel.add(p.k);sfx('ui_klick',.5);lay()};return {p,t}});
+ const bar=el('div','bz-bar');o.appendChild(bar);const T=P.map(p=>{const t=el('button','bz-t','<i style="background-image:url('+p.img+')"></i><img class="bz-sp" src="'+p.run+'0.png" alt=""><b>'+esc(p.n)+'</b><span>'+p.w+' Stein</span>');const sp=t.querySelector('.bz-sp');sp.onload=()=>t.classList.add('has-sp');sp.onerror=()=>sp.remove();t._sp=sp;t._run=p.run;o.appendChild(t);t.onclick=()=>{if(busy||side[p.k]!==lamp)return;sel.has(p.k)?sel.delete(p.k):sel.size<3&&sel.add(p.k);sfx('ui_klick',.5);lay()};const c=el('button','bz-chip','<i style="background-image:url('+p.img+')"></i><b>'+esc(p.n)+'</b><span>'+p.w+' Stein</span>');c.onclick=t.onclick;bar.appendChild(c);t._chip=c;return {p,t}});
  const HINTS=['Grumbold ist so schwer, dass er nur mit einer einzigen Figur zusammen gehen kann. Mit wem?','Grumbold und Zirpia gehen in der Mitte hinüber, nicht am Anfang und nicht am Ende.','Du und Hulda hin, Hulda zurück, Grumbold mit Zirpia hin, Zirpia zurück, dann Zirpia und Hulda hin.'];let hint=0;
- o.querySelector('.pg-tip').onclick=()=>{toast(HINTS[Math.min(hint,2)],8000);hint++};
+ o.querySelector('.pg-tip').onclick=()=>{const h=HINTS[Math.min(hint,2)];toast(h,8000);readAloud(h);hint++};
  const lay=()=>{const W=o.clientWidth,H=o.clientHeight,y=H*BY;const cnt=[0,0];
-  T.forEach(({p,t})=>{const sd=side[p.k];const i=cnt[sd]++;const col=i%2,row=Math.floor(i/2);const x=sd?W*(.76+col*.14):W*(.08+col*.14);t.style.left=x+'px';t.style.top=(y-(t.classList.contains('has-sp')?84:70)-row*96)+'px';t.classList.toggle('sel',sel.has(p.k));t.classList.toggle('off',sd!==lamp)});
+  T.forEach(({p,t})=>{const sd=side[p.k];const i=cnt[sd]++;const back=i>=2,col=i%2;const x=sd?W*(.93-col*.15-(back?.075:0)):W*(.07+col*.15+(back?.075:0));t.style.left=x+'px';const sh=t.classList.contains('has-sp')?((t._sp&&t._sp.offsetHeight)||76):62;t.style.top=(H*(FEET-(back?.032:0))-sh)+'px';t.style.zIndex=back?5:9;t.classList.toggle('back',back);t.classList.toggle('sel',sel.has(p.k));t.classList.toggle('off',sd!==lamp);if(t._chip){t._chip.classList.toggle('sel',sel.has(p.k));t._chip.classList.toggle('off',sd!==lamp);t._chip.classList.toggle('drueben',!!sd)}});
   lampEl.style.left=(lamp?W*.95:W*.03)+'px';lampEl.style.top=(y-44)+'px';
   const w=[...sel].reduce((a,k)=>a+P.find(p=>p.k===k).w,0);const wb=o.querySelector('.bz-w');wb.textContent=w+' von 100 Stein';wb.classList.toggle('bad',w>100);
   o.querySelector('.bz-m').textContent='Überquerungen: '+moves;o.querySelector('.bz-go').disabled=!sel.size};

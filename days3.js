@@ -68,6 +68,8 @@ DAYS[15]={end:'Heute zum Ausdrucken: die Ladenliste von Goldhafen.',steps:[
  {s:'SL',t:'Bob! Und noch ein Bob! Ich hab mir nur einen Bob ausgedacht. Der zweite ist einfach so aufgetaucht.'},
  {s:'WG',note:1,wg:'wgc6',t:'Zwei Bobs. Notiert.'},
  {s:'HU',t:'Vier Händler, Kindchen. Genau einer betrügt, und der lügt immer. Die anderen drei sagen immer die Wahrheit.'},
+ {s:'SL',t:'Vier Händler stehen am Kai. Tippe jeden an und hör dir an, was er über die anderen sagt. Dann zeig auf den Betrüger.'},
+ {bg:'f_markt',alt:'ort15',look:1400},
  {game:'haendler',wrong:[{s:'SL',t:'Er ist ehrlich. Und jetzt traurig. Er schenkt euch trotzdem einen Apfel. Gut gemacht.'}]},
  {s:'BOB2',t:'Erwischt. Ich wollte euch einen Heiltrank aus Apfelsaft verkaufen.'},
  {s:'BOB',t:'Ich schäme mich für dich, Bob.'},
@@ -75,7 +77,8 @@ DAYS[15]={end:'Heute zum Ausdrucken: die Ladenliste von Goldhafen.',steps:[
  {s:'SL',t:'Der Laden ist offen. Kauf ein, was du brauchst.'},
  {game:'laden'},
  {if:()=>!has('stange'),then:[{s:'BOB',t:'Nimm die Stange mit, sie steht mir im Weg.'},{item:'stange'}]},
- {s:'SL',t:'Eine drei Meter Stange. Wer kauft so was? Wofür? Ich frage für einen Freund.'},
+ {s:'SL',t:'Eine drei Meter Stange. In den alten Regelbüchern steht sie in jeder Ausrüstungsliste. Damit tippt man den Boden vor sich ab, bevor man selbst in eine Falle tritt.'},
+ {s:'SL',t:'Ich hab nie einen Abenteurer gesehen, der sie wirklich benutzt. Behalte sie trotzdem. Man weiß nie.'},
  {song:'zirpia_09',v:.85,imgs:['zm1','zm2','zm5','zm3','zm4']},
  {s:'SL',t:'Stufe vier! Ohne Fanfare. Nur ich. Tadaaa.'},
  {levelup:4},
@@ -111,7 +114,7 @@ FILMS.z4={shots:[
  {img:'f_z4b',s:'SL',t:'Oh, das Seil ist zu kurz! Das ist ein Problem! Das ist … Sie lässt sich einfach fallen! Sie landet! Eine Zehn von zehn!'},
  {img:'f_z4c',s:'SL',t:'Glück! Pures Glück! Das ist kein Können mehr, das ist Frechheit!'},
  {img:'f_z4d',s:'SL',t:'Sie nimmt nur eine Münze! Und hinterlässt ein Plätzchen! Warum? Wir werden es nie erfahren!'},
- {img:'ort17',mus:null,atmo:'lagerfeuer',s:'HU',t:'Weil man immer etwas zurücklässt, Kindchen. Das gehört sich so.'},
+ {img:'ort16',mus:null,atmo:null,sfx:'glut_knistern',s:'HU',t:'Weil man immer etwas zurücklässt, Kindchen. Das gehört sich so.'},
  {s:'HU',t:'Fast immer.',gap:1200},
  {img:'f_tisch',sfx:'plattenkratzer',s:'SL',t:'Das fast immer hab ich mir notiert. Das ist wichtig. Ich weiß nur noch nicht, warum.'}
 ]};
@@ -138,7 +141,12 @@ DAYS[17]={end:'Alle tragen jetzt einen roten Schal. Auch Herbert.',steps:[
  {s:'SL',t:'Und in dieser Nacht lernte Grumbold, dass Wärme nicht davon abhängt, wie hell man leuchtet. Sondern davon, wer neben einem sitzt.'},
  {s:'SL',t:'Das war schön. Ich sag nichts mehr.'},
  {s:'SL',t:'Das war sehr schön.'},
- {learn:'gr:waermherz'},{item:'schal'},
+ {learn:'gr:waermherz'},
+ {s:'HU',t:'So, Großer. Fertig gestrickt. Halt still.'},
+ {bg:'gr_schal',alt:'ort17',look:1800},
+ {s:'GR',t:'Ein Schal. Mein erster Schal. Und Herbert hat auch einen.',e:'laugh'},
+ {s:'HU',t:'Natürlich hat Herbert auch einen. Ich bin doch kein Unmensch.'},
+ {item:'schal'},
  {sfx:'rohrpost'},
  {s:'SL',t:'Sie hat mir einen Keks geschickt. Was bedeutet das? Ist das gut? Das ist gut, oder?'},{hide:1}
 ]};
