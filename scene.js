@@ -62,7 +62,7 @@ async function choice(opts){hideBox();const c=$('#sc-choices');c.innerHTML='';c.
  return new Promise(r=>{opts.forEach((o,i)=>{if(o.need&&!o.need())return;const b=el('button','ch-btn',T(o.t));b.onclick=()=>{sfx('ui_klick',.7);c.classList.remove('on');c.innerHTML='';r(i)};c.appendChild(b)})})}
 
 // Einzelne Schritte ausführen
-async function run(steps,ctx){ctx=ctx||{};for(const s of steps){if(SC.abort)return;if(SC.wgPrev&&s.s!=='WG'&&!s.note)wgBack();await step(s,ctx)}}
+async function run(steps,ctx){ctx=ctx||{};for(let i=0;i<steps.length;i++){const s=steps[i];if(SC.abort)return;if(SC.wgPrev&&s.s!=='WG'&&!s.note){if(s.bg){SC.wgPrev=null;$('#s-scene').classList.remove('real')}else wgBack()}SC.nextBg=!!(steps[i+1]&&steps[i+1].bg)||(i===steps.length-1);await step(s,ctx)}}
 // Meisterin Wendelgard: Schnitt aus der Geschichte an den echten Spieltisch
 const WGC=['wgc1','wgc2','wgc3','wgc4','wgc5','wgc6','wgc7','wgc8','wgc9','wgc10'];let wgI=0;
 function wgCut(img){const cur=$('#sc-bg .on');if(!SC.wgPrev)SC.wgPrev=cur?cur.dataset.src:null;img=img||WGC[(wgI++)%WGC.length];sfx('pergament',.5);setBg(A+'img/'+img+'.jpg',true);$('#s-scene').classList.add('real')}
@@ -94,7 +94,7 @@ async function step(s,ctx){
  if(s.levelup){hideBox();await levelUp(s.levelup)}
  if(s.loot){hideBox();await lootRoll()}
  if(s.film){hideBox();await playFilm(s.film)}
- if(s.song){hideBox();await songShow(s.song,s.imgs||[],s)}
+ if(s.song){hideBox();await songShow(s.song,s.imgs||[],Object.assign({},s,{keep:s.keep||SC.nextBg}))}
  if(s.flag)flag(s.flag);
  if(s.if){const t=typeof s.if==='function'?s.if():st.flags[s.if];await run(t?s.then||[]:s.else||[],ctx)}
  if(s.fn)await s.fn(ctx);
@@ -119,10 +119,10 @@ function numberSteps(id,steps){let n=0;const walk=a=>{(a||[]).forEach(s=>{if(s.s
 // Zirpias Auftritt: Lied läuft, Bilder der Vorstellung wechseln, Tippen beendet
 async function songShow(name,imgs,o){const cur=$('#sc-bg .on');const prev=cur?cur.dataset.src:null;let skip=false;
  const hint=el('div','song-hint','Tippen zum Weiterspielen');$('#s-scene').appendChild(hint);setTimeout(()=>hint.classList.add('on'),1600);
- let i=0;const next=()=>{if(!imgs.length||skip)return;setBg(A+'img/'+imgs[i%imgs.length]+'.jpg');i++};
- const p=playSong(name,o.v??.9,o.max);next();
- const per=(o.per||0)||null;const dur=await songDur(name,o.max);const step=per||Math.max(3500,dur*1000/Math.max(1,imgs.length));
+ let i=0;const next=()=>{if(!imgs.length||skip||i>=imgs.length)return;setBg(A+'img/'+imgs[i]+'.jpg');i++};
+ let sk=null;const p=st.sound?playSong(name,o.v??.9,o.max):new Promise(r=>{sk=r;setTimeout(r,Math.max(1,imgs.length)*2600)});next();
+ const per=(o.per||0)||null;const dur=st.sound?await songDur(name,o.max):Math.max(1,imgs.length)*2.6;const step=per||Math.max(3500,dur*1000/Math.max(1,imgs.length));
  const tm=setInterval(next,step);
- SC.tap=()=>{skip=true;stopSong()};await p;SC.tap=null;clearInterval(tm);hint.remove();if(prev&&!o.keep)setBg(prev)}
+ SC.tap=()=>{skip=true;stopSong();if(sk)sk()};await p;SC.tap=null;clearInterval(tm);hint.remove();if(prev&&!o.keep)setBg(prev)}
 const SDUR={zirpia_01:21.8,zirpia_02:82,zirpia_03:96.8,zirpia_04:93,zirpia_05:78.4,zirpia_06:27.5,zirpia_07:28,zirpia_08:13,zirpia_09:27.3,zirpia_10:27.2,zirpia_11:50.5,zirpia_12:30,zirpia_13:92.8};
 async function songDur(n,max){const d=SDUR[n]||30;return max?Math.min(d,max):d}

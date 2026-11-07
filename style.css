@@ -590,3 +590,27 @@ img{display:block;max-width:100%}
 .lk-turn{width:96px;height:96px;border-radius:50%;border:4px solid #1a0f06;font-family:var(--sc);font-weight:700;font-size:1rem;line-height:1.1;color:#2a1d10;background:radial-gradient(circle at 35% 30%,#f6dca0,#c99a4c 60%,#8a6326);box-shadow:0 6px 14px rgba(0,0,0,.45);touch-action:none;-webkit-touch-callout:none}
 .lk-turn small{font-weight:400;font-size:.7rem}
 .lk-turn.on{transform:scale(.95);box-shadow:0 2px 6px rgba(0,0,0,.5),inset 0 4px 10px rgba(0,0,0,.35)}
+.bz .bz-t{position:absolute;z-index:4;width:84px;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:2px;background:none;border:0;padding:0;transition:left .5s,top .5s}
+.bz .bz-t i{width:62px;height:62px;border-radius:50%;background-size:cover;background-position:center top;border:4px solid #1a0f06;box-shadow:0 4px 10px rgba(0,0,0,.6);transition:transform .2s,border-color .2s}
+.bz .bz-t b{font-family:var(--sc);font-size:.72rem;color:#fff;text-shadow:0 1px 2px #000,0 0 6px #000;white-space:nowrap}
+.bz .bz-t span{font-size:.68rem;color:#cfe8ff;text-shadow:0 1px 2px #000}
+.bz .bz-t.sel i{border-color:#ffd76a;transform:scale(1.12);box-shadow:0 0 16px #ffd76a}
+.bz .bz-t.off{opacity:.55}
+.bz .bz-t.walk i{animation:bzwalk .35s ease-in-out infinite}
+@keyframes bzwalk{50%{transform:translateY(-6px) rotate(3deg)}}
+.bz-lamp{position:absolute;z-index:5;width:42px;transform:translateX(-50%);filter:drop-shadow(0 0 12px #ffd76a)}
+.bz-info{position:absolute;left:0;right:0;top:calc(52px + env(safe-area-inset-top));display:flex;justify-content:center;gap:14px;font-family:var(--sc);font-size:.9rem;color:#fff;text-shadow:0 1px 3px #000;z-index:4}
+.bz-w.bad{color:#ff8a7a}
+.bz-go{position:absolute;left:50%;bottom:calc(84px + env(safe-area-inset-bottom));transform:translateX(-50%);z-index:5}
+.bz-go:disabled{opacity:.5}
+.bz-rule{position:absolute;left:12px;right:12px;bottom:calc(14px + env(safe-area-inset-bottom));font-size:.8rem;line-height:1.3;color:#fff;text-shadow:0 1px 3px #000;background:rgba(10,20,40,.55);padding:8px 10px;border-radius:10px;z-index:4;text-align:center}
+.bz.crack .pg-img{animation:shake .4s 2}
+.bz-crack{position:absolute;inset:0;pointer-events:none;z-index:3}
+/* Absicht des Gegners immer über dem Bild, nie darauf */
+.bt-int{top:auto;bottom:calc(100% + 6px)}
+.bt-foes{padding-top:44px}
+.bz .bz-t .bz-sp{display:none;height:92px;width:auto;filter:drop-shadow(0 3px 3px rgba(0,0,0,.6))}
+.bz .bz-t.has-sp .bz-sp{display:block}.bz .bz-t.has-sp i{display:none}
+.bz .bz-t.left .bz-sp{transform:scaleX(-1)}
+.bz .bz-t.has-sp.sel .bz-sp{filter:drop-shadow(0 0 8px #ffd76a) drop-shadow(0 0 4px #ffd76a)}
+.bz .bz-t.has-sp.walk i,.bz .bz-t.has-sp.walk .bz-sp{animation:none}

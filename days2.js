@@ -104,7 +104,7 @@ DAYS[12]={end:'Halbzeit. Noch zwölf Nächte.',steps:[
  {s:'HEX',t:'Das Rezept hab ich nur noch als Reim im Kopf. Hör gut zu.'},
  {game:'trank'},
  {if:'korken_tausch',then:[{item:'feuerschutz',n:2}],else:[{item:'feuerschutz'}]},
- {s:'WG',note:1,wg:'wgc5',t:'Zwischenbewertung, Tag zwölf. Erzählung: lebendig. Witze: zahlreich. Zu zahlreich. Bob: Bitte erklären Sie mir Bob.'},
+ {s:'WG',note:1,wg:'wgc5',t:'Zwischenbewertung, Tag zwölf. Erzählung: lebendig. Witze: zahlreich. Zu zahlreich. Das Butterbrot: Bitte erklären Sie mir das Butterbrot.'},
  {s:'SL',t:'Verstanden. Ab jetzt nur noch ernste Erzählung.'},
  {s:'SL',t:'Der Nebel lichtete sich. Die Hexe nickte weise. Der Trank glühte in der Flasche.'},
  {bg:'hx2',alt:'ort12',look:1200},

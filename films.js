@@ -1,7 +1,7 @@
 // Zwischensequenzen: gemalte Bilder mit Kamerafahrt, Stimme, Musik, Untertitel
 // Jede Einstellung: {img, pan, s (Sprecher), t (Text), sfx, mus, card (Bild statt Text), d (Dauer ohne Stimme)}
 let filmRun=0;
-async function playFilm(key){const F=FILMS[key];if(!F)return;show('#s-film');const run=++filmRun;const f=$('#film');f.innerHTML='';const sub=$('#film-sub');sub.classList.remove('on');
+async function playFilm(key){const F=FILMS[key];if(!F)return;stopSfx(.4);show('#s-film');const run=++filmRun;const f=$('#film');f.innerHTML='';const sub=$('#film-sub');sub.classList.remove('on');
  let skip=false;$('#btn-skip').onclick=()=>{skip=true;stopVo();filmRun++};accents(null);
  let n=0,curImg=null;
  for(const sh of F.shots){if(skip||run!==filmRun)break;
@@ -25,7 +25,7 @@ async function playFilm(key){const F=FILMS[key];if(!F)return;show('#s-film');con
    await sleep(sh.gap??350)}
   else await sleep(sh.d||1800);
  }
- sub.classList.remove('on');stopVo();await sleep(400)}
+ sub.classList.remove('on');stopVo();stopSfx(.6);await sleep(400)}
 
 // Der große Auftritt: Würfel rollt, kritische 20, Lichtschlag, Logo
 const DRF=[0,1,2,3].map(i=>{const im=new Image();im.src=A+'ui/dr_s_'+i+'.png';return im});

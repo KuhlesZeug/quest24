@@ -88,10 +88,10 @@ const LVL_SK={krieger:[['kampfschrei','eisernwille'],['wirbelhieb','schildstoss'
 function heroMaxHp(){const h=st.hero;return 10+h.str*2+(st.lvl-1)*3+(h.skills.includes('unbeugsam')?5:0)+(st.flags.drachenhaut?3:0)}
 function partyUnits(){const h=st.hero,c=CLS[h.cls];
  const u=[{id:'held',n:h.name,img:null,hero:1,el:h.cls==='magier'?null:null,hp:heroMaxHp(),max:heroMaxHp(),atk:h[c.stat],stat:c.stat,dmg:1,hit:c.hit,skills:[c.start,...h.skills.filter(s=>!SK[s].passive)]}];
- st.party.forEach(id=>{const C=COMP[id];const ex=(st.flags['sk_'+id]||[]);u.push({id,n:C.n,img:C.img,el:C.el,hp:C.hp,max:C.hp,atk:C.atk,dmg:C.dmg,hit:C.hit,skills:[...Object.keys(C.skills),...ex]})});return u}
+ st.party.filter(id=>!(window.FIGHTKEY==='eis'&&id==='na')).forEach(id=>{const C=COMP[id];const ex=(st.flags['sk_'+id]||[]);u.push({id,n:C.n,img:C.img,el:C.el,hp:C.hp,max:C.hp,atk:C.atk,dmg:C.dmg,hit:C.hit,skills:[...Object.keys(C.skills),...ex]})});return u}
 
 let B=null;
-async function fight(key){const F=FOES[key];let tries=0;
+async function fight(key){window.FIGHTKEY=key;const F=FOES[key];let tries=0;
  while(true){const r=await battle(F,key,tries);if(r)return true;tries++;
   const again=await choice([{t:'Noch einmal antreten'+(tries>=1?' (mit Tipp)':'')}]);}}
 

@@ -54,7 +54,9 @@ function hush(on){HUSH=on?1:0;duck(DUCKED)}
 const SFXV={};const SFXA={glocke_fern:'glocke',tuer_knarzt:'tavernentuer',holz_knarzt:'tavernentuer'};
 async function sfx(name,vol){if(!st.sound)return;ac();name=SFXA[name]||name;const v=SFXV[name]=(SFXV[name]||0)+1;const ab=v%2?'a':'b';
  let b=await loadBuf(A+'sfx/'+name+'_'+ab+'.mp3');if(!b)b=await loadBuf(A+'sfx/'+name+'.mp3');if(!b)return;
- const s=AC.createBufferSource();s.buffer=b;s.playbackRate.value=.97+Math.random()*.06;const g=AC.createGain();g.gain.value=vol??1;s.connect(g);g.connect(sfxBus);s.start()}
+ const s=AC.createBufferSource();s.buffer=b;s.playbackRate.value=.97+Math.random()*.06;const g=AC.createGain();g.gain.value=vol??1;s.connect(g);g.connect(sfxBus);s.start();const h={s,g};SFXON.add(h);s.onended=()=>SFXON.delete(h);return h}
+// Laufende Geräusche sanft beenden, wenn die Szene wechselt
+const SFXON=new Set();function stopSfx(t){if(!AC)return;SFXON.forEach(h=>{try{h.g.gain.setTargetAtTime(0,AC.currentTime,(t||.25)/3);h.s.stop(AC.currentTime+(t||.25))}catch(e){}});SFXON.clear()}
 // Zufällige Akzente zur Atmo (Eule, Knistern, Tropfen)
 let accTimer=null;
 function accents(list,every){clearInterval(accTimer);if(!list||!list.length)return;accTimer=setInterval(()=>{if(Math.random()<.55)sfx(list[Math.floor(Math.random()*list.length)],.55)},(every||14)*1000)}

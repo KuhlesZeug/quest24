@@ -12,7 +12,7 @@ function renderHud(){const h=$('#hud');if(!h)return;const n=nights();
  '<div class="hud-btns"><button class="hb" id="hb-party" aria-label="Gruppe">'+UI('herz')+'</button><button class="hb" id="hb-inv" aria-label="Rucksack">'+UI('rucksack')+'</button><button class="hb" id="hb-log" aria-label="Tagebuch">'+UI('tagebuch')+'</button><button class="hb btn-snd'+(st.sound?'':' off')+'" id="hb-snd" aria-label="Ton">'+UI('horn')+'</button></div>';
  $('#hb-inv').onclick=openInv;$('#hb-party').onclick=openParty;$('#hb-log').onclick=openLog;$('#hb-snd').onclick=()=>{setSound(!st.sound);renderHud()}}
 
-function goMap(){stopVo();SC.abort=0;show('#s-map');renderHud();renderMap();music(A+'mus/karte.mp3',.4);atmo(A+'atmo/bergwind.mp3',.35);accents(null)}
+function goMap(){stopVo();stopSfx(.5);SC.abort=0;show('#s-map');renderHud();renderMap();music(A+'mus/karte.mp3',.4);atmo(A+'atmo/bergwind.mp3',.35);accents(null)}
 function renderMap(){const m=$('#map-in');m.querySelectorAll('.wp,.token,.trail').forEach(e=>e.remove());const nd=nextDay();
  // Gezeichneter Weg: geschafft als feste Spur, kommend gestrichelt
  const last=Object.keys(st.done).length?Math.max(...Object.keys(st.done).map(Number)):1;
@@ -38,7 +38,7 @@ async function runTo(d){const tk=$('.token');if(!tk)return;const m=$('#map-in'),
  const h=st.hero,fr=(h&&RUNF[h.cls+'_'+h.look])||[1,2,3];let k=0;const iv=setInterval(()=>{sp.style.backgroundImage='url('+runImg(fr[k++%fr.length])+')'},115);
  tk.style.transition='left '+ms+'ms linear,top '+ms+'ms linear,transform .35s ease-out';requestAnimationFrame(()=>{tk.style.left=x1+'%';tk.style.top=y1+'%'});
  sc.scrollTo({left:Math.max(0,x1/100*W-sc.clientWidth/2),behavior:'smooth'});
- sfx('schritte',.6);const pl=$('.tr-done');if(pl){const seg=document.createElementNS('http://www.w3.org/2000/svg','line');seg.setAttribute('class','tr-run');seg.setAttribute('x1',x0*23.52);seg.setAttribute('y1',y0*17.6);seg.setAttribute('x2',x1*23.52);seg.setAttribute('y2',y1*17.6);seg.style.setProperty('--len',Math.hypot((x1-x0)*23.52,(y1-y0)*17.6));seg.style.animationDuration=ms+'ms';pl.parentNode.appendChild(seg)}await sleep(ms);clearInterval(iv);tk.classList.remove('run');standBeside(tk,d);sp.style.backgroundImage='url('+runImg(0)+')';await sleep(500)}
+ const stp=sfx('schritte',.6);const pl=$('.tr-done');if(pl){const seg=document.createElementNS('http://www.w3.org/2000/svg','line');seg.setAttribute('class','tr-run');seg.setAttribute('x1',x0*23.52);seg.setAttribute('y1',y0*17.6);seg.setAttribute('x2',x1*23.52);seg.setAttribute('y2',y1*17.6);seg.style.setProperty('--len',Math.hypot((x1-x0)*23.52,(y1-y0)*17.6));seg.style.animationDuration=ms+'ms';pl.parentNode.appendChild(seg)}await sleep(ms);clearInterval(iv);tk.classList.remove('run');stp.then(h=>{if(h){try{h.g.gain.setTargetAtTime(0,AC.currentTime,.08);h.s.stop(AC.currentTime+.3)}catch(e){}}});standBeside(tk,d);sp.style.backgroundImage='url('+runImg(0)+')';await sleep(500)}
 function lockMsg(d){const b=berlin();return b.month===12?'Wegpunkt '+d+' öffnet sich am '+d+'. Dezember.':'Das Abenteuer beginnt am 1. Dezember.'}
 async function tapDay(d){sfx('ui_klick',.6);
  if(!unlocked(d)){await rollPercent({title:'Tageswurf',sub:'Noch nicht',locked:'Nachtigall: Geduld ist auch eine Tugend. Angeblich.'});return}
@@ -50,7 +50,7 @@ async function tapDay(d){sfx('ui_klick',.6);
  await runTo(d)
  playDay(d,false)}
 
-async function playDay(d,again){const D=DAYS[d];if(!D){toast('Dieser Tag wird gerade gebaut.');return}
+async function playDay(d,again){const D=DAYS[d];if(!D){toast('Dieser Tag wird gerade gebaut.');return}stopSfx(.4);
  show('#s-scene');SC.id='d'+String(d).padStart(2,'0');if(!D._n)D._n=numberSteps(SC.id,D.steps)||1;SC.abort=0;SC.wgPrev=null;$('#s-scene').classList.remove('real');$('#sc-bg').innerHTML='';const fg=$('#sc-fig');if(fg)fg.classList.remove('on');$('#sc-title').textContent='Tag '+d+' · '+DAYN[d];renderHud();
  await run(D.steps);if(SC.abort){SC.abort=0;return goMap()}
  hideBox();if(!again){st.done[d]=Date.now();save()}

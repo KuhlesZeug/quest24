@@ -217,14 +217,14 @@ GAMES.becher=()=>new Promise(done=>{
 
 // Tag 7: Die sprechenden Wegweiser. Schilder antippen, zuhören, dann einem Weg folgen.
 // Logik: Nur ein Schild sagt die Wahrheit, und das ehrliche Schild steht vor dem Weg nach Norden. Lösung: Mitte.
-GAMES.schilder=(s)=>new Promise(done=>{const sc=$('#s-scene');const IW=810,IH=1080;
- const SG=[{k:'l',x:.355,top:.27,bot:.66,t:'Der rechte Weg führt nach Norden!',dir:'Links lang'},{k:'m',x:.52,top:.28,bot:.74,t:'Der linke Weg führt nicht nach Norden.',dir:'Geradeaus'},{k:'r',x:.68,top:.28,bot:.66,t:'Das mittlere Schild lügt.',dir:'Rechts lang'}];
+GAMES.schilder=(s)=>new Promise(done=>{const sc=$('#s-scene');const IW=1080,IH=1920;
+ const SG=[{k:'l',x:.355,top:0.337,bot:0.631,t:'Der rechte Weg führt nach Norden!',dir:'Links lang'},{k:'m',x:.52,top:0.344,bot:0.691,t:'Der linke Weg führt nicht nach Norden.',dir:'Geradeaus'},{k:'r',x:.68,top:0.344,bot:0.631,t:'Das mittlere Schild lügt.',dir:'Rechts lang'}];
  const HINTS=['Das ehrliche Schild steht vor dem richtigen Weg. Prüf jeden Weg: Würde dann genau dieses eine Schild die Wahrheit sagen?','Links? Dann müsste das linke Schild ehrlich sein. Es sagt aber, rechts sei Norden. Passt nicht.','Rechts? Dann wäre das rechte ehrlich, die Mitte würde lügen, also wäre links Norden. Widerspruch. Es bleibt: geradeaus.'];
  const o=el('div','pg','<div class="pg-img" style="background-image:url('+A+'img/f_schild_weg.jpg)"></div><div class="pg-top">Tippe die Schilder an</div><button class="pg-tip"><img src="'+A+'ui/tipp.png" alt="Tipp"></button>');sc.appendChild(o);
  const box=()=>{const W=o.clientWidth,H=o.clientHeight,k=Math.max(W/IW,H/IH);return {k,ox:(W-IW*k)/2,oy:(H-IH*k)/2}};
  let hint=0,walking=false;
  const spots=SG.map((g,i)=>{const b=el('button','pg-spot','<i class="pg-bub"></i><i class="pg-ring"></i>');o.appendChild(b);const go=el('button','pg-go',g.dir);o.appendChild(go);return {g,b,go}});
- const lay=()=>{const {k,ox,oy}=box();spots.forEach(({g,b,go})=>{const x=ox+g.x*IW*k,y0=oy+g.top*IH*k,y1=oy+g.bot*IH*k;b.style.left=(x-IW*k*.075)+'px';b.style.top=y0+'px';b.style.width=(IW*k*.15)+'px';b.style.height=(y1-y0)+'px';go.style.left=(o.clientWidth*[.2,.5,.8][SG.indexOf(g)])+'px';go.style.top=(oy+.86*IH*k)+'px'})};
+ const lay=()=>{const {k,ox,oy}=box();spots.forEach(({g,b,go})=>{const x=ox+g.x*IW*k,y0=oy+g.top*IH*k,y1=oy+g.bot*IH*k;b.style.left=(x-IW*k*.075)+'px';b.style.top=y0+'px';b.style.width=(IW*k*.15)+'px';b.style.height=(y1-y0)+'px';go.style.left=(o.clientWidth*[.2,.5,.8][SG.indexOf(g)])+'px';go.style.top=(oy+.80*IH*k)+'px'})};
  lay();addEventListener('resize',lay);
  spots.forEach(sp=>{sp.b.onclick=async()=>{if(walking)return;stopVo();spots.forEach(x=>{x.b.classList.remove('talk','on')});sp.b.classList.add('on','talk');
   sp.b.querySelector('.pg-bub').textContent=sp.g.t;sp.go.classList.add('on');
@@ -238,13 +238,13 @@ GAMES.schilder=(s)=>new Promise(done=>{const sc=$('#s-scene');const IW=810,IH=10
 
 // Tag 15: Vier Händler stehen nebeneinander. Antippen, zuhören, den Betrüger entlarven.
 GAMES.haendler=(s)=>new Promise(done=>{const sc=$('#s-scene');const IW=1080,IH=1920;
- const SG=[{k:'bob',n:'Bob',x:.14,top:.44,bot:.86,t:'Berta betrügt nicht.'},{k:'bob2',n:'Bob der Zweite',x:.38,top:.44,bot:.86,t:'Ferdinand betrügt.'},{k:'berta',n:'Berta',x:.62,top:.44,bot:.86,t:'Einer der beiden Bobs betrügt.'},{k:'ferd',n:'Ferdinand',x:.86,top:.42,bot:.86,t:'Bob der Zweite lügt.'}];
+ const SG=[{k:'bob',n:'Bob',x:.13,top:.59,bot:.84,t:'Berta betrügt nicht.'},{k:'bob2',n:'Bob der Zweite',x:.40,top:.58,bot:.86,t:'Ferdinand betrügt.'},{k:'berta',n:'Berta',x:.63,top:.62,bot:.86,t:'Einer der beiden Bobs betrügt.'},{k:'ferd',n:'Ferdinand',x:.87,top:.59,bot:.82,t:'Bob der Zweite lügt.'}];
  const HINTS=['Genau einer betrügt, und der lügt immer. Die anderen drei sagen immer die Wahrheit. Nimm nacheinander an, jeder wäre der Betrüger.','Bob der Zweite und Ferdinand widersprechen sich direkt. Einer von beiden muss der Betrüger sein.','Wäre Ferdinand der Betrüger, müsste Berta lügen. Berta ist aber ehrlich. Also betrügt Bob der Zweite.'];
  const o=el('div','pg hd','<div class="pg-img" style="background-image:url('+A+'img/f_markt.jpg),url('+A+'img/ort15.jpg)"></div><div class="pg-top">Tippe die Händler an</div><button class="pg-tip"><img src="'+A+'ui/tipp.png" alt="Tipp"></button>');sc.appendChild(o);
  const box=()=>{const W=o.clientWidth,H=o.clientHeight,k=Math.max(W/IW,H/IH);return {k,ox:(W-IW*k)/2,oy:(H-IH*k)/2}};
  let hint=0,busy=false;
  const spots=SG.map((g,i)=>{const b=el('button','pg-spot'+(i===0?' el':i===3?' er':''),'<i class="pg-bub"></i><i class="pg-ring"></i>');o.appendChild(b);const go=el('button','pg-go hd-go','Betrüger!');o.appendChild(go);return {g,b,go}});
- const lay=()=>{const {k,ox,oy}=box();const W=o.clientWidth;spots.forEach(({g,b,go},i)=>{const x=ox+g.x*IW*k,y0=oy+g.top*IH*k,y1=oy+g.bot*IH*k;const w=Math.min(IW*k*.2,W/4.4);b.style.left=(x-w/2)+'px';b.style.top=y0+'px';b.style.width=w+'px';b.style.height=(y1-y0)+'px';go.style.left=Math.min(W-6-W/8,Math.max(6+W/8,x))+'px';go.style.top=Math.min(o.clientHeight-70,y1+8)+'px'})};
+ const lay=()=>{const {k,ox,oy}=box();const W=o.clientWidth;spots.forEach(({g,b,go},i)=>{const x=ox+g.x*IW*k,y0=oy+g.top*IH*k,y1=oy+g.bot*IH*k;const w=Math.min(IW*k*.2,W/4.4);b.style.left=(x-w/2)+'px';b.style.top=y0+'px';b.style.width=w+'px';b.style.height=(y1-y0)+'px';go.style.left=Math.min(W-6-W/8,Math.max(6+W/8,x))+'px';go.style.top=Math.min(o.clientHeight-60,y1+18)+'px'})};
  lay();addEventListener('resize',lay);
  spots.forEach(sp=>{sp.b.onclick=async()=>{if(busy)return;stopVo();spots.forEach(x=>x.b.classList.remove('talk','on'));sp.b.classList.add('on','talk');
   sp.b.querySelector('.pg-bub').innerHTML='<b>'+sp.g.n+'</b>'+sp.g.t;sp.go.classList.add('on');
@@ -254,4 +254,34 @@ GAMES.haendler=(s)=>new Promise(done=>{const sc=$('#s-scene');const IW=1080,IH=1
    if(sp.g.k==='bob2'){sfx('richtig');o.classList.add('out');setTimeout(()=>o.remove(),500);removeEventListener('resize',lay);return done(true)}
    sfx('falsch');o.style.display='none';await run(s.wrong||[]);hideBox();o.style.display='';busy=false}});
  o.querySelector('.pg-tip').onclick=()=>{toast(HINTS[Math.min(hint,2)],7000);hint++};
+});
+
+// Tag 18: Die Eisbrücke. Seitenansicht, Figuren mit der Laterne hinüberschicken.
+GAMES.bruecke=(s)=>new Promise(done=>{const sc=$('#s-scene');
+ const h=st.hero;const P=[{k:'held',n:heroName(),w:50,img:heroImg(),run:A+'img/r_'+h.cls+'_'+h.look+'_'},{k:'gr',n:'Grumbold',w:90,img:A+'img/p_gr.jpg',run:A+'img/r_gr_'},{k:'hu',n:'Oma Hulda',w:30,img:A+'img/p_hu.jpg',run:A+'img/r_hu_'},{k:'zi',n:'Zirpia',w:5,img:A+'img/p_zi.jpg',run:A+'img/r_zi_'}];
+ const side={held:0,gr:0,hu:0,zi:0};let lamp=0,sel=new Set(),moves=0,busy=false;const BY=.58;
+ const o=el('div','pg bz','<div class="pg-img" style="background-image:url('+A+'img/f_brueckespiel.jpg),url('+A+'img/ort18.jpg)"></div><div class="bz-crack"></div><div class="pg-top">Wer geht mit der Laterne hinüber?</div><div class="bz-info"><b class="bz-w">0 von 100 Stein</b><span class="bz-m">Überquerungen: 0</span></div><button class="pbtn bz-go">Losgehen</button><button class="pg-tip"><img src="'+A+'ui/tipp.png" alt="Tipp"></button><div class="bz-rule">Die Brücke trägt höchstens 100 Stein. Wer geht, nimmt die Laterne mit. Grumbold trägt die Laterne nie allein und bleibt nie allein im Dunkeln.</div>');sc.appendChild(o);
+ const lampEl=el('img','bz-lamp');lampEl.src=A+'items/laterne.png';o.appendChild(lampEl);
+ const T=P.map(p=>{const t=el('button','bz-t','<i style="background-image:url('+p.img+')"></i><img class="bz-sp" src="'+p.run+'0.png" alt=""><b>'+esc(p.n)+'</b><span>'+p.w+' Stein</span>');const sp=t.querySelector('.bz-sp');sp.onload=()=>t.classList.add('has-sp');sp.onerror=()=>sp.remove();t._sp=sp;t._run=p.run;o.appendChild(t);t.onclick=()=>{if(busy||side[p.k]!==lamp)return;sel.has(p.k)?sel.delete(p.k):sel.size<3&&sel.add(p.k);sfx('ui_klick',.5);lay()};return {p,t}});
+ const HINTS=['Grumbold ist so schwer, dass er nur mit einer einzigen Figur zusammen gehen kann. Mit wem?','Grumbold und Zirpia gehen in der Mitte hinüber, nicht am Anfang und nicht am Ende.','Du und Hulda hin, Hulda zurück, Grumbold mit Zirpia hin, Zirpia zurück, dann Zirpia und Hulda hin.'];let hint=0;
+ o.querySelector('.pg-tip').onclick=()=>{toast(HINTS[Math.min(hint,2)],8000);hint++};
+ const lay=()=>{const W=o.clientWidth,H=o.clientHeight,y=H*BY;const cnt=[0,0];
+  T.forEach(({p,t})=>{const sd=side[p.k];const i=cnt[sd]++;const col=i%2,row=Math.floor(i/2);const x=sd?W*(.70+col*.15):W*(.08+col*.15);t.style.left=x+'px';t.style.top=(y-150-row*92)+'px';t.classList.toggle('sel',sel.has(p.k));t.classList.toggle('off',sd!==lamp)});
+  lampEl.style.left=(lamp?W*.88:W*.05)+'px';lampEl.style.top=(y-48)+'px';
+  const w=[...sel].reduce((a,k)=>a+P.find(p=>p.k===k).w,0);const wb=o.querySelector('.bz-w');wb.textContent=w+' von 100 Stein';wb.classList.toggle('bad',w>100);
+  o.querySelector('.bz-m').textContent='Überquerungen: '+moves;o.querySelector('.bz-go').disabled=!sel.size};
+ lay();addEventListener('resize',lay);
+ const say1=t=>{toast(t,4500)};
+ o.querySelector('.bz-go').onclick=async()=>{if(busy||!sel.size)return;const g=[...sel];const w=g.reduce((a,k)=>a+P.find(p=>p.k===k).w,0);
+  if(g.length===1&&g[0]==='gr'){sfx('falsch',.6);return say1('Grumbold trägt die Laterne nicht allein. Er würde sie vor Aufregung fallen lassen.')}
+  const after={...side};g.forEach(k=>after[k]=1-lamp);const nl=1-lamp;
+  if(after.gr!==nl&&!Object.keys(after).some(k=>k!=='gr'&&after[k]===after.gr)){sfx('falsch',.6);return say1('Dann stünde Grumbold allein im Dunkeln. Das macht er nicht. Er fürchtet sich.')}
+  busy=true;const W=o.clientWidth;const dir=lamp?-1:1;sfx('schritte_schnee',.7);
+  const mv=T.filter(x=>sel.has(x.p.k));let fr=1;const runI=setInterval(()=>{mv.forEach(x=>{if(x.t._sp&&x.t.classList.contains('has-sp'))x.t._sp.src=x.t._run+(1+fr%3)+'.png'});fr++},120);mv.forEach(x=>x.t.classList.toggle('left',dir<0));setTimeout(()=>{clearInterval(runI);mv.forEach(x=>{if(x.t._sp)x.t._sp.src=x.t._run+'0.png'})},1850);mv.forEach((x,i)=>{x.t.classList.add('walk');x.t.style.transition='left 1.8s linear';x.t.style.left=(W*(lamp?.30:.55)-i*30*dir)+'px'});lampEl.style.transition='left 1.8s linear';lampEl.style.left=(W*(lamp?.33:.58))+'px';
+  if(w>100){await sleep(1100);sfx('eis_knackt',1);o.classList.add('crack');await sleep(500);mv.forEach(x=>{x.t.style.transition='top .9s ease-in';x.t.style.top=(o.clientHeight+100)+'px'});sfx('platsch',.6);await sleep(1300);
+   o.style.display='none';await run(s.wrong||[]);hideBox();o.style.display='';o.classList.remove('crack');Object.keys(side).forEach(k=>side[k]=0);lamp=0;moves=0;sel.clear();
+   T.forEach(x=>{x.t.style.transition='none';x.t.classList.remove('walk')});lampEl.style.transition='none';lay();busy=false;return}
+  await sleep(1850);mv.forEach(x=>{x.t.classList.remove('walk')});g.forEach(k=>side[k]=nl);lamp=nl;moves++;sel.clear();T.forEach(x=>x.t.style.transition='left .5s,top .5s');lampEl.style.transition='left .5s';lay();busy=false;
+  if(Object.values(side).every(v=>v===1)){sfx('richtig');await sleep(600);toast(moves<=5?'Alle drüben! In '+moves+' Überquerungen, besser geht es nicht.':'Alle drüben! In '+moves+' Überquerungen. Mit fünf wäre es auch gegangen.',5000);
+   o.classList.add('out');setTimeout(()=>o.remove(),500);removeEventListener('resize',lay);done(moves)}};
 });
