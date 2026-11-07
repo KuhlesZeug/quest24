@@ -614,3 +614,4 @@ img{display:block;max-width:100%}
 .bz .bz-t.left .bz-sp{transform:scaleX(-1)}
 .bz .bz-t.has-sp.sel .bz-sp{filter:drop-shadow(0 0 8px #ffd76a) drop-shadow(0 0 4px #ffd76a)}
 .bz .bz-t.has-sp.walk i,.bz .bz-t.has-sp.walk .bz-sp{animation:none}
+.hd .pg-img{background-size:100% auto!important;background-position:center bottom!important;background-color:#101a2c}
