@@ -27,13 +27,14 @@ DAYS[2]={end:'Der Kompass zeigt nach Norden. Fast immer.',steps:[
  {bg:'f_tav_kap'},
  {s:'KAP',t:'Was guckst du so? Meine Frau hat mir gestern die Haare geschnitten. Sie war dabei sehr wütend.'},
  {s:'SL',t:'Ich hatte ehrlich gesagt mehr erwartet.'},
- {bg:'f_tav_theke'},
+ {bg:'f_wirt3'},
  {s:'WIRT',t:'Du willst nach Norden? Dann brauchst du einen Kompass. Ich hab einen. Aber geschenkt gibt es nichts.'},
  {s:'WIRT',t:'Ich leg ihn unter einen von drei Bechern und misch. Findest du ihn dreimal hintereinander, gehört er dir.'},
+ {bg:'f_wirt1'},
  {s:'SL',t:'Ein Hütchenspiel. In einer Taverne. Mit einem Wirt, der seit dreißig Jahren Becher schiebt. Das wird bestimmt ganz fair.'},
- {game:'becher'},
+ {bg:'f_wirt2'},{game:'becher'},
  {if:()=>st.flags.becher_leer&&!has('korken'),then:[{s:'SL',t:'Ach, und den Korken aus dem leeren Becher darfst du behalten.'},{item:'korken'}]},
- {sfx:'gegenstand'},{s:'WIRT',t:'Dreimal! Na gut. Abgemacht ist abgemacht. Der Kompass gehört dir.'},
+ {bg:'f_wirt4'},{sfx:'gegenstand'},{s:'WIRT',t:'Dreimal! Na gut. Abgemacht ist abgemacht. Der Kompass gehört dir.'},
  {item:'kompass'},
  {bg:'f_tav_ofen'},
  {s:'WG',note:1,t:'Der Witz mit der Kapuze. Mittelmäßig.'},
@@ -76,12 +77,13 @@ DAYS[4]={end:'Heute zum Ausdrucken: Grumbolds Gefährtenbogen.',steps:[
 DAYS[5]={end:'Heute zum Ausdrucken: die Runenschablone. Du brauchst sie morgen.',steps:[
  {bg:'ort05',mus:'mine',atmo:'hoehle',acc:['tropfen','stein_rieseln','laterne_zischt'],every:9},
  {s:'GR',t:'Wenn die Lampen ausgehen, dürfen wir dann einfach umkehren? Kleine Frage.'},
+ {bg:'f_kiste1'},
  {s:'SL',t:'Eine Schatztruhe. Mitten im Gang. Völlig unbewacht. Würfle auf Wahrnehmung.'},
  {probe:{stat:'wis',ziel:12,name:'Wahrnehmung'},
-  ok:[{s:'SL',t:'Du siehst die Zähne im Spalt. Die Truhe ist ein Monster. Eine Schnappkiste!'},
+  ok:[{bg:'f_kiste2'},{s:'SL',t:'Du siehst die Zähne im Spalt. Die Truhe ist ein Monster. Eine Schnappkiste!'},
    {choice:[{t:'Vorsichtig um die Truhe herumgehen',go:[{s:'SL',t:'Ihr schleicht vorbei. Die Truhe schmollt.'}]},
-    {t:'Ihr den Korken zum Kauen geben',need:()=>has('korken'),go:[{drop:'korken'},{sfx:'kauen'},{s:'SL',t:'Sie kaut. Sie schnurrt. Sie folgt euch. Ich glaube, ihr habt jetzt ein Haustier. Für einen Tag.'},{flag:'kiste'}]}]}],
-  fail:[{sfx:'biss'},{s:'SL',t:'Die Truhe beißt dich. Ich hab dich gewarnt. Also, ich hab gesagt, würfle. Das ist eine Warnung in Spielleitersprache.'}]},
+    {t:'Ihr den Korken zum Kauen geben',need:()=>has('korken'),go:[{drop:'korken'},{sfx:'kauen'},{bg:'f_kiste4'},{s:'SL',t:'Sie kaut. Sie schnurrt. Sie folgt euch. Ich glaube, ihr habt jetzt ein Haustier. Für einen Tag.'},{flag:'kiste'}]}]}],
+  fail:[{bg:'f_kiste3'},{sfx:'biss'},{s:'SL',t:'Die Truhe beißt dich. Ich hab dich gewarnt. Also, ich hab gesagt, würfle. Das ist eine Warnung in Spielleitersprache.'}]},
  {bg:'ort05_leer'},
  {s:'SL',t:'Ihr geht tiefer in den Stollen. Und da flattert schon etwas aus dem Dunkel. Aschenmotten. Sie fressen Licht.'},
  {fight:'motten'},
@@ -108,8 +110,8 @@ DAYS[6]={end:'Grumbolds Glut leuchtet heller als je zuvor.',steps:[
  {item:'glutstein'},{learn:'gr:glutfaust'},{xp:10},
  {film:'z1'},
  {bg:'ort06'},
- {s:'WG',note:1,t:'Der Drache mit der Kerze. Das war gut.'},
- {s:'SL',t:'Sie hat gut gesagt. Sie hat gut gesagt!'},{hide:1}
+ {s:'WG',note:1,t:'Der Drache mit der Kerze. Traurig, ruhig, nah dran. So holt man die Spieler ab. Gut.'},
+ {s:'SL',t:'Sie hat gut gesagt. Sie hat gut gesagt! Und abgeholt!'},{hide:1}
 ]};
 
 FILMS.z1={shots:[
@@ -118,5 +120,6 @@ FILMS.z1={shots:[
  {img:'f_z1c',s:'SL',t:'Er hielt sie ganz nah an sein Gesicht. Als wollte er sich daran wärmen. Aber sie wärmte ihn nicht.'},
  {img:'f_z1d',s:'SL',t:'Am Morgen brannte in Morgentau wieder ein Licht weniger.'},
  {img:'f_tisch',mus:null,sfx:'plattenkratzer',s:'SL',t:'Das war übrigens das Fenster von Aldric. Der mit dem Butterbrot.'},
- {s:'SL',t:'Kein Druck.'}
+ {img:'f_aldric',sfx:'wind_boe',s:'ALT',t:'Hallo? Ist da wer? Ich seh nichts mehr. Ich finde mein Butterbrot nicht.'},
+ {img:'f_tisch',s:'SL',t:'Kein Druck.'}
 ]};

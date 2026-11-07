@@ -2,7 +2,7 @@
 WHO.BOB2={n:'Bob der Zweite',p:'p_bob'};
 
 DAYS[13]={end:'Heute zum Ausdrucken: Teil 2 der Landkarte.',steps:[
- {bg:'ort13_leer',mus:'sumpf',atmo:'nebelsumpf',acc:['frosch','rabe'],every:12,fig:'g_krok_0'},
+ {bg:'ort13',mus:'sumpf',atmo:'nebelsumpf',acc:['frosch','rabe'],every:12},
  {s:'KROK',t:'Halt. Dies ist meine Furt. Wer hinüber will, zahlt. Oder kämpft. Oder zahlt und kämpft, das hatten wir auch schon.'},
  {s:'SL',t:'Der Krokodilkönig. Er hat sich selbst gekrönt. Niemand hat ihm widersprochen. Aus naheliegenden Gründen.'},
  {s:'ZI',t:'Deine Krone ist schief.'},
@@ -10,8 +10,7 @@ DAYS[13]={end:'Heute zum Ausdrucken: Teil 2 der Landkarte.',steps:[
  {s:'SL',t:'Würfelt Initiative!'},
  {fight:'krok'},
  {bg:'ort13_leer',mus:'sumpf'},
- {fig:'g_krok_2'},
- {s:'KROK',t:'Ihr dürft sagen, dass ich tapfer war.'},{fig:null},
+ {s:'KROK',t:'Ihr dürft sagen, dass ich tapfer war.'},
  {gold:30},{loot:1},
  {film:'z3'},{hide:1}
 ]};

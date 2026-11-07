@@ -25,13 +25,13 @@ DAYS[8]={end:'Ein Irrlicht leuchtet jetzt im Glas. Es kichert manchmal.',steps:[
  {s:'SL',t:'Die Irrlichter leuchten in einer Reihenfolge auf. Merk sie dir und tippe sie nach.'},
  {game:'irrlicht'},
  {item:'irrlicht'},
- {hide:1},{sfx:'eule',fig:'g_eulenbaer_0'},{wait:1200},
+ {hide:1},{sfx:'eule',bg:'ort08'},{wait:1600},
  {s:'SL',t:'Ein Eulenbär. Bleib ganz ruhig. Keine schnellen Bewegungen.'},
  {choice:[
   {t:'Leise vorbeischleichen',go:[{probe:{stat:'dex',ziel:10,name:'Schleichen'},ok:[{s:'SL',t:'Er schaut nur. Lange. Aber nur.'}],fail:[{s:'SL',t:'Er schaut. Sehr nah. Du riechst jetzt nach Eule.'}]}]},
   {t:'Kann ich ihn streicheln?',go:[{s:'SL',t:'Natürlich fragt das jemand. Es fragt immer jemand.'},{sfx:'wuerfel'},{s:'SL',t:'Na gut. Du darfst.'},{s:'SL',t:'Er mag dich. Er mag dich zu sehr. Das ist jetzt deine Feder.'},{item:'eulenfeder'}]},
   {t:'Grumbold vorschicken',go:[{s:'GR',t:'Guten Abend. Entschuldigung. Wir gehen nur vorbei.'},{s:'SL',t:'Der Eulenbär verbeugt sich. Ich wusste nicht, dass die das können.'}]}]},
- {fig:null},
+ {bg:'ort08_leer'},
  {s:'WG',note:1,t:'Drei Optionen für einen Bären. Sie verwöhnen Ihre Gäste.'},
  {s:'SL',t:'Er ist halb Eule. Also eigentlich nur anderthalb Optionen pro Tier.'},
  {s:'WG',t:'Bitte nicht rechnen.'},{hide:1}
