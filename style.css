@@ -543,3 +543,19 @@ img{display:block;max-width:100%}
 .fs.pan .bg{animation:pan9 14s ease-in-out forwards}
 @keyframes kb9{from{transform:scale(1)}to{transform:scale(1.05)}}
 @keyframes pan9{from{transform:scale(1.06) translate3d(2%,0,0)}to{transform:scale(1.06) translate3d(-2%,0,0)}}
+/* Taktspiel: Ringe fliegen von außen auf die Trommel zu */
+.tk-wrap{position:relative;height:300px;display:grid;place-items:center;overflow:visible}
+.tk-rings,.tk-target,.tk-drum,.tk-pop{grid-area:1/1}
+.tk-rings{position:relative;width:150px;height:150px;pointer-events:none}
+.tk-rings .tk-ring{position:absolute;inset:0;border-radius:50%;border:7px solid #ffd76a;box-shadow:0 0 14px rgba(255,200,80,.8);opacity:0;animation-name:tkin;animation-timing-function:linear;animation-fill-mode:forwards}
+@keyframes tkin{0%{transform:scale(2.6);opacity:.15}70%{opacity:1}100%{transform:scale(1);opacity:1}}
+.tk-target{width:150px;height:150px;border-radius:50%;border:4px dashed rgba(255,215,106,.85);pointer-events:none;z-index:3}
+.tk-target.beat{animation:tkbeat .35s ease-out}
+@keyframes tkbeat{0%{box-shadow:0 0 0 0 rgba(255,215,106,.9),inset 0 0 30px rgba(255,215,106,.8)}100%{box-shadow:0 0 0 22px rgba(255,215,106,0),inset 0 0 0 rgba(255,215,106,0)}}
+.tk-pop{z-index:4;font-family:var(--head);font-size:2rem;color:#fff3c4;text-shadow:0 2px 0 #6b1d10,0 0 10px #000;opacity:0;transform:translateY(-95px) scale(.8);transition:opacity .15s,transform .15s;pointer-events:none}
+.tk-pop.on{opacity:1;transform:translateY(-105px) scale(1)}
+.tk-pop.d{color:#ffb3a0}.tk-pop.c{font-size:3rem;transform:translateY(0) scale(1)}
+.tk-score{text-align:center;font-family:var(--sc);margin-top:6px}
+.tk-rings .tk-ring{border:8px solid #f0a51c;box-shadow:0 0 0 2px #5a2b12,inset 0 0 0 2px #5a2b12,0 0 16px rgba(255,190,60,.9)}
+.tk-target{border:5px solid #8a4b1c;box-shadow:0 0 0 2px #f3d48a}
+.test-sol{display:block;margin:12px auto 0;min-width:0;font-size:.85rem;background:#2f5d3a;color:#fff}

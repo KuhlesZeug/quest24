@@ -51,12 +51,22 @@ function tone(f,d){const c=ac(),o=c.createOscillator(),g=c.createGain();o.type='
 
 // Tag 10: Im Takt bleiben. Kein Scheitern möglich, je besser, desto mehr Applaus.
 GAMES.takt=()=>new Promise(async done=>{
- const area=gameShell('Im Takt bleiben','Tippe auf die Trommel, wenn der Ring sie erreicht. Je genauer, desto lauter jubeln die Schnecken.');
- area.innerHTML='<div class="tk-wrap"><div class="tk-ring"></div><button class="tk-drum"><img src="'+A+'ui/trommel.png" alt=""></button><div class="tk-score">0 Treffer</div></div>';
- const drum=area.querySelector('.tk-drum'),ring=area.querySelector('.tk-ring');const beats=16,iv=650;let hits=0,beatAt=0;
- drum.onclick=()=>{const d=Math.abs(performance.now()-beatAt);drum.classList.remove('hit');void drum.offsetWidth;drum.classList.add('hit');if(d<170){hits++;area.querySelector('.tk-score').textContent=hits+' Treffer';sfx('treffer',.25)}};
- for(let i=0;i<beats;i++){ring.classList.remove('go');void ring.offsetWidth;ring.classList.add('go');await sleep(iv);beatAt=performance.now();tone(110,.12)}
- await sleep(500);gameEnd();toast(hits>12?'Tosender Applaus!':hits>6?'Die Schnecken wippen begeistert.':'Höflicher Applaus. Sehr langsamer Applaus.');sfx('sieg',.6);done()});
+ const area=gameShell('Im Takt bleiben','Ein Ring fliegt von außen auf die Trommel zu. Tippe genau dann auf die Trommel, wenn er den goldenen Rand erreicht und die Trommel aufleuchtet.');
+ area.innerHTML='<div class="tk-wrap"><div class="tk-rings"></div><div class="tk-target"></div><button class="tk-drum"><img src="'+A+'ui/trommel.png" alt=""></button><div class="tk-pop"></div></div><div class="tk-score">Gleich geht es los</div>';
+ const drum=area.querySelector('.tk-drum'),rings=area.querySelector('.tk-rings'),tgt=area.querySelector('.tk-target'),pop=area.querySelector('.tk-pop'),sc=area.querySelector('.tk-score');
+ const beats=16,iv=700,lead=1400;let hits=0,perfect=0;const times=[];const used=new Set();
+ const say=(t,c)=>{pop.textContent=t;pop.className='tk-pop on '+(c||'');clearTimeout(pop._t);pop._t=setTimeout(()=>pop.className='tk-pop',450)};
+ drum.onclick=()=>{drum.classList.remove('hit');void drum.offsetWidth;drum.classList.add('hit');tone(196,.08);
+  const now=performance.now();let best=-1,bd=1e9;times.forEach((t,i)=>{const d=Math.abs(now-t);if(d<bd&&!used.has(i)){bd=d;best=i}});
+  if(best>=0&&bd<110){used.add(best);hits++;perfect++;say('Perfekt!','p');sfx('treffer',.3)}else if(best>=0&&bd<200){used.add(best);hits++;say('Gut!','g');sfx('treffer',.2)}else say('Daneben','d');
+  sc.textContent=hits+' von '+beats+' Treffern'};
+ // Einzählen
+ for(const n of ['3','2','1']){say(n,'c');tone(330,.1);await sleep(iv)}
+ const t0=performance.now()+lead;for(let i=0;i<beats;i++)times.push(t0+i*iv);
+ times.forEach((t,i)=>{setTimeout(()=>{const r=el('i','tk-ring');r.style.animationDuration=lead+'ms';rings.appendChild(r);setTimeout(()=>r.remove(),lead+120)},t-lead-performance.now());
+  setTimeout(()=>{tgt.classList.remove('beat');void tgt.offsetWidth;tgt.classList.add('beat');tone(110,.12)},t-performance.now())});
+ await sleep(t0+beats*iv-performance.now()+600);
+ drum.onclick=null;gameEnd();toast(hits>12?'Tosender Applaus!':hits>6?'Die Schnecken wippen begeistert.':'Höflicher Applaus. Sehr langsamer Applaus.');sfx('sieg',.6);done()});
 
 // Tag 11: Steinpfad im Nebelsumpf. Raster wie auf dem Druckblatt, oben Norden, unten Ufer.
 GAMES.sumpf=()=>new Promise(done=>{

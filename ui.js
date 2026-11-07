@@ -42,7 +42,8 @@ async function runTo(d){const tk=$('.token');if(!tk)return;const m=$('#map-in'),
 function lockMsg(d){const b=berlin();return b.month===12?'Wegpunkt '+d+' öffnet sich am '+d+'. Dezember.':'Das Abenteuer beginnt am 1. Dezember.'}
 async function tapDay(d){sfx('ui_klick',.6);
  if(!unlocked(d)){await rollPercent({title:'Tageswurf',sub:'Noch nicht',locked:'Nachtigall: Geduld ist auch eine Tugend. Angeblich.'});return}
- if(d>nextDay()){toast('Erst Wegpunkt '+nextDay()+'. Die Reise geht der Reihe nach.');return}
+ if(d>nextDay()&&!TEST){toast('Erst Wegpunkt '+nextDay()+'. Die Reise geht der Reihe nach.');return}
+ if(TEST)testPrep(d);
  if(st.done[d]){const r=await choice([{t:'Tag '+d+' noch einmal erleben'},{t:'Zurück zur Karte'}]);if(r===1)return;return playDay(d,true)}
  await rollPercent({title:'Tageswurf',sub:'W100 und W10 zeigen die Zahl des Tages',fixed:d,after:v=>'Auf zu Wegpunkt '+v+': '+DAYN[v]});
  // Figur zieht weiter
@@ -96,7 +97,13 @@ async function codeInput(c){hideBox();const o=$('#card');const key=SC.id+'_'+(c.
  return new Promise(res=>{const draw=()=>{const n=st.hint[key]||0;
   o.innerHTML='<div class="c-card code"><div class="cc-k">'+esc(c.k||'Rätsel')+'</div><h3>'+T(c.q)+'</h3>'+(c.opts?'<div class="code-opts">'+c.opts.map((x,i)=>'<button class="code-o" data-i="'+i+'">'+T(x)+'</button>').join('')+'</div>':'<input class="code-in" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="'+(c.ph||'Lösung')+'"><button class="pbtn code-go">Prüfen</button>')+
   '<div class="hints">'+c.hints.map((h,i)=>'<button class="hint'+(i<n?' open':'')+'" data-i="'+i+'"><span>'+(i===2?'Lösung':'Tipp '+(i+1))+'</span>'+(i<n?T(h):i===n?'Antippen zum Aufdecken':'')+'</button>').join('')+'</div></div>';
+  if(TEST){const tb=el('button','pbtn test-sol','Test: Rätsel als gelöst werten');tb.onclick=()=>{sfx('richtig');o.classList.remove('on');res(true)};o.querySelector('.c-card').appendChild(tb)}
   o.classList.add('on');
   $$('#card .hint').forEach(b=>b.onclick=()=>{const i=+b.dataset.i;if(i!==(st.hint[key]||0))return;st.hint[key]=i+1;save();sfx('pergament',.5);draw()});
   const test=async v=>{const ok=c.opts?v===c.a:[].concat(c.h).includes(await QZ.hash(v));if(ok){sfx('richtig');o.classList.remove('on');res(true)}else{sfx('falsch');if(c.wrongSteps){o.classList.remove('on');await run(c.wrongSteps.filter(x=>!x.onlyOnce||!st.flags[key+'_w']));st.flags[key+'_w']=1;save();if(c.once)return res(false);draw()}else toast('Das stimmt noch nicht.')}};
   $$('#card .code-o').forEach(b=>b.onclick=()=>test(+b.dataset.i));const g=o.querySelector('.code-go');if(g){const i=o.querySelector('.code-in');g.onclick=()=>test(i.value);i.onkeydown=e=>{if(e.key==='Enter')test(i.value)}}};draw()})}
+
+// Testmodus: Tage frei wählbar, Gruppe und Stufe passend zum Tag
+function testPrep(d){if(!st.hero)st.hero={cls:'krieger',look:1,f:true,str:3,dex:2,wis:1,name:'Testheldin',skills:[]};
+ const p=[];if(d>4)p.push('gr');if(d>9)p.push('zi');if(d>14)p.push('hu');if(d>19)p.push('na');for(const x of p)if(!st.party.includes(x))st.party.push(x);
+ st.lvl=Math.max(st.lvl||1,1+(d>5)+(d>10)+(d>15)+(d>20));save()}

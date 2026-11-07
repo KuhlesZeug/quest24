@@ -7,7 +7,7 @@ const sleep=ms=>new Promise(r=>setTimeout(r,ms));
 const rnd=n=>1+Math.floor(Math.random()*n);
 const params=new URLSearchParams(location.search);
 const KEY='kz_quest24_v1';
-if(params.get('neu')==='1'&&params.get('probe')){try{localStorage.removeItem(KEY)}catch(e){}history.replaceState(null,'',location.pathname+'?probe='+encodeURIComponent(params.get('probe')))}
+if(params.get('neu')==='1'&&params.get('probe')){try{localStorage.removeItem(KEY)}catch(e){}history.replaceState(null,'',location.pathname+'?probe='+encodeURIComponent(params.get('probe'))+(params.get('test')==='1'?'&test=1':''))}
 const A='a/';
 
 const ST0=()=>({ok:0,intro:0,sound:true,auto:true,hero:null,party:[],inv:[],gold:0,xp:0,lvl:1,done:{},hint:{},flags:{},seen:{},log:[],start:0,insp:0});
@@ -21,9 +21,9 @@ const heroName=()=>esc((st.hero&&st.hero.name)||(GIFT&&GIFT.an)||'Held');
 const T=t=>String(t||'').replace(/\{NAME\}/g,heroName()).replace(/\{VON\}/g,esc(GIFT&&GIFT.von||'jemand, der dich gut kennt'));
 
 // Zeit: deutsche Zeit, Serverzeit wenn möglich
-let PROBE=false,skew=0;
+let PROBE=false,TEST=false,skew=0;
 const timeReady=(async()=>{
- const q=params.get('probe');if(q&&await QZ.sha(q)===QZ.PROBE)PROBE=true;
+ const q=params.get('probe');if(q&&await QZ.sha(q)===QZ.PROBE){PROBE=true;TEST=params.get('test')==='1'}
  try{const r=await fetch(location.href.split('#')[0],{method:'HEAD',cache:'no-store'});const d=r.headers.get('date');if(d)skew=new Date(d).getTime()-Date.now()}catch(e){}
 })();
 function now(){return new Date(Date.now()+skew)}
