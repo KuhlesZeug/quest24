@@ -26,9 +26,9 @@ GAMES.spiegel=()=>new Promise(done=>{
 
 // Lieder von Zirpia (Suno), laufen über der Musik
 let songEl=null;
-function playSong(name,vol,max){stopSong();if(!st.sound)return Promise.resolve();ac();const me={stop:null,done:null};songEl=me;duck(true);
+function playSong(name,vol,max,onStart){stopSong();if(!st.sound)return Promise.resolve();ac();const me={stop:null,done:null};songEl=me;duck(true);
  return new Promise(r=>{let t=null,fin=false;const end=()=>{if(fin)return;fin=true;clearTimeout(t);clearTimeout(me._w);if(songEl===me){songEl=null;duck(false)}r()};me.done=end;
-  loadVo(A+'songs/'+name+'.mp3').then(b=>{if(songEl!==me||fin)return end();if(!b)return end();const s=AC.createBufferSource();s.buffer=b;const g=AC.createGain();g.gain.value=vol??.9;s.connect(g);g.connect(voOut());s.onended=end;s.start();
+  loadVo(A+'songs/'+name+'.mp3').then(b=>{if(songEl!==me||fin)return end();if(!b)return end();const s=AC.createBufferSource();s.buffer=b;const g=AC.createGain();g.gain.value=vol??.9;s.connect(g);g.connect(voOut());s.onended=end;s.start();if(onStart)onStart();
    me.stop=()=>{try{g.gain.setTargetAtTime(0,AC.currentTime,.05);s.stop(AC.currentTime+.2)}catch(e){}end()};
    me._w=setTimeout(end,(b.duration+1.5)*1000);
    if(max)t=setTimeout(()=>{g.gain.setTargetAtTime(0,AC.currentTime,.5);setTimeout(()=>{try{s.stop()}catch(e){}end()},2200)},max*1000)})})}

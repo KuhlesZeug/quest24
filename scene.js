@@ -42,6 +42,7 @@ function waitTap(){return new Promise(r=>{SC.tap=()=>{SC.tap=null;r()}})}
 $('#s-scene').addEventListener('click',e=>{if(e.target.closest('button,input,.sc-choices,.ovl'))return;if(SC.tap)SC.tap()});
 
 async function say(k,text,vo,e){const b=scBox(),w=WHO[k]||WHO.SL;const name=k==='HELD'?heroName():w.n;const emo=guessEmo(k,text,e);
+ wgPop(k==='WG','#s-scene',emo);
  b.classList.add('on');b.classList.toggle('noface',!portrait(k));
  b.querySelector('.sb-face').style.backgroundImage=portrait(k)?'url('+portrait(k,emo)+')':'none';b.querySelector('.sb-face').classList.remove('pop');void b.offsetWidth;b.querySelector('.sb-face').classList.add('pop');
  b.querySelector('.sb-name').textContent=name;const tx=b.querySelector('.sb-text');tx.innerHTML='';b.classList.remove('done');
@@ -53,7 +54,11 @@ async function say(k,text,vo,e){const b=scBox(),w=WHO[k]||WHO.SL;const name=k===
  if(st.auto&&a){const ok=await Promise.race([voDone(a),waitTap().then(()=>'tap')]);if(ok==='tap'){stopVo();return}if(ok){await Promise.race([sleep(650),waitTap()]);SC.tap=null;return}}
  await waitTap();stopVo()}
 
-function hideBox(){scBox().classList.remove('on')}
+function hideBox(){scBox().classList.remove('on');wgPop(false)}
+// Meisterin Wendelgard schaut kurz ins Bild, wenn sie etwas sagt
+function wgPop(on,root,emo){document.querySelectorAll('.wgpop').forEach(x=>{if(!on||!x.closest(root))x.classList.remove('on')});if(!on)return;
+ let p=$(root+' .wgpop');if(!p){p=el('div','wgpop','<div class="wp-img"></div><b>Meisterin Wendelgard</b>');$(root).appendChild(p)}
+ p.querySelector('.wp-img').style.backgroundImage='url('+portrait('WG',emo??0)+')';requestAnimationFrame(()=>p.classList.add('on'))}
 
 async function choice(opts){hideBox();const c=$('#sc-choices');c.innerHTML='';c.classList.add('on');
  return new Promise(r=>{opts.forEach((o,i)=>{if(o.need&&!o.need())return;const b=el('button','ch-btn',T(o.t));b.onclick=()=>{sfx('ui_klick',.7);c.classList.remove('on');c.innerHTML='';r(i)};c.appendChild(b)})})}
@@ -61,7 +66,9 @@ async function choice(opts){hideBox();const c=$('#sc-choices');c.innerHTML='';c.
 // Einzelne Schritte ausführen
 async function run(steps,ctx){ctx=ctx||{};for(const s of steps){if(SC.abort)return;await step(s,ctx)}}
 async function step(s,ctx){
- if(s.bg){setBg(A+'img/'+s.bg+'.jpg')}
+ if(s.bg){const src=A+'img/'+s.bg+'.jpg',cur=$('#sc-bg .on');const neu=!cur||cur.dataset.src!==src;setBg(src);
+  // neues Bild erst einmal in Ruhe zeigen, bevor Text darüber kommt
+  if(neu&&s.look!==0){hideBox();wgPop(false);await Promise.race([sleep(s.look||2200),waitTap()]);SC.tap=null}}
  if(s.fig!==undefined){let f=$('#sc-fig');if(!f){f=el('div','sc-fig');f.id='sc-fig';$('#s-scene').insertBefore(f,$('#sc-box'))}f.classList.toggle('on',!!s.fig);if(s.fig)f.style.backgroundImage='url('+A+'img/'+s.fig+'.png)'}
  if(s.mus!==undefined)music(s.mus?A+'mus/'+s.mus+'.mp3':null,s.mv??.45);
  if(s.atmo!==undefined){atmo(s.atmo?A+'atmo/'+s.atmo+'.mp3':null,s.av??.6);accents(s.acc,s.every)}
@@ -93,7 +100,7 @@ const flag=f=>{st.flags[f]=1;save()};
 const has=id=>st.inv.some(x=>x.id===id);
 
 // Rohrpost von Wendelgard: Zettel fällt ins Bild
-async function rohrpost(){const n=el('div','rohr');n.innerHTML='<img src="'+A+'ui/rohrpost.png" alt="">';$('#s-scene').appendChild(n);await sleep(700);setTimeout(()=>{n.classList.add('out');setTimeout(()=>n.remove(),600)},2600)}
+async function rohrpost(){const n=el('div','rohr');n.innerHTML='<img src="'+A+'ui/rohrpost.png" alt=""><span class="rp-tag">Feedback</span>';$('#s-scene').appendChild(n);await sleep(700);setTimeout(()=>{n.classList.add('out');setTimeout(()=>n.remove(),600)},2600)}
 
 // Probe: W20 plus Wert gegen Ziel
 const STATN={str:'Stärke',dex:'Geschick',wis:'Weisheit'};

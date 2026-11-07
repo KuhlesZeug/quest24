@@ -11,18 +11,18 @@ async function playFilm(key){const F=FILMS[key];if(!F)return;show('#s-film');con
   if(sh.img&&sh.img!==curImg){curImg=sh.img;const fit=!sh.tilt&&!sh.fx;const d=el('div','fs'+(sh.pan?' pan':'')+(sh.tilt?' tilt':'')+(fit?' fit':''),(fit?'<div class="bgb" style="background-image:url('+A+'img/'+sh.img+'.jpg)"></div>':'')+'<div class="bg" style="background-image:url('+A+'img/'+sh.img+'.jpg)"></div><div class="shade"></div>');d._t0=performance.now();d._pan=!!sh.pan;if(sh.fx)skyFx(d.querySelector('.bg'),sh.fx,sh.fxo);if(sh.fx2)skyFx(d.querySelector('.bg'),sh.fx2,{});f.appendChild(d);requestAnimationFrame(()=>requestAnimationFrame(()=>{[...f.children].forEach(x=>x.classList.toggle('on',x===d))}));setTimeout(()=>{[...f.children].forEach(x=>{if(x!==d&&!x.classList.contains('on'))x.remove()})},1500)}
   if(sh.card){const c=el('div','fs on','<div class="fcard"><img src="'+A+'ui/'+sh.card+'.png" alt=""></div>');f.appendChild(c)}
   if(sh.fn==='titel'){sub.classList.remove('on');await titleReveal(f,()=>skip||run!==filmRun);curImg=null;continue}
-  if(sh.fn==='ballade'){sub.classList.remove('on');await playSong(ballade(),.95,45);continue}
+  if(sh.fn==='ballade'){sub.classList.remove('on');const nm=ballade();const tm=[];const L=LYR[nm]||[];await playSong(nm,.95,LYRMAX[nm]||45,()=>{const cue=(a,b,h)=>{tm.push(setTimeout(()=>{if(run!==filmRun)return;sub.innerHTML=h;sub.classList.add('on')},a*1000));tm.push(setTimeout(()=>sub.classList.remove('on'),b*1000))};if(L[0])cue(.6,L[0][0]-.6,'<i>Zirpia singt</i>Die Ballade von Zirpia der Großen');L.forEach(([a,b,i])=>cue(a,b,'<i>Zirpia</i>'+BALLADE[i]))});tm.forEach(clearTimeout);sub.classList.remove('on');continue}
   if(sh.fn==='abspann'){sub.classList.remove('on');music(null);const lines=[['GR','Ich kann jetzt bis acht zählen. Herbert ist sehr stolz.'],['ZI','Nächstes Jahr: Welttournee. Erste Station: Pilzbühne.'],['HU','Ich hab übrigens noch was von euch allen in meiner Schürze. Holt es euch ab.'],['NA','Mir hat es nicht gefallen. Überhaupt nicht. Ich komme nächstes Jahr wieder. Um mich zu beschweren.'],['VH','Danke.']];
    const p=playSong('zirpia_13',.9);await sleep(9000);for(const [k,t] of lines){if(skip)break;sub.innerHTML='<i>'+WHO[k].n+'</i>'+t;sub.classList.add('on');await sleep(Math.max(5000,t.length*70));sub.classList.remove('on');await sleep(2500)}await p;continue}
   if(sh.black){[...f.children].forEach(x=>x.classList.remove('on'))}
   if(sh.t){n++;const male=sh.tm&&st.hero&&!st.hero.f;const vo=A+'vo/f_'+key+'_'+String(n).padStart(3,'0')+(male?'m':'')+'.mp3';const who=WHO[sh.s]||WHO.SL;
-   sub.classList.remove('on');await sleep(150);sub.innerHTML=(sh.s&&sh.s!=='SL'?'<i>'+who.n+'</i>':'')+T(male?sh.tm:sh.t);sub.classList.add('on');
+   sub.classList.remove('on');await sleep(150);sub.innerHTML=(sh.s&&sh.s!=='SL'?'<i>'+who.n+'</i>':'')+T(male?sh.tm:sh.t);sub.classList.add('on');wgPop(sh.s==='WG'&&!/^f_wg/.test(curImg||''),'#s-film',guessEmo('WG',sh.t,sh.e));
    const a=playVo(vo);if(sh.fade){const fd=sh.fade;const doFade=()=>{if(run!==filmRun)return;sfx(fd.sfx||'wind_boe',.7);const base=[...f.children].reverse().find(x=>x._t0);const el0=base?performance.now()-base._t0:0;const d=el('div','fs slow fit'+(base&&base._pan?' pan':''),'<div class="bgb" style="background-image:url('+A+'img/'+fd.img+'.jpg)"></div><div class="bg" style="background-image:url('+A+'img/'+fd.img+'.jpg);animation-delay:-'+Math.round(el0)+'ms"></div><div class="shade"></div>');d._t0=base?base._t0:performance.now();d._pan=base&&base._pan;f.appendChild(d);curImg=fd.img;requestAnimationFrame(()=>requestAnimationFrame(()=>d.classList.add('on')))};const t0=performance.now();const wt=setInterval(()=>{if(run!==filmRun){clearInterval(wt);return}if((a&&a.s)||!a||a._err||performance.now()-t0>4000){clearInterval(wt);setTimeout(doFade,fd.at)}},50)}const ok=await Promise.race([voDone(a),sleep(400).then(()=>a&&!a._err?null:false)]);
    if(ok===null)await voDone(a);else if(ok===false)await sleep(Math.max(2200,sh.t.length*62));
    await sleep(sh.gap??350)}
   else await sleep(sh.d||1800);
  }
- sub.classList.remove('on');stopVo();await sleep(400)}
+ sub.classList.remove('on');wgPop(false);stopVo();await sleep(400)}
 
 // Der große Auftritt: Würfel rollt, kritische 20, Lichtschlag, Logo
 const DRF=[0,1,2,3].map(i=>{const im=new Image();im.src=A+'ui/dr_s_'+i+'.png';return im});
@@ -62,6 +62,10 @@ function skyFx(d,kind,o){const L=el('div','sky '+kind);d.appendChild(L);o=o||{};
  if(kind.includes('lantern'))for(let i=0;i<16;i++){const t=el('i','ln');t.style.left=(5+Math.random()*90)+'%';t.style.animationDelay=(Math.random()*7)+'s';t.style.animationDuration=(7+Math.random()*5)+'s';L.appendChild(t)}
  if(kind.includes('flare')){const f=el('i','fl');f.style.left=(o.x||50)+'%';f.style.top=(o.y||15)+'%';L.appendChild(f)}}
 
+// Zirpias Ballade: Text und Einsätze der vier Fassungen (Sekunden ab Liedbeginn)
+const BALLADE=['Ich bin nicht größer als ein Daumen, nicht mehr,<br>doch sing ich lauter als ein ganzer Bär.','Nach meinem Auftritt wirft man mir nie Hosen,<br>man wirft mir duftende, rote Rosen.','Zirpia, Zirpia, die Größte im Land,<br>mit Walnussgeige und Federhut in der Hand.','Die Spinne hielt mich fest, ich sang ganz laut,<br>da hat sie mich verliebt angeschaut.','Und ist mein Lied auch viel zu lang, juchhei,<br>es ist erst morgen früh vorbei.'];
+const LYR={zirpia_02:[[4.5,14.9,0],[15.1,23.9,1],[25.7,33.7,2],[34.1,42.9,3]],zirpia_03:[[21.3,29.8,0],[30,38.2,1],[38.8,45.8,2]],zirpia_04:[[18.1,26.8,0],[27,35,1],[36,44.6,2]],zirpia_05:[[7.9,17.6,0],[17.8,26.1,1],[26.2,34.5,2],[34.8,43.1,3]]};
+const LYRMAX={zirpia_02:44,zirpia_03:47.5,zirpia_04:46,zirpia_05:44.5};
 const FILMS={
  intro:{shots:[
   {black:1,sfx:'trommel',d:1600,mus:null},
