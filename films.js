@@ -9,7 +9,6 @@ async function playFilm(key){const F=FILMS[key];if(!F)return;show('#s-film');con
   if(sh.atmo!==undefined)atmo(sh.atmo?A+'atmo/'+sh.atmo+'.mp3':null,.4);
   if(sh.sfx)sfx(sh.sfx,sh.v);
   if(sh.img&&sh.img!==curImg){curImg=sh.img;const d=el('div','fs'+(sh.pan?' pan':'')+(sh.tilt?' tilt':''),'<div class="bg" style="background-image:url('+A+'img/'+sh.img+'.jpg)"></div><div class="shade"></div>');d._t0=performance.now();d._pan=!!sh.pan;if(sh.fx)skyFx(d.querySelector('.bg'),sh.fx,sh.fxo);if(sh.fx2)skyFx(d.querySelector('.bg'),sh.fx2,{});f.appendChild(d);requestAnimationFrame(()=>requestAnimationFrame(()=>{[...f.children].forEach(x=>x.classList.toggle('on',x===d))}));setTimeout(()=>{[...f.children].forEach(x=>{if(x!==d&&!x.classList.contains('on'))x.remove()})},1500)}
-  if(sh.fade){const fd=sh.fade;setTimeout(()=>{if(run!==filmRun)return;sfx(fd.sfx||'wind_boe',.7);const base=[...f.children].reverse().find(x=>x._t0);const el0=base?performance.now()-base._t0:0;const d=el('div','fs slow'+(base&&base._pan?' pan':''),'<div class="bg" style="background-image:url('+A+'img/'+fd.img+'.jpg);animation-delay:-'+Math.round(el0)+'ms"></div><div class="shade"></div>');d._t0=base?base._t0:performance.now();d._pan=base&&base._pan;f.appendChild(d);curImg=fd.img;requestAnimationFrame(()=>requestAnimationFrame(()=>d.classList.add('on')))},fd.at)}
   if(sh.card){const c=el('div','fs on','<div class="fcard"><img src="'+A+'ui/'+sh.card+'.png" alt=""></div>');f.appendChild(c)}
   if(sh.fn==='titel'){sub.classList.remove('on');await titleReveal(f,()=>skip||run!==filmRun);curImg=null;continue}
   if(sh.fn==='ballade'){sub.classList.remove('on');await playSong(ballade(),.95,45);continue}
@@ -18,7 +17,7 @@ async function playFilm(key){const F=FILMS[key];if(!F)return;show('#s-film');con
   if(sh.black){[...f.children].forEach(x=>x.classList.remove('on'))}
   if(sh.t){n++;const male=sh.tm&&st.hero&&!st.hero.f;const vo=A+'vo/f_'+key+'_'+String(n).padStart(3,'0')+(male?'m':'')+'.mp3';const who=WHO[sh.s]||WHO.SL;
    sub.classList.remove('on');await sleep(150);sub.innerHTML=(sh.s&&sh.s!=='SL'?'<i>'+who.n+'</i>':'')+T(male?sh.tm:sh.t);sub.classList.add('on');
-   const a=playVo(vo);const ok=await Promise.race([voDone(a),sleep(400).then(()=>a&&!a._err?null:false)]);
+   const a=playVo(vo);if(sh.fade){const fd=sh.fade;const doFade=()=>{if(run!==filmRun)return;sfx(fd.sfx||'wind_boe',.7);const base=[...f.children].reverse().find(x=>x._t0);const el0=base?performance.now()-base._t0:0;const d=el('div','fs slow'+(base&&base._pan?' pan':''),'<div class="bg" style="background-image:url('+A+'img/'+fd.img+'.jpg);animation-delay:-'+Math.round(el0)+'ms"></div><div class="shade"></div>');d._t0=base?base._t0:performance.now();d._pan=base&&base._pan;f.appendChild(d);curImg=fd.img;requestAnimationFrame(()=>requestAnimationFrame(()=>d.classList.add('on')))};const t0=performance.now();const wt=setInterval(()=>{if(run!==filmRun){clearInterval(wt);return}if((a&&a.s)||!a||a._err||performance.now()-t0>4000){clearInterval(wt);setTimeout(doFade,fd.at)}},50)}const ok=await Promise.race([voDone(a),sleep(400).then(()=>a&&!a._err?null:false)]);
    if(ok===null)await voDone(a);else if(ok===false)await sleep(Math.max(2200,sh.t.length*62));
    await sleep(sh.gap??350)}
   else await sleep(sh.d||1800);
@@ -27,14 +26,17 @@ async function playFilm(key){const F=FILMS[key];if(!F)return;show('#s-film');con
 
 // Der große Auftritt: Würfel rollt, kritische 20, Lichtschlag, Logo
 async function titleReveal(f,stop){const w=t=>stop()?Promise.resolve():sleep(t);
- const o=el('div','ttl','<div class="ttl-bg" style="background-image:url('+A+'img/f_intro5.jpg)"></div><div class="ttl-flash"></div><div class="ttl-rays"></div><div class="ttl-embers"></div><div class="ttl-logo"><div class="lg"><img class="lg-base" src="'+A+'ui/logo_base.png" alt=""><img class="lg-dr" src="'+A+'ui/logo_drache.png" alt=""><i class="lg-glow"></i><img class="lg-fl" src="'+A+'ui/flamme.png" alt=""></div><div class="ttl-sub"></div></div>');
+ const o=el('div','ttl','<div class="ttl-bg" style="background-image:url('+A+'img/f_intro5.jpg)"><i class="ttl-glow"></i></div><div class="ttl-flash"></div><div class="ttl-rays"></div><div class="ttl-embers"></div><div class="ttl-logo"><div class="lg"><img class="lg-base" src="'+A+'ui/logo_leer.png" alt=""><img class="lg-dr" src="'+A+'ui/logo_drache.png" alt=""><i class="lg-glow"></i><img class="lg-fl" src="'+A+'ui/flamme.png" alt=""></div><div class="ttl-sub"></div></div>');
  f.appendChild(o);[...f.children].forEach(x=>{if(x!==o)x.classList.remove('on')});
  const em=o.querySelector('.ttl-embers');for(let i=0;i<34;i++){const e=el('i','');e.style.left=Math.random()*100+'%';e.style.animationDelay=(Math.random()*4)+'s';e.style.animationDuration=(3+Math.random()*3)+'s';const z=2+Math.random()*4;e.style.width=e.style.height=z+'px';em.appendChild(e)}
- music(null);sfx('trommel',.9);requestAnimationFrame(()=>o.classList.add('s1'));await w(700);
+ music(null);sfx('trommel',.9);requestAnimationFrame(()=>o.classList.add('s1'));await w(500);
  sfx('wuerfel',1);await w(1500);
- o.classList.add('s2');await w(900);
- sfx('kritisch',1);o.classList.add('s3');await w(260);
- o.classList.add('s4');sfx('fanfare',.9);music(A+'mus/titel.mp3',.55);await w(1300);
+ // langsame Fahrt auf die 20, die Zahl beginnt golden zu glühen
+ o.classList.add('s2');sfx('zauber',.5);await w(2100);
+ // das Licht der 20 flutet das Bild
+ sfx('kritisch',1);o.classList.add('s3');await w(900);
+ // aus dem Licht erscheint das Logo
+ o.classList.add('s4');sfx('fanfare',.9);music(A+'mus/titel.mp3',.55);await w(1700);
  sfx('drache',.5);o.classList.add('s5');
  const t='Der Hort des Aschenkönigs',sb=o.querySelector('.ttl-sub');for(const c of t){if(stop())break;sb.innerHTML+=c===' '?' ':'<span>'+c+'</span>';await sleep(55)}
  await w(2400);
@@ -77,7 +79,7 @@ const FILMS={
   {img:'f_tisch',s:'SL',t:'Ja. Natürlich. Also.'},
   {img:'f_intro3',mus:'intro_dunkel',s:'SL',t:'Doch seit sechzig Jahren ist der Lichternachtstern nicht mehr aufgegangen. Und in diesem Winter … verschwinden auch die Lichter in den Fenstern.'},
   {img:'f_intro4',s:'SL',t:'Vharkon. Der Aschenkönig. Jede Nacht holt er sich ein Licht. Und niemand weiß, warum.'},
-  {img:'ort01',s:'SL',t:'In vierundzwanzig Nächten ist Lichternacht. Wenn bis dahin das letzte Licht erlischt … bleibt Eldmark für immer im Dunkeln.',fade:{img:'ort01_dunkel',at:5200,sfx:'laterne_zischt'}},
+  {img:'ort01',s:'SL',t:'In vierundzwanzig Nächten ist Lichternacht. Wenn bis dahin das letzte Licht erlischt … bleibt Eldmark für immer im Dunkeln.',fade:{img:'ort01_dunkel',at:4900,sfx:'laterne_zischt'}},
   {img:'ort01_dunkel',s:'SL',t:'Das Königreich braucht eine Heldin. Oder einen Helden. Jemand Mutigen. Jemand Starken. Jemand …'},
   {s:'SL',t:'… Verfügbaren.'},
   {img:'f_held1',pan:1,mus:'intro_dunkel',s:'SL',t:'Irgendwo in Morgentau liegt in dieser Nacht jemand wach. Jemand, den noch niemand kennt.'},
