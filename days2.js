@@ -6,7 +6,7 @@ DAYS[7]={end:'Die Laterne leuchtet. Der Wald flüstert trotzdem weiter.',steps:[
  {s:'SL',t:'Der Flüsterwald. Er heißt so, weil die Bäume flüstern. Nicht, weil ich gerade so leise rede.'},
  {s:'SL',t:'Ich rede normal.'},
  {s:'GR',t:'Die Bäume sagen, wir sollen umkehren.'},
- {s:'SL',t:'Das sagen sie zu jedem. Das ist ihr Ding.'},
+ {s:'SL',t:'Das sagen sie zu jedem. Machen die immer so.'},
  {bg:'f_schild_weg'},
  {s:'SL',t:'Drei Wege, drei Wegweiser. Die Waldgeister haben sie verhext. Zwei von ihnen lügen, nur einer sagt die Wahrheit. Und nur das ehrliche Schild steht vor dem Weg nach Norden.'},
  {game:'schilder',wrong:[{s:'GR',t:'Den Baum kenne ich. Ich hab ihn Gerhard genannt.'},{s:'SL',t:'Zurück an den Anfang. Gerhard grüßt.'}]},
@@ -33,7 +33,7 @@ DAYS[8]={end:'Ein Irrlicht leuchtet jetzt im Glas. Es kichert manchmal.',steps:[
   {t:'Grumbold vorschicken',go:[{s:'GR',t:'Guten Abend. Entschuldigung. Wir gehen nur vorbei.'},{s:'SL',t:'Der Eulenbär verbeugt sich. Ich wusste nicht, dass die das können.'}]}]},
  {bg:'ort08_leer'},
  {s:'WG',note:1,t:'Drei Optionen für einen Bären. Sie verwöhnen Ihre Gäste.'},
- {s:'SL',t:'Er ist halb Eule. Also eigentlich nur anderthalb Optionen pro Tier.'},
+ {s:'SL',t:'Er ist ja nur halb Bär. Also eigentlich sechs Optionen pro Bär.'},
  {s:'WG',t:'Bitte nicht rechnen.'},{hide:1}
 ]};
 
@@ -113,6 +113,6 @@ FILMS.z2={shots:[
  {img:'f_z2a',fn:'ballade'},
  {img:'f_z2b',s:'ZI',t:'Sie lieben mich. Sie lieben mich wirklich.'},
  {img:'f_z2c',s:'GR',t:'Das war das Schönste, was ich je gehört habe. Und ich habe schon mal einen Kiesel ins Wasser fallen hören.'},
- {img:'f_tisch',sfx:'plattenkratzer',s:'SL',t:'Ich hab da was im Auge. Ein Würfel. Ich hab einen Würfel im Auge.'},
+ {img:'f_tisch',sfx:'plattenkratzer',s:'SL',t:'Ich weine nicht. Ich hab nur was im Auge. Einen Würfel. Ganz bestimmt.'},
  {img:'f_z2b',mus:'wald',s:'ZI',t:'Für schwere Zeiten. Ein Wiegenlied. Das wirkt bei jedem. Sogar bei Drachen, vermutlich.'}
 ]};

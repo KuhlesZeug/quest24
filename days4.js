@@ -128,7 +128,7 @@ DAYS[24]={end:'Heute ist Lichternacht.',steps:[
  {s:'NA',t:'Ich weiß.',e:'sad'},
  {sfx:'drache'},
  {s:'VH',t:'Geht. Bevor ich euch die Kälte zeige, die ich seit sechzig Jahren fühle.',e:3},
- {s:'SL',t:'Okay. Das ist es. Würfelt Initiative. Alle. Zusammen.',e:'worried'},
+ {s:'SL',t:'Na gut. Jetzt gilt es. Würfelt Initiative. Alle. Zusammen.',e:'worried'},
  {fn:()=>music(A+'mus/boss.mp3',.5)},
  {s:'HU',t:'Kindchen, runter da.',e:'angry'},{fn:()=>keyProbe(0)},{sfx:'netz'},
  {s:'VH',t:'Was … ist das? Gestrickt?',e:4},{s:'HU',t:'Doppelt. Mit Zopfmuster.',e:'sly'},
