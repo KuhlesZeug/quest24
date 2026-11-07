@@ -137,12 +137,31 @@ async function pickFoe(){const alive=B.foes.filter(f=>f.hp>0);if(alive.length===
 async function pickAlly(down){const e=await pick('#bt-party .bt-u',e=>down?B.party[+e.dataset.k].hp<=0:B.party[+e.dataset.k].hp>0);return B.party[+e.dataset.k]}
 async function attack(u,f,o){let bonus=u.atk+(B.buff.all||0)+(u.next||0)+(o.add||0)-(u.blind?2:0);u.next=0;
  let v;if(u.hero){const r=await rollD20({title:u.hit+' gegen '+f.n,sub:'W20 plus '+bonus+', Ziel '+f.def,bonus,ziel:f.def,force:o.crit?20:null});v=r}else{const x=rnd(20);v={v:x,total:x+bonus,crit:x===20,fumble:x===1}}
- poseFor(u,1,700);if(!u.hero)await sleep(250);
+ poseFor(u,1,700);const pk=projKind(u,o);if(pk&&!(v.fumble&&u.hero))await shoot(u,f,pk,v.total<f.def&&!v.crit);else if(!u.hero)await sleep(250);
  if(v.fumble&&u.hero){await fumble();return}
  if(v.total<f.def&&!v.crit){blog(u.n+' verfehlt.');sfx('falsch',.5);await sleep(500);return}
  let dmg=o.fixed||(Math.ceil(d10()/2)+u.dmg+(o.dmgAdd||0));const el_=o.el||u.el;let m=o.ignore?Math.max(1,elemMul(el_,f.el)):elemMul(el_,f.el);
  if(v.crit)dmg*=2;if(u.hero&&B.first&&st.hero.cls==='schurke'){dmg*=2;B.first=false}if(u.ballad){dmg*=2;u.ballad=0}if(o.double)dmg*=2;
  dmg=Math.max(1,Math.round(dmg*m));u.face=m>1||v.crit?3:6;setTimeout(()=>{u.face=0;if(B)render()},800);hurtFoe(f,dmg,u,null,m);if(m>1)superEff(u,f);if(v.crit&&u.hero)critLine();await sleep(650)}
+// Fliegende Angriffe: Pfeil, Zauber, Stein, Noten
+const PROJ={feuer:['p_feuer_0','p_feuer_1'],eis:['p_eis_0','p_eis_1'],blitz:['p_blitz_0','p_blitz_1'],pfeil:['p_pfeil'],gift:['p_giftpfeil'],stein:['p_stein_0','p_stein_1'],noten:['p_note_0','p_note_1'],dolch:['p_dolch'],stern:['p_stern'],natur:['p_blatt'],erde:['p_stein_0','p_stein_1'],bombe:['p_bombe']};
+const PSFX={feuer:'feuerball',eis:'eis_knackt',blitz:'donner',pfeil:'wuerfel',gift:'wuerfel',stein:'stein',noten:'zauber',stern:'zauber',natur:'zauber',erde:'stein',bombe:'puff',dolch:'schwert_ziehen'};
+function projKind(u,o){if(o&&o.proj)return o.proj;if(u.hero){const c=st.hero.cls;if(c==='waldlaeufer')return 'pfeil';if(c==='magier')return (o&&o.el)||'stern';return null}
+ if(u.id==='gr')return o&&o.el==='feuer'?'feuer':'stein';if(u.id==='zi')return 'noten';if(u.id==='hu')return 'blitz';if(u.id==='na')return o&&o.el==='eis'?'eis':null;return null}
+async function shoot(u,f,kind,miss){const ov=$('#battle');const ue=$('#bt-party .bt-u[data-k="'+B.party.indexOf(u)+'"] .bt-sp'),fe=$('#bt-foes .bt-f[data-i="'+f.i+'"] .bt-fi');if(!ue||!fe||!PROJ[kind])return;
+ const R=ov.getBoundingClientRect(),a=ue.getBoundingClientRect(),b=fe.getBoundingClientRect();
+ const x0=a.left+a.width*.5-R.left,y0=a.top+a.height*.3-R.top,x1=b.left+b.width*.5-R.left+(miss?b.width*.7:0),y1=b.top+b.height*.5-R.top+(miss?-b.height*.4:0);
+ const fr=PROJ[kind],p=el('div','proj'+(kind==='stein'||kind==='erde'||kind==='dolch'?' spin':''),'<img src="'+A+'ui/'+fr[0]+'.png" alt="">');ov.appendChild(p);const im=p.firstChild;
+ const ang=Math.atan2(y1-y0,x1-x0)*180/Math.PI;const arc=(kind==='stein'||kind==='erde'||kind==='bombe')?-Math.min(140,Math.abs(y1-y0)*.6+60):-30;
+ sfx(PSFX[kind]||'zauber',.6);const T=kind==='blitz'?320:kind==='pfeil'||kind==='gift'?480:700;const t0=performance.now();let k=0;
+ await new Promise(res=>{const step=t=>{const q=Math.min(1,(t-t0)/T);const x=x0+(x1-x0)*q,y=y0+(y1-y0)*q+arc*4*q*(1-q);const dy=(y1-y0)+arc*4*(1-2*q);const rot=Math.atan2(dy,x1-x0)*180/Math.PI;
+  const sc=.55+.45*q;p.style.transform='translate('+x+'px,'+y+'px) translate(-50%,-50%) rotate('+(p.classList.contains('spin')?q*720:rot)+'deg) scale('+sc+')';
+  if(fr.length>1&&(k++%4===0))im.src=A+'ui/'+fr[(k>>2)%fr.length]+'.png';
+  if(kind==='noten'||kind==='stern'||kind==='feuer'||kind==='eis'||kind==='natur'){if(k%3===0){const t2=el('i','ptrail '+kind);t2.style.left=x+'px';t2.style.top=y+'px';ov.appendChild(t2);setTimeout(()=>t2.remove(),450)}}
+  if(q<1)requestAnimationFrame(step);else res()};requestAnimationFrame(step)});
+ p.remove();if(!miss){const fxk=kind==='feuer'?'hit':kind==='eis'||kind==='blitz'||kind==='stern'||kind==='noten'||kind==='natur'?'magic':kind==='bombe'?'smoke':'hit';fx(fxk,fe)}}
+// Mehrere Ziele auf einmal
+async function shootAll(u,kind){const al=B.foes.filter(f=>f.hp>0);await Promise.all(al.map((f,i)=>sleep(i*120).then(()=>shoot(u,f,kind,false))))}
 function hurtFoe(f,d,u,why,m){f.hp=Math.max(0,f.hp-d);sfx('treffer',.8);blog((u?u.n:why)+' trifft '+f.n+': '+d+' Schaden'+(m>1?', super effektiv':m<1?', nicht sehr wirksam':''));render();
  f.fr=2;setTimeout(()=>{f.fr=0;if(B)render()},450);render();const e=$('#bt-foes .bt-f[data-i="'+f.i+'"]');if(e){fx('hit',e.querySelector('.bt-fi'));e.classList.add('hit');const n=el('div','dmg',''+d);e.appendChild(n);setTimeout(()=>e.classList.remove('hit'),400)}if(f.hp<=0)blog(f.n+' ist besiegt.')}
 async function foeTurn(f){const a=f.intent;if(!a||a.pre){blog(f.n+' holt aus. Achtung, nächste Runde kommt '+a.pre.n+'.');await sleep(800);return}
@@ -168,10 +187,10 @@ async function useSkill(u,s){const S=SK[s];if(S.once)B.used[u.id+s]=1;sfx('zaube
  case 'glutfaust':{const f=await pickFoe();await attack(u,f,{el:'feuer',dmgAdd:1});break}
  case 'waermherz':B.party.forEach(p=>{if(p.hp>0)p.hp=Math.min(p.max,p.hp+4)});blog('Wärmendes Herz: alle plus 4.');break;
  case 'mutmach':B.party.forEach(p=>p.next=(p.next||0)+2);blog('Zirpia spielt das Mutmachlied. Alle plus 2.');break;
- case 'schlaflied':{const f=await pickFoe();f.skip=1;blog(f.n+' gähnt und schläft ein.');break}
+ case 'schlaflied':{const f=await pickFoe();await shoot(u,f,'noten',false);f.skip=1;blog(f.n+' gähnt und schläft ein.');break}
  case 'ballade':{const a=await pickAlly();a.ballad=1;blog('Heldenballade für '+a.n+'.');break}
  case 'taschendieb':{const f=await pickFoe();const g=3+rnd(6);addGold(g);f.minus=2;blog('Oma Hulda klaut '+g+' Gold und eine Zahnbürste. '+f.n+' ist verwirrt.');break}
- case 'stahlfalle':{const f=await pickFoe();f.skip=1;blog(f.n+' verheddert sich im Stahlgarn.');break}
+ case 'stahlfalle':{const f=await pickFoe();await shoot(u,f,'blitz',false);f.skip=1;blog(f.n+' verheddert sich im Stahlgarn.');break}
  case 'plaetzchen':B.party.forEach(p=>{if(p.hp>0){p.hp=Math.min(p.max,p.hp+3);p.next=(p.next||0)+1}});blog('Plätzchenpause! Alle plus 3.');break;
  case 'schattensprung':{u.dodge=1;const f=await pickFoe();await attack(u,f,{add:1});break}
  case 'frostkralle':{const f=await pickFoe();await attack(u,f,{el:'eis',fixed:8});break}
@@ -179,25 +198,25 @@ async function useSkill(u,s){const S=SK[s];if(S.once)B.used[u.id+s]=1;sfx('zaube
  case 'doppelschuss':{for(let i=0;i<2;i++){const f=await pickFoe();if(f)await attack(u,f,{})}break}
  case 'elementar':{const e=await pickElem();const f=await pickFoe();await attack(u,f,{el:e,dmgAdd:1});break}
  case 'kampfschrei':B.buff.all=1;blog('Kampfschrei! Alle plus 1.');break;
- case 'wirbelhieb':case 'pfeilregen':for(const f of B.foes.filter(f=>f.hp>0))hurtFoe(f,Math.max(1,Math.ceil((Math.ceil(d10()/2)+1)/2)),u);break;
+ case 'wirbelhieb':case 'pfeilregen':if(s==='pfeilregen')await shootAll(u,'pfeil');for(const f of B.foes.filter(f=>f.hp>0))hurtFoe(f,Math.max(1,Math.ceil((Math.ceil(d10()/2)+1)/2)),u);break;
  case 'schildstoss':{const f=await pickFoe();const r=await rollD20({title:'Schildstoß',sub:'Ziel 12',bonus:st.hero.str,ziel:12});if(r.total>=12){f.skip=1;blog(f.n+' taumelt.')}break}
  case 'beschuetzer':{const a=await pickAlly();a.block=1;break}
  case 'kraftschlag':{const f=await pickFoe();await attack(u,f,{double:1});u.pause=1;break}
- case 'heldenhieb':{const f=await pickFoe();hurtFoe(f,d10()+d10()+d10(),u);break}
- case 'giftpfeil':case 'giftklinge':{const f=await pickFoe();f.poison=3;blog(f.n+' ist vergiftet.');break}
+ case 'heldenhieb':{const f=await pickFoe();poseFor(u,1,700);await sleep(250);hurtFoe(f,d10()+d10()+d10(),u);break}
+ case 'giftpfeil':case 'giftklinge':{const f=await pickFoe();if(s==='giftpfeil')await shoot(u,f,'gift',false);f.poison=3;blog(f.n+' ist vergiftet.');break}
  case 'hoernchen':case 'schmutztrick':{const f=await pickFoe();f.minus=3;blog(f.n+' ist abgelenkt.');break}
  case 'tarnung':u.hidden=1;setTimeout(()=>u.hidden=0,0);blog(u.n+' verschwindet im Gebüsch.');u.dodge=1;break;
  case 'zielschuss':{const f=await pickFoe();await attack(u,f,{add:5});break}
  case 'meisterschuss':{const f=await pickFoe();await attack(u,f,{double:1,ignore:1});break}
  case 'schutzkreis':B.buff.circle=1;blog('Ein Schutzkreis leuchtet auf.');break;
- case 'funkenregen':for(const f of B.foes.filter(f=>f.hp>0))hurtFoe(f,3,u);break;
+ case 'funkenregen':await shootAll(u,'feuer');for(const f of B.foes.filter(f=>f.hp>0))hurtFoe(f,3,u);break;
  case 'spiegelbild':u.mirror=1;blog('Drei '+u.n+' stehen plötzlich da.');break;
  case 'elementwandel':{const f=await pickFoe();f.el=await pickElem();blog(f.n+' ist jetzt '+ELEM[f.el]+'.');break}
  case 'heilzauber':{const a=await pickAlly();a.hp=Math.min(a.max,a.hp+6);break}
- case 'kettenblitz':B.foes.filter(f=>f.hp>0).slice(0,2).forEach(f=>hurtFoe(f,Math.max(1,Math.round((Math.ceil(d10()/2)+2)*elemMul('blitz',f.el))),u));break;
+ case 'kettenblitz':{const t2=B.foes.filter(f=>f.hp>0).slice(0,2);for(const f of t2)await shoot(u,f,'blitz',false)}B.foes.filter(f=>f.hp>0).slice(0,2).forEach(f=>hurtFoe(f,Math.max(1,Math.round((Math.ceil(d10()/2)+2)*elemMul('blitz',f.el))),u));break;
  case 'zeitstopp':blog('Die Zeit steht still. Noch eine Runde für euch.');for(const p of B.party)if(p.hp>0&&p!==u)await partyTurn(p);break;
- case 'sternenfeuer':{const f=await pickFoe();hurtFoe(f,d10()+d10()+d10()+d10(),u);break}
- case 'rauchbombe':B.buff.smoke=1;setTimeout(()=>{},0);blog('Puff! Alles voller Rauch.');break;
+ case 'sternenfeuer':{const f=await pickFoe();await shoot(u,f,'stern',false);hurtFoe(f,d10()+d10()+d10()+d10(),u);break}
+ case 'rauchbombe':await shootAll(u,'bombe');B.buff.smoke=1;setTimeout(()=>{},0);blog('Puff! Alles voller Rauch.');break;
  case 'schattenpartner':{const f=await pickFoe();await attack(u,f,{double:B.party.some(p=>p.id==='na'&&p.hp>0)?1:0});break}
  case 'glueckspilz':{const f=await pickFoe();await attack(u,f,{crit:1});break}
  }

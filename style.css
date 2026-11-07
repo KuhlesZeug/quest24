@@ -428,24 +428,26 @@ img{display:block;max-width:100%}
 .pg-top{position:absolute;top:calc(14px + env(safe-area-inset-top));left:50%;transform:translateX(-50%);padding:6px 16px;border-radius:20px;background:rgba(20,12,6,.7);color:#ffe9b8;font-family:var(--sc);font-size:1rem;white-space:nowrap;border:2px solid var(--wood)}
 .pg-tip{position:absolute;top:calc(10px + env(safe-area-inset-top));right:12px;width:46px;height:46px;border:0;background:none;padding:0}
 .pg-tip img{width:100%}
-.pg-spot{position:absolute;transform:translate(-50%,-50%);background:none;border:0;border-radius:40% 40% 20% 20%;box-shadow:0 0 0 0 rgba(255,214,110,0);animation:pgpulse 2.2s ease-in-out infinite}
-.pg-spot:nth-of-type(2){animation-delay:.7s}.pg-spot:nth-of-type(3){animation-delay:1.4s}
-@keyframes pgpulse{0%,100%{box-shadow:0 0 0 0 rgba(255,214,110,0)}50%{box-shadow:0 0 18px 4px rgba(255,214,110,.55)}}
-.pg-spot.on{animation:none;box-shadow:0 0 22px 6px rgba(255,214,110,.75)}
+.pg-spot{position:absolute;background:none;border:0;padding:0;z-index:2}
+.pg-ring{position:absolute;left:50%;top:-6px;width:34px;height:34px;translate:-50% -100%;border-radius:50%;border:3px solid #ffe08a;box-shadow:0 0 12px #ffcf5a;animation:pgring 1.6s ease-in-out infinite}
+.pg-ring::after{content:"";position:absolute;inset:8px;border-radius:50%;background:#ffe08a}
+.pg-spot:nth-of-type(2) .pg-ring{animation-delay:.5s}.pg-spot:nth-of-type(3) .pg-ring{animation-delay:1s}
+@keyframes pgring{0%,100%{transform:scale(.8);opacity:.7}50%{transform:scale(1.1);opacity:1}}
+.pg-spot.on .pg-ring{display:none}
 .pg-spot.talk{animation:pgtalk .35s ease-in-out infinite}
-@keyframes pgtalk{0%,100%{transform:translate(-50%,-50%) rotate(0)}50%{transform:translate(-50%,-50%) rotate(1.5deg) scale(1.02)}}
-.pg-bub{position:absolute;left:50%;bottom:103%;transform:translateX(-50%);width:max-content;max-width:42vw;padding:8px 12px;border-radius:14px;background:#fff8e6;color:var(--ink);font-family:var(--body);font-style:normal;font-size:.95rem;line-height:1.25;box-shadow:0 4px 12px rgba(0,0,0,.5);opacity:0;transition:opacity .25s;pointer-events:none}
+@keyframes pgtalk{0%,100%{transform:rotate(0)}50%{transform:rotate(1.2deg)}}
+.pg-bub{position:absolute;left:50%;bottom:calc(100% + 8px);z-index:3;transform:translateX(-50%);width:max-content;max-width:42vw;padding:8px 12px;border-radius:14px;background:#fff8e6;color:var(--ink);font-family:var(--body);font-style:normal;font-size:.95rem;line-height:1.25;box-shadow:0 4px 12px rgba(0,0,0,.5);opacity:0;transition:opacity .25s;pointer-events:none}
 .pg-bub::after{content:"";position:absolute;left:50%;top:100%;transform:translateX(-50%);border:8px solid transparent;border-top-color:#fff8e6}
 .pg-spot.talk .pg-bub{opacity:1}
-.pg-go{position:absolute;transform:translate(-50%,-50%) scale(.6);opacity:0;pointer-events:none;padding:8px 14px;border-radius:12px;border:3px solid var(--wood);background:url(a/ui/knopf.png) center/100% 100%;color:#fff3d6;font-family:var(--sc);font-size:1rem;text-shadow:0 1px 2px #000;transition:.25s;white-space:nowrap}
+.pg-go{position:absolute;z-index:4;transform:translate(-50%,-50%) scale(.6);opacity:0;pointer-events:none;padding:8px 14px;border-radius:12px;border:3px solid var(--wood);background:url(a/ui/knopf.png) center/100% 100%;color:#fff3d6;font-family:var(--sc);font-size:.95rem;text-shadow:0 1px 2px #000;transition:.25s;white-space:nowrap;min-height:44px}
 .pg-go.on{opacity:1;pointer-events:auto;transform:translate(-50%,-50%) scale(1)}
 
 /* Feuerstoß als Überleitung */
 @keyframes drinhale{to{transform:scale(1.03,1.08) translateY(-2%)}}
 @keyframes drspit{0%{transform:scale(1.03,1.08) translateY(-2%)}30%{transform:scale(.97,.95) translate(-2%,1%)}100%{transform:none}}
 .fball{position:absolute;z-index:8;width:0;height:0;pointer-events:none}
-.fball img{position:absolute;left:0;top:0;max-width:none;width:min(130vw,700px);translate:-50% -50%;transform:scale(.04) rotate(-30deg);opacity:.2;transition:transform 1s cubic-bezier(.4,0,.7,1),opacity .3s;filter:drop-shadow(0 0 30px #ff8a1a)}
-.fball.go img{transform:scale(4.2) rotate(25deg);opacity:1}
+.fball img{position:absolute;left:0;top:0;max-width:none;width:min(130vw,700px);translate:-50% -50%;transform:scale(.5) rotate(-20deg);opacity:.9;transition:transform .9s cubic-bezier(.5,0,.8,.6),opacity .2s;filter:drop-shadow(0 0 30px #ff8a1a)}
+.fball.go img{transform:scale(5) rotate(30deg);opacity:1}
 .fball::after{content:"";position:fixed;inset:0;background:radial-gradient(circle,#fff7d6,#ffb13b 45%,#ff6a00);opacity:0;transition:opacity .25s .85s}
 .fball.go::after{opacity:1}
 .fball.gone img,.fball.gone::after{opacity:0;transition:opacity 1.2s;transition-delay:0s}
@@ -464,3 +466,29 @@ img{display:block;max-width:100%}
 @keyframes lantern{0%{opacity:0;transform:translate(0,0) scale(1)}10%{opacity:1}70%{opacity:.9}100%{opacity:0;transform:translate(30px,-75vh) scale(.45)}}
 .sky .fl{position:absolute;width:44%;aspect-ratio:1;translate:-50% -50%;background:radial-gradient(circle,#fff 0,#fff6c8 6%,rgba(255,226,140,.55) 18%,rgba(255,210,110,.12) 40%,transparent 62%),conic-gradient(from 0deg,transparent 0 10deg,rgba(255,240,190,.45) 10deg 13deg,transparent 13deg 55deg,rgba(255,240,190,.45) 55deg 58deg,transparent 58deg 100deg,rgba(255,240,190,.45) 100deg 103deg,transparent 103deg 145deg,rgba(255,240,190,.45) 145deg 148deg,transparent 148deg 190deg,rgba(255,240,190,.45) 190deg 193deg,transparent 193deg 235deg,rgba(255,240,190,.45) 235deg 238deg,transparent 238deg 280deg,rgba(255,240,190,.45) 280deg 283deg,transparent 283deg 325deg,rgba(255,240,190,.45) 325deg 328deg,transparent 328deg);-webkit-mask-image:radial-gradient(circle,#000 20%,transparent 68%);mask-image:radial-gradient(circle,#000 20%,transparent 68%);mix-blend-mode:screen;animation:flare 3.2s ease-in-out infinite}
 @keyframes flare{0%,100%{opacity:.55;transform:scale(.85) rotate(0deg)}35%{opacity:1;transform:scale(1.25) rotate(12deg)}55%{opacity:.8;transform:scale(1) rotate(18deg)}}
+/* Drachen Nahaufnahme vor dem Feuerstoß */
+.ttl.zoomin .ttl-logo{transition:transform .5s ease-in,opacity .45s;transform:scale(2.2) translate(12%,18%)!important;opacity:0;animation:none}
+.drv{position:absolute;inset:0;opacity:0;transition:opacity .35s;z-index:3;background:radial-gradient(circle at 50% 50%,#3a220e,#120804 75%)}
+.drv.on{opacity:1}
+.drf{position:absolute;left:0;right:0;top:50%;aspect-ratio:3/4;translate:0 -50%;max-height:100%;background:center/cover no-repeat;opacity:0;border-radius:6px;box-shadow:0 0 40px rgba(255,170,60,.35)}
+.drf.on{opacity:1}
+.drf.turn{animation:drturn .5s ease-out}
+@keyframes drturn{0%{transform:scale(1.04) rotate(-1deg)}60%{transform:scale(1.07) rotate(.6deg)}100%{transform:scale(1.06)}}
+.drf.inhale{animation:drinh 1.2s ease-in forwards}
+@keyframes drinh{from{transform:scale(1.06)}to{transform:scale(1.14) translateY(-1%)}}
+.drf.spit{animation:drspitf .5s ease-out forwards}
+@keyframes drspitf{0%{transform:scale(1.18) translate(-1%,1%)}20%{transform:scale(1.12) translate(1%,-1%)}40%{transform:scale(1.16) translate(-1%,0)}100%{transform:scale(1.14)}}
+/* Flugobjekte im Kampf */
+.proj{position:absolute;left:0;top:0;width:92px;height:92px;z-index:9;pointer-events:none;will-change:transform}
+.proj img{width:100%;height:100%;object-fit:contain;filter:drop-shadow(0 0 6px rgba(255,230,160,.8))}
+.ptrail{position:absolute;width:12px;height:12px;margin:-6px 0 0 -6px;border-radius:50%;z-index:8;pointer-events:none;animation:ptr .45s ease-out forwards}
+.ptrail.feuer{background:radial-gradient(circle,#fff3b0,#ff8a1a 60%,transparent)}
+.ptrail.eis{background:radial-gradient(circle,#fff,#7fd4ff 60%,transparent)}
+.ptrail.noten,.ptrail.stern{background:radial-gradient(circle,#fff,#ffd34d 60%,transparent)}
+.ptrail.natur{background:radial-gradient(circle,#fff,#7be36b 60%,transparent)}
+@keyframes ptr{to{transform:scale(.2);opacity:0}}
+
+.drf.glow{animation:drglow .65s ease-in forwards}
+@keyframes drglow{from{transform:scale(1.02)}to{transform:scale(1.16);filter:brightness(1.25)}}
+.drf.rush{animation:drrush .45s ease-in forwards}
+@keyframes drrush{from{transform:scale(1)}to{transform:scale(1.9);filter:brightness(1.4)}}

@@ -167,21 +167,22 @@ GAMES.becher=()=>new Promise(done=>{
  setTimeout(play,500)});
 
 // Tag 7: Die sprechenden Wegweiser. Schilder antippen, zuhören, dann einem Weg folgen.
+// Logik: Nur ein Schild sagt die Wahrheit, und das ehrliche Schild steht vor dem Weg nach Norden. Lösung: Mitte.
 GAMES.schilder=(s)=>new Promise(done=>{const sc=$('#s-scene');const IW=810,IH=1080;
- const SG=[{k:'l',sp:'SCHL',x:.36,y:.52,t:'Ich führe nach Norden!'},{k:'m',sp:'SCHM',x:.52,y:.54,t:'Ich führe nicht nach Norden.'},{k:'r',sp:'SCHR',x:.70,y:.52,t:'Der linke Weg führt nach Norden.'}];
- const HINTS=['Probier es aus: Wäre links richtig, hätten alle drei Schilder recht. Das kann nicht sein.','Wäre die Mitte richtig, würden alle drei lügen. Auch das kann nicht sein.','Bleibt rechts: Dann lügen links und rechts, und nur das mittlere Schild sagt die Wahrheit.'];
- const o=el('div','pg','<div class="pg-img" style="background-image:url('+A+'img/f_schild_weg.jpg)"></div><div class="pg-top">Tippe ein Schild an</div><button class="pg-tip"><img src="'+A+'ui/tipp.png" alt="Tipp"></button>');sc.appendChild(o);
+ const SG=[{k:'l',x:.355,top:.27,bot:.66,t:'Der rechte Weg führt nach Norden!',dir:'Links lang'},{k:'m',x:.52,top:.28,bot:.74,t:'Der linke Weg führt nicht nach Norden.',dir:'Geradeaus'},{k:'r',x:.68,top:.28,bot:.66,t:'Das mittlere Schild lügt.',dir:'Rechts lang'}];
+ const HINTS=['Das ehrliche Schild steht vor dem richtigen Weg. Prüf jeden Weg: Würde dann genau dieses eine Schild die Wahrheit sagen?','Links? Dann müsste das linke Schild ehrlich sein. Es sagt aber, rechts sei Norden. Passt nicht.','Rechts? Dann wäre das rechte ehrlich, die Mitte würde lügen, also wäre links Norden. Widerspruch. Es bleibt: geradeaus.'];
+ const o=el('div','pg','<div class="pg-img" style="background-image:url('+A+'img/f_schild_weg.jpg)"></div><div class="pg-top">Tippe die Schilder an</div><button class="pg-tip"><img src="'+A+'ui/tipp.png" alt="Tipp"></button>');sc.appendChild(o);
  const box=()=>{const W=o.clientWidth,H=o.clientHeight,k=Math.max(W/IW,H/IH);return {k,ox:(W-IW*k)/2,oy:(H-IH*k)/2}};
- let heard=new Set(),sel=null,busy=false,hint=0;
- const spots=SG.map((g,i)=>{const b=el('button','pg-spot','<i class="pg-bub"></i>');b.dataset.i=i;o.appendChild(b);
-  const go=el('button','pg-go','Hier lang');go.dataset.i=i;o.appendChild(go);return {g,b,go}});
- const lay=()=>{const {k,ox,oy}=box();spots.forEach(({g,b,go})=>{const x=ox+g.x*IW*k,y=oy+g.y*IH*k;b.style.left=x+'px';b.style.top=y+'px';b.style.width=(IW*k*.13)+'px';b.style.height=(IH*k*.46)+'px';go.style.left=x+'px';go.style.top=(oy+.80*IH*k)+'px'})};
+ let hint=0,walking=false;
+ const spots=SG.map((g,i)=>{const b=el('button','pg-spot','<i class="pg-bub"></i><i class="pg-ring"></i>');o.appendChild(b);const go=el('button','pg-go',g.dir);o.appendChild(go);return {g,b,go}});
+ const lay=()=>{const {k,ox,oy}=box();spots.forEach(({g,b,go})=>{const x=ox+g.x*IW*k,y0=oy+g.top*IH*k,y1=oy+g.bot*IH*k;b.style.left=(x-IW*k*.075)+'px';b.style.top=y0+'px';b.style.width=(IW*k*.15)+'px';b.style.height=(y1-y0)+'px';go.style.left=x+'px';go.style.top=(oy+.83*IH*k)+'px'})};
  lay();addEventListener('resize',lay);
- spots.forEach(sp=>{sp.b.onclick=async()=>{if(busy)return;busy=true;sel=sp;spots.forEach(x=>{x.b.classList.toggle('on',x===sp);x.go.classList.toggle('on',x===sp)});
-  const bub=sp.b.querySelector('.pg-bub');bub.textContent=sp.g.t;sp.b.classList.add('talk');
-  const a=playVo(A+'vo/d07_s'+sp.g.k+'.mp3');await voDone(a);sp.b.classList.remove('talk');heard.add(sp.g.k);
-  o.querySelector('.pg-top').textContent=heard.size<3?'Tippe ein Schild an':'Welchem Weg folgst du?';busy=false};
-  sp.go.onclick=async()=>{if(busy||!sel)return;busy=true;sfx('schritte_schnee',.7);
-   if(sp.g.k==='r'){o.classList.add('out');setTimeout(()=>o.remove(),500);removeEventListener('resize',lay);return done()}
-   o.style.display='none';await run(s.wrong||[]);hideBox();o.style.display='';spots.forEach(x=>{x.b.classList.remove('on');x.go.classList.remove('on')});busy=false}});
- o.querySelector('.pg-tip').onclick=()=>{toast(HINTS[Math.min(hint,2)],6500);hint++}});
+ spots.forEach(sp=>{sp.b.onclick=async()=>{if(walking)return;stopVo();spots.forEach(x=>{x.b.classList.remove('talk','on')});sp.b.classList.add('on','talk');
+  sp.b.querySelector('.pg-bub').textContent=sp.g.t;sp.go.classList.add('on');
+  const a=playVo(A+'vo/d07_s'+sp.g.k+'.mp3');await voDone(a);sp.b.classList.remove('talk');
+  if(spots.every(x=>x.go.classList.contains('on')))o.querySelector('.pg-top').textContent='Welchem Weg folgst du?'};
+  sp.go.onclick=async()=>{if(walking)return;walking=true;stopVo();sfx('schritte_schnee',.7);spots.forEach(x=>x.b.classList.remove('talk'));
+   if(sp.g.k==='m'){o.classList.add('out');setTimeout(()=>o.remove(),500);removeEventListener('resize',lay);return done()}
+   o.style.display='none';await run(s.wrong||[]);hideBox();o.style.display='';walking=false}});
+ o.querySelector('.pg-tip').onclick=()=>{toast(HINTS[Math.min(hint,2)],7000);hint++};
+});
