@@ -640,3 +640,5 @@ img{display:block;max-width:100%}
 @keyframes zgshake{40%{transform:translate(-50%,3px) rotate(-1.5deg)}}
 .zg-conf{position:absolute;inset:0;pointer-events:none}.zg-conf i{position:absolute;top:-10px;width:8px;height:12px;border-radius:2px;animation:zgfall linear forwards}
 @keyframes zgfall{to{transform:translateY(520px) rotate(540deg);opacity:0}}
+.bz .bz-t .bz-sp{height:76px}.bz .bz-t{width:60px}.bz .bz-t b{font-size:.62rem}.bz .bz-t span{font-size:.6rem}
+.bz-lamp{pointer-events:none}

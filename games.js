@@ -267,15 +267,15 @@ GAMES.haendler=(s)=>new Promise(done=>{const sc=$('#s-scene');const IW=1080,IH=1
 // Tag 18: Die Eisbrücke. Seitenansicht, Figuren mit der Laterne hinüberschicken.
 GAMES.bruecke=(s)=>new Promise(done=>{const sc=$('#s-scene');
  const h=st.hero;const P=[{k:'held',n:heroName(),w:50,img:heroImg(),run:A+'img/r_'+h.cls+'_'+h.look+'_'},{k:'gr',n:'Grumbold',w:90,img:A+'img/p_gr.jpg',run:A+'img/r_gr_'},{k:'hu',n:'Oma Hulda',w:30,img:A+'img/p_hu.jpg',run:A+'img/r_hu_'},{k:'zi',n:'Zirpia',w:5,img:A+'img/p_zi.jpg',run:A+'img/r_zi_'}];
- const side={held:0,gr:0,hu:0,zi:0};let lamp=0,sel=new Set(),moves=0,busy=false;const BY=.58;
+ const side={held:0,gr:0,hu:0,zi:0};let lamp=0,sel=new Set(),moves=0,busy=false;const BY=.465;
  const o=el('div','pg bz','<div class="pg-img" style="background-image:url('+A+'img/f_brueckespiel.jpg),url('+A+'img/ort18.jpg)"></div><div class="bz-crack"></div><div class="pg-top">Wer geht mit der Laterne hinüber?</div><div class="bz-info"><b class="bz-w">0 von 100 Stein</b><span class="bz-m">Überquerungen: 0</span></div><button class="pbtn bz-go">Losgehen</button><button class="pg-tip"><img src="'+A+'ui/tipp.png" alt="Tipp"></button><div class="bz-rule">Die Brücke trägt höchstens 100 Stein. Wer geht, nimmt die Laterne mit. Grumbold trägt die Laterne nie allein und bleibt nie allein im Dunkeln.</div>');sc.appendChild(o);
  const lampEl=el('img','bz-lamp');lampEl.src=A+'items/laterne.png';o.appendChild(lampEl);
  const T=P.map(p=>{const t=el('button','bz-t','<i style="background-image:url('+p.img+')"></i><img class="bz-sp" src="'+p.run+'0.png" alt=""><b>'+esc(p.n)+'</b><span>'+p.w+' Stein</span>');const sp=t.querySelector('.bz-sp');sp.onload=()=>t.classList.add('has-sp');sp.onerror=()=>sp.remove();t._sp=sp;t._run=p.run;o.appendChild(t);t.onclick=()=>{if(busy||side[p.k]!==lamp)return;sel.has(p.k)?sel.delete(p.k):sel.size<3&&sel.add(p.k);sfx('ui_klick',.5);lay()};return {p,t}});
  const HINTS=['Grumbold ist so schwer, dass er nur mit einer einzigen Figur zusammen gehen kann. Mit wem?','Grumbold und Zirpia gehen in der Mitte hinüber, nicht am Anfang und nicht am Ende.','Du und Hulda hin, Hulda zurück, Grumbold mit Zirpia hin, Zirpia zurück, dann Zirpia und Hulda hin.'];let hint=0;
  o.querySelector('.pg-tip').onclick=()=>{toast(HINTS[Math.min(hint,2)],8000);hint++};
  const lay=()=>{const W=o.clientWidth,H=o.clientHeight,y=H*BY;const cnt=[0,0];
-  T.forEach(({p,t})=>{const sd=side[p.k];const i=cnt[sd]++;const col=i%2,row=Math.floor(i/2);const x=sd?W*(.70+col*.15):W*(.08+col*.15);t.style.left=x+'px';t.style.top=(y-150-row*92)+'px';t.classList.toggle('sel',sel.has(p.k));t.classList.toggle('off',sd!==lamp)});
-  lampEl.style.left=(lamp?W*.88:W*.05)+'px';lampEl.style.top=(y-48)+'px';
+  T.forEach(({p,t})=>{const sd=side[p.k];const i=cnt[sd]++;const col=i%2,row=Math.floor(i/2);const x=sd?W*(.76+col*.14):W*(.08+col*.14);t.style.left=x+'px';t.style.top=(y-(t.classList.contains('has-sp')?84:70)-row*96)+'px';t.classList.toggle('sel',sel.has(p.k));t.classList.toggle('off',sd!==lamp)});
+  lampEl.style.left=(lamp?W*.95:W*.03)+'px';lampEl.style.top=(y-44)+'px';
   const w=[...sel].reduce((a,k)=>a+P.find(p=>p.k===k).w,0);const wb=o.querySelector('.bz-w');wb.textContent=w+' von 100 Stein';wb.classList.toggle('bad',w>100);
   o.querySelector('.bz-m').textContent='Überquerungen: '+moves;o.querySelector('.bz-go').disabled=!sel.size};
  lay();addEventListener('resize',lay);
@@ -285,7 +285,7 @@ GAMES.bruecke=(s)=>new Promise(done=>{const sc=$('#s-scene');
   const after={...side};g.forEach(k=>after[k]=1-lamp);const nl=1-lamp;
   if(after.gr!==nl&&!Object.keys(after).some(k=>k!=='gr'&&after[k]===after.gr)){sfx('falsch',.6);return say1('Dann stünde Grumbold allein im Dunkeln. Das macht er nicht. Er fürchtet sich.')}
   busy=true;const W=o.clientWidth;const dir=lamp?-1:1;sfx('schritte_schnee',.7);
-  const mv=T.filter(x=>sel.has(x.p.k));let fr=1;const runI=setInterval(()=>{mv.forEach(x=>{if(x.t._sp&&x.t.classList.contains('has-sp'))x.t._sp.src=x.t._run+(1+fr%3)+'.png'});fr++},120);mv.forEach(x=>x.t.classList.toggle('left',dir<0));setTimeout(()=>{clearInterval(runI);mv.forEach(x=>{if(x.t._sp)x.t._sp.src=x.t._run+'0.png'})},1850);mv.forEach((x,i)=>{x.t.classList.add('walk');x.t.style.transition='left 1.8s linear';x.t.style.left=(W*(lamp?.30:.55)-i*30*dir)+'px'});lampEl.style.transition='left 1.8s linear';lampEl.style.left=(W*(lamp?.33:.58))+'px';
+  const mv=T.filter(x=>sel.has(x.p.k));let fr=1;const runI=setInterval(()=>{mv.forEach(x=>{if(x.t._sp&&x.t.classList.contains('has-sp'))x.t._sp.src=x.t._run+(1+fr%3)+'.png'});fr++},120);mv.forEach(x=>x.t.classList.toggle('left',dir<0));setTimeout(()=>{clearInterval(runI);mv.forEach(x=>{if(x.t._sp)x.t._sp.src=x.t._run+'0.png'})},1850);mv.forEach((x,i)=>{x.t.classList.add('walk');x.t.style.transition='left 1.8s linear';x.t.style.left=(W*(lamp?.26:.70)-i*34*dir)+'px'});lampEl.style.transition='left 1.8s linear';lampEl.style.left=(W*(lamp?.30:.74))+'px';
   if(w>100){await sleep(1100);sfx('eis_knackt',1);o.classList.add('crack');await sleep(500);mv.forEach(x=>{x.t.style.transition='top .9s ease-in';x.t.style.top=(o.clientHeight+100)+'px'});sfx('platsch',.6);await sleep(1300);
    o.style.display='none';await run(s.wrong||[]);hideBox();o.style.display='';o.classList.remove('crack');Object.keys(side).forEach(k=>side[k]=0);lamp=0;moves=0;sel.clear();
    T.forEach(x=>{x.t.style.transition='none';x.t.classList.remove('walk')});lampEl.style.transition='none';lay();busy=false;return}
