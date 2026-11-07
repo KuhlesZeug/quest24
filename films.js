@@ -8,7 +8,7 @@ async function playFilm(key){const F=FILMS[key];if(!F)return;show('#s-film');con
   if(sh.mus!==undefined)music(sh.mus?A+'mus/'+sh.mus+'.mp3':null,sh.mv??.55);
   if(sh.atmo!==undefined)atmo(sh.atmo?A+'atmo/'+sh.atmo+'.mp3':null,.4);
   if(sh.sfx)sfx(sh.sfx,sh.v);
-  if(sh.img&&sh.img!==curImg){curImg=sh.img;const d=el('div','fs'+(sh.pan?' pan':''),'<div class="bg" style="background-image:url('+A+'img/'+sh.img+'.jpg)"></div><div class="shade"></div>');d._t0=performance.now();d._pan=!!sh.pan;f.appendChild(d);requestAnimationFrame(()=>requestAnimationFrame(()=>{[...f.children].forEach(x=>x.classList.toggle('on',x===d))}));setTimeout(()=>{[...f.children].forEach(x=>{if(x!==d&&!x.classList.contains('on'))x.remove()})},1500)}
+  if(sh.img&&sh.img!==curImg){curImg=sh.img;const d=el('div','fs'+(sh.pan?' pan':'')+(sh.tilt?' tilt':''),'<div class="bg" style="background-image:url('+A+'img/'+sh.img+'.jpg)"></div><div class="shade"></div>');d._t0=performance.now();d._pan=!!sh.pan;if(sh.fx)skyFx(d.querySelector('.bg'),sh.fx,sh.fxo);f.appendChild(d);requestAnimationFrame(()=>requestAnimationFrame(()=>{[...f.children].forEach(x=>x.classList.toggle('on',x===d))}));setTimeout(()=>{[...f.children].forEach(x=>{if(x!==d&&!x.classList.contains('on'))x.remove()})},1500)}
   if(sh.fade){const fd=sh.fade;setTimeout(()=>{if(run!==filmRun)return;sfx(fd.sfx||'wind_boe',.7);const base=[...f.children].reverse().find(x=>x._t0);const el0=base?performance.now()-base._t0:0;const d=el('div','fs slow'+(base&&base._pan?' pan':''),'<div class="bg" style="background-image:url('+A+'img/'+fd.img+'.jpg);animation-delay:-'+Math.round(el0)+'ms"></div><div class="shade"></div>');d._t0=base?base._t0:performance.now();d._pan=base&&base._pan;f.appendChild(d);curImg=fd.img;requestAnimationFrame(()=>requestAnimationFrame(()=>d.classList.add('on')))},fd.at)}
   if(sh.card){const c=el('div','fs on','<div class="fcard"><img src="'+A+'ui/'+sh.card+'.png" alt=""></div>');f.appendChild(c)}
   if(sh.fn==='titel'){sub.classList.remove('on');await titleReveal(f,()=>skip||run!==filmRun);curImg=null;continue}
@@ -45,12 +45,20 @@ async function titleReveal(f,stop){const w=t=>stop()?Promise.resolve():sleep(t);
  dr.style.animation='drspit .5s ease-out forwards';sfx('feuerball',1);sfx('feuer_entfacht',.8);requestAnimationFrame(()=>requestAnimationFrame(()=>fb.classList.add('go')));
  await w(1000);o.remove();music(A+'mus/intro.mp3',.45);fb.classList.add('gone');setTimeout(()=>fb.remove(),1300)}
 
+// Lebendiger Himmel über den gemalten Bildern
+function skyFx(d,kind,o){const L=el('div','sky '+kind);d.appendChild(L);o=o||{};
+ if(kind.includes('twinkle'))for(let i=0;i<26;i++){const t=el('i','tw');t.style.left=Math.random()*100+'%';t.style.top=Math.random()*(o.sky||40)+'%';t.style.animationDelay=(Math.random()*3)+'s';t.style.animationDuration=(1.6+Math.random()*2.4)+'s';L.appendChild(t)}
+ if(kind.includes('shoot')){const go=()=>{if(!L.isConnected)return;const s=el('i','sh');s.style.left=(10+Math.random()*70)+'%';s.style.top=(2+Math.random()*(o.sky||30)*.7)+'%';L.appendChild(s);setTimeout(()=>s.remove(),1400);setTimeout(go,900+Math.random()*1600)};setTimeout(go,400)}
+ if(kind.includes('snow'))L.appendChild(el('div','sn'));
+ if(kind.includes('lantern'))for(let i=0;i<16;i++){const t=el('i','ln');t.style.left=(5+Math.random()*90)+'%';t.style.animationDelay=(Math.random()*7)+'s';t.style.animationDuration=(7+Math.random()*5)+'s';L.appendChild(t)}
+ if(kind.includes('flare')){const f=el('i','fl');f.style.left=(o.x||50)+'%';f.style.top=(o.y||15)+'%';L.appendChild(f)}}
+
 const FILMS={
  intro:{shots:[
   {black:1,sfx:'trommel',d:1600,mus:null},
-  {img:'f_intro1',pan:1,mus:'intro',s:'SL',t:'In einer Zeit vor unserer Zeit …'},
+  {img:'f_intro1',tilt:1,mus:'intro',fx:'twinkle shoot snow',fxo:{sky:32},s:'SL',t:'In einer Zeit vor unserer Zeit …'},
   {img:'f_intro1',s:'SL',t:'… in einem Königreich voller Licht …'},
-  {img:'f_intro2',s:'SL',t:'… feierte man jedes Jahr die Lichternacht.'},
+  {img:'f_intro2',pan:0,fx:'twinkle shoot lantern flare',fxo:{sky:40,x:50,y:26.7},s:'SL',t:'… feierte man jedes Jahr die Lichternacht.'},
   {img:'f_tisch',mus:null,sfx:'plattenkratzer',s:'SL',t:'Moment. Moment. Falsche Seite.'},
   {sfx:'pergament',s:'SL',t:'Das ist … mein Einkaufszettel.'},
   {sfx:'pergament',s:'SL',t:'So. Jetzt.'},
