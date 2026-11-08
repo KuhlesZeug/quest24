@@ -22,7 +22,9 @@ async function playFilm(key){const F=FILMS[key];if(!F)return;stopSfx(.4);show('#
    await Promise.race([p,new Promise(r=>{const iv=setInterval(()=>{if(skip||run!==filmRun){clearInterval(iv);r()}},300)})]);clearInterval(at);
    // Überblendung auf das Logo
    cr.classList.add('out');[...f.children].forEach(x=>{if(x!==cr)x.classList.remove('on')});await sleep(1200);cr.remove();
-   if(run===filmRun){const lg=el('div','fs on logo-end','<img src="'+A+'ui/logo.png" alt="Quest 24"><p>Frohe Lichternacht</p>');f.appendChild(lg);sfx('licht_an',.7);await sleep(skip?1200:5200);lg.classList.add('gone');await sleep(1400)}
+   if(run===filmRun){const lg=el('div','fs on logo-end','<div class="le-rays"></div><div class="le-emb"></div><div class="lg le-lg"><img class="lg-base" src="'+A+'ui/logo_leer.png" alt=""><img class="lg-dr" src="'+A+'ui/logo_drache.png" alt=""><i class="lg-glow"></i><img class="lg-fl" src="'+A+'ui/flamme.png" alt=""></div><p>Frohe Lichternacht</p>');f.appendChild(lg);
+    const em=lg.querySelector('.le-emb');for(let i=0;i<30;i++){const e=el('i','');e.style.left=Math.random()*100+'%';e.style.animationDelay=(Math.random()*4)+'s';e.style.animationDuration=(3+Math.random()*3)+'s';const z=2+Math.random()*4;e.style.width=e.style.height=z+'px';em.appendChild(e)}
+    sfx('trommel',.6);setTimeout(()=>{sfx('feuer_entfacht',.7);lg.classList.add('lit')},1300);await sleep(skip?1500:6500);lg.classList.add('gone');await sleep(1400)}
    continue}
   if(sh.black){[...f.children].forEach(x=>x.classList.remove('on'))}
   if(sh.t){n++;const male=sh.tm&&st.hero&&!st.hero.f;const vo=A+'vo/f_'+key+'_'+String(n).padStart(3,'0')+(male?'m':'')+'.mp3';const who=WHO[sh.s]||WHO.SL;

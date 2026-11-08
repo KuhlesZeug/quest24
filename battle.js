@@ -101,7 +101,7 @@ async function battle(F,key,tries){const ov=$('#battle');ov.innerHTML='';ov.clas
  if(F.phases&&B.phI){const f=B.foes.find(x=>x.boss);if(f)f.hp=Math.max(1,Math.ceil(F.phases[B.phI-1]*f.max)-2)}
  if(st.hero.skills.includes('waldsegen'))B.party.forEach(p=>p.hp=Math.min(p.max,p.hp+3));
  ov.innerHTML='<div class="bt-bg" style="background-image:url('+A+'img/'+F.bg+'.jpg)"></div><div class="bt-top"><div class="bt-t">'+esc(F.t)+'</div><div class="bt-r" id="bt-r"></div></div><div class="bt-foes" id="bt-foes"></div><div class="bt-log" id="bt-log"></div><div class="bt-party" id="bt-party"></div><div class="bt-act" id="bt-act"></div>';
- preloadSprites();sfx('schwert_ziehen');if(tries&&TIPS[key])blog('Tipp: '+TIPS[key],1);
+ preloadSprites();sfx('schwert_ziehen');setTimeout(()=>{if(B){B._fszLock=0;fitFoes(true);B._fszLock=1}},700);if(tries&&TIPS[key])blog('Tipp: '+TIPS[key],1);
  if(F.tut&&!st.flags.tut_done)await tutorial();
  while(true){B.round++;$('#bt-r').textContent='Runde '+B.round;planFoes();render();
   for(const u of B.party){if(u.hp<=0)continue;if(u.web){u.web=0;blog(u.n+' hängt im Netz fest und setzt aus.');render();await sleep(900);continue}
@@ -118,10 +118,22 @@ const TIPS={ratten:'Ratten haben wenig Lebenspunkte. Ein Treffer reicht oft.',mo
 function blog(t,tip){const l=$('#bt-log');if(!l)return;const p=el('div',tip?'tip':'',esc(t));l.prepend(p);while(l.children.length>3)l.lastChild.remove()}
 function planFoes(){B.foes.forEach(f=>{if(f.hp<=0)return;if(f.warned){f.intent=f.warned;f.warned=null;return}
  const a=f.acts[(B.round+f.i)%f.acts.length];if(a.warn&&!f.intent?.warn){f.intent={n:'holt aus',pre:a};f.warned=a;return}f.intent=a})}
-function render(){const fo=$('#bt-foes');fo.innerHTML='';fo.classList.toggle('many',B.foes.length>=3);B.foes.forEach(f=>{const d=el('div','bt-f'+(f.hp<=0?' down':'')+(f.boss?' boss':''),'<div class="bt-fi" style="background-image:url('+A+'img/'+f.img+'_'+(f.hp<=0?3:(f.fr||0))+'.png)"></div><div class="bt-hp"><i style="width:'+Math.max(0,f.hp/f.max*100)+'%"></i></div><div class="bt-fn">'+esc(f.n)+' <span class="el el-'+f.el+'"></span></div>'+(f.hp>0&&f.intent?'<div class="bt-int">'+esc(f.intent.pre?f.intent.pre.n+' kommt':f.intent.n)+'</div>':''));d.dataset.i=f.i;fo.appendChild(d)});
- fitFoes();const pa=$('#bt-party');pa.innerHTML='';const vw=Math.min(innerWidth,480);pa.style.setProperty('--pw',Math.round(Math.min(150,innerHeight*.17/1.35*1.35,(vw-16)/(B.party.length+(B.party.some(p=>p.id==='gr')?.25:0))*(B.party.length>2?1.18:1)-6))+'px');B.party.forEach((u,k)=>{const pose=u.hp<=0?3:(u.pose||0);const d=el('div','bt-u'+(u.id==='gr'?' big':'')+(u.id==='hu'||u.id==='zi'?' small':'')+(u.hp<=0?' down':'')+(B.cur===u?' cur':'')+(pose===1?' atk':'')+(pose===2?' hurt':''),'<div class="bt-sp" style="background-image:url('+spriteSrc(u,pose)+')"></div><div class="bt-hp p"><i style="width:'+Math.max(0,u.hp/u.max*100)+'%"></i></div><div class="bt-un"><span class="bt-mini" style="background-image:url('+(u.hero?heroImg():A+'img/p_'+u.id+'_'+(u.hp<=0?8:(u.face??0))+'.jpg')+')"></span>'+u.hp+'/'+u.max+'</div>');d.dataset.k=k;pa.appendChild(d)});markPick()}
+// Neuzeichnen ohne den DOM jedes Mal neu zu bauen: Elemente bleiben, nur Werte ändern sich (flüssiger auf dem Handy)
+function setBI(e,u){if(e._u!==u){e._u=u;e.style.backgroundImage='url('+u+')'}}
+function render(){const fo=$('#bt-foes');fo.classList.toggle('many',B.foes.length>=3);
+ B.foes.forEach(f=>{let d=fo.querySelector('.bt-f[data-i="'+f.i+'"]');
+  if(!d){d=el('div','bt-f'+(f.boss?' boss':''),'<div class="bt-fi"></div><div class="bt-hp"><i></i></div><div class="bt-fn">'+esc(f.n)+' <span class="el el-'+f.el+'"></span></div><div class="bt-int"></div>');d.dataset.i=f.i;fo.appendChild(d)}
+  d.classList.toggle('down',f.hp<=0);setBI(d.querySelector('.bt-fi'),A+'img/'+f.img+'_'+(f.hp<=0?3:(f.fr||0))+'.png');d.querySelector('.bt-hp i').style.width=Math.max(0,f.hp/f.max*100)+'%';
+  const it=d.querySelector('.bt-int');const txt=f.hp>0&&f.intent?(f.intent.pre?f.intent.pre.n+' kommt':f.intent.n):'';if(it.textContent!==txt)it.textContent=txt;it.style.display=txt?'':'none'});
+ fitFoes();const pa=$('#bt-party');const vw=Math.min(innerWidth,480);const pw=Math.round(Math.min(150,innerHeight*.17/1.35*1.35,(vw-16)/(B.party.length+(B.party.some(p=>p.id==='gr')?.25:0))*(B.party.length>2?1.18:1)-6))+'px';if(pa._pw!==pw){pa._pw=pw;pa.style.setProperty('--pw',pw)}
+ B.party.forEach((u,k)=>{const pose=u.hp<=0?3:(u.pose||0);let d=pa.querySelector('.bt-u[data-k="'+k+'"]');
+  if(!d){d=el('div','bt-u'+(u.id==='gr'?' big':'')+(u.id==='hu'||u.id==='zi'?' small':''),'<div class="bt-sp"></div><div class="bt-hp p"><i></i></div><div class="bt-un"><span class="bt-mini"></span><b></b></div>');d.dataset.k=k;pa.appendChild(d)}
+  d.classList.toggle('down',u.hp<=0);d.classList.toggle('cur',B.cur===u);d.classList.toggle('atk',pose===1);d.classList.toggle('hurt',pose===2);
+  setBI(d.querySelector('.bt-sp'),spriteSrc(u,pose));d.querySelector('.bt-hp i').style.width=Math.max(0,u.hp/u.max*100)+'%';
+  setBI(d.querySelector('.bt-mini'),u.hero?heroImg():A+'img/p_'+u.id+'_'+(u.hp<=0?8:(u.face??0))+'.jpg');const t=u.hp+'/'+u.max;const bb=d.querySelector('.bt-un b');if(bb.textContent!==t)bb.textContent=t});markPick()}
 // Rückansicht im Kampf: 0 bereit, 1 Angriff, 2 getroffen, 3 besiegt
-function fitFoes(){const fo=$('#bt-foes');if(!fo)return;const n=Math.max(1,B.foes.length);const h=fo.clientHeight,w=fo.clientWidth;if(!h)return;const byH=h-86,byW=(w-12)/n*.92;const big=n===1&&B.foes[0].boss;fo.style.setProperty('--fsz',Math.round(Math.max(80,Math.min(byH,big?(w-8)*.98:byW,big?420:300)))+'px')}
+function fitFoes(force){const fo=$('#bt-foes');if(!fo)return;if(B&&B._fszLock&&B._fsz&&!force&&B._fszN===B.foes.length){fo.style.setProperty('--fsz',B._fsz);return}const n=Math.max(1,B.foes.length);const h=fo.clientHeight,w=fo.clientWidth;if(!h)return;const byH=h-86,byW=(w-12)/n*.92;const big=n===1&&B.foes[0].boss;const v=Math.round(Math.max(80,Math.min(byH,big?(w-8)*.98:byW,big?420:300)))+'px';fo.style.setProperty('--fsz',v);if(B){B._fsz=v;B._fszN=B.foes.length}}
+addEventListener('resize',()=>{if(B)fitFoes(true)});
 function spriteSrc(u,p){return A+'img/b_'+(u.hero?st.hero.cls+'_'+st.hero.look:u.id)+'_'+p+'.png'}
 function poseFor(u,p,ms){u.pose=p;clearTimeout(u._pt);if(B)render();u._pt=setTimeout(()=>{u.pose=0;if(B)render()},ms)}
 const PRE=[];function preImg(src){const i=new Image();i.decoding='async';i.src=src;PRE.push(i);if(PRE.length>200)PRE.shift()}

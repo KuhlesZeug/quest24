@@ -920,3 +920,36 @@ img{display:block;max-width:100%}
 .logo-end.gone{opacity:0}
 @keyframes logoIn{0%{opacity:0;transform:scale(.86)}35%{opacity:1}100%{opacity:1;transform:scale(1)}}
 @keyframes fadeInL{to{opacity:1}}
+/* Nachtigall von oben: Körper und Schwanz getrennt, der Schwanz pendelt beim Schleichen */
+.ps2-c{position:relative}
+.ps2-cat img{display:block;width:100%}
+.ps2-cat.top .ps2-c img{position:absolute;left:0;top:0}
+.ps2-cat.top .ps2-c{aspect-ratio:154/299}
+.ps2-cat.top img.b{clip-path:inset(0 0 37% 0)}
+.ps2-cat.top img.t{clip-path:inset(60% 0 0 0);transform-origin:50% 62%;animation:psTail 2.4s ease-in-out infinite}
+.ps2-cat.walk.top img.t{animation-duration:.9s}
+.ps2-cat.walk .ps2-c{animation:psStep .45s ease-in-out infinite}
+@keyframes psTail{0%,100%{transform:rotate(-10deg)}50%{transform:rotate(12deg)}}
+@keyframes psStep{0%,100%{transform:translateX(-1.5px) rotate(-3deg)}50%{transform:translateX(1.5px) rotate(3deg)}}
+.ps2-cat .ps2-c{filter:drop-shadow(0 0 2px #fff) drop-shadow(0 0 3px rgba(255,240,200,.9)) drop-shadow(0 6px 6px rgba(0,0,0,.85))}
+.ps2-cat img{filter:none!important}
+/* Animiertes Logo am Schluss */
+.logo-end{overflow:hidden}
+.logo-end .le-lg{width:min(90vw,480px);opacity:0;transform:scale(.8) translateY(10px);animation:leIn 1.6s cubic-bezier(.2,1,.3,1) .2s forwards;filter:drop-shadow(0 0 0 rgba(255,190,80,0)) drop-shadow(0 8px 14px #000);transition:filter 1.2s}
+.logo-end.lit .le-lg{filter:drop-shadow(0 0 26px rgba(255,190,80,.7)) drop-shadow(0 8px 14px #000)}
+.logo-end .lg-fl,.logo-end .lg-glow{opacity:0;transition:opacity .6s}
+.logo-end.lit .lg-fl,.logo-end.lit .lg-glow{opacity:1}
+.logo-end .lg-dr{opacity:0;animation:leDr 1.4s ease .9s forwards,drbreath 3.6s ease-in-out 2.3s infinite}
+@keyframes leIn{to{opacity:1;transform:scale(1) translateY(0)}}
+@keyframes leDr{from{opacity:0;transform:scale(.92)}to{opacity:1;transform:scale(1)}}
+.le-rays{position:absolute;left:50%;top:45%;width:240vmax;height:240vmax;translate:-50% -50%;background:repeating-conic-gradient(from 0deg,rgba(255,206,110,.22) 0 6deg,transparent 6deg 18deg);-webkit-mask-image:radial-gradient(circle,#000 0,#000 6%,transparent 34%);mask-image:radial-gradient(circle,#000 0,#000 6%,transparent 34%);opacity:0;transition:opacity 1.6s;animation:ttlspin 40s linear infinite}
+.logo-end.lit .le-rays{opacity:1}
+.le-emb{position:absolute;inset:0;pointer-events:none}
+.le-emb i{position:absolute;bottom:-10px;border-radius:50%;background:#ffcf6a;box-shadow:0 0 8px #ff9a2a,0 0 2px #fff;animation:ember 4s linear infinite}
+.logo-end p{position:relative}
+/* Bilder hinter dem Abspann dunkler, damit die Schrift hervorsticht */
+.credits{background:rgba(0,0,0,.58)}
+.logo-end .lg img{max-width:none;filter:none}
+.logo-end .lg .lg-base{width:100%;animation:none}
+.logo-end .lg .lg-dr{width:100%}
+.logo-end .lg .lg-fl{width:8.9%;animation:lgflick 1.3s ease-in-out infinite}

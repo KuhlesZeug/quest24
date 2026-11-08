@@ -80,9 +80,9 @@ GAMES.p_schatten=()=>new Promise(async done=>{const W3=phWho(3);const fast=W3.ri
  const IW=PS_IMG[0],IH=PS_IMG[1];const P=PS_PATH;const L=[0];for(let i=1;i<P.length;i++)L.push(L[i-1]+Math.hypot((P[i][0]-P[i-1][0])*IW,(P[i][1]-P[i-1][1])*IH));const TOT=L[L.length-1];
  const map=(u,v)=>{const W=o.clientWidth,H=o.clientHeight,sc=Math.max(W/IW,H/IH);return [(W-IW*sc)/2+u*IW*sc,(H-IH*sc)/2+v*IH*sc,sc]};
  const at=q=>{const d=q*TOT;let i=1;while(i<L.length-1&&L[i]<d)i++;const f=(d-L[i-1])/(L[i]-L[i-1]||1);const u=P[i-1][0]+(P[i][0]-P[i-1][0])*f,v=P[i-1][1]+(P[i][1]-P[i-1][1])*f;const ang=Math.atan2((P[i][1]-P[i-1][1])*IH,(P[i][0]-P[i-1][0])*IW)*180/Math.PI;return [u,v,ang]};
- const top=W3.w==='na';const cat=el('div','ps2-cat'+(top?' top':''),'<img src="'+A+'img/'+(top?'na_top':'r_'+(W3.w==='held'?st.hero.cls+'_'+st.hero.look:W3.w)+'_0')+'.png" alt="">');o.appendChild(cat);const ci=cat.firstChild;
+ const top=W3.w==='na';const csrc=A+'img/'+(top?'na_top':'r_'+(W3.w==='held'?st.hero.cls+'_'+st.hero.look:W3.w)+'_0')+'.png';const cat=el('div','ps2-cat'+(top?' top':''),top?'<div class="ps2-c"><img class="t" src="'+csrc+'" alt=""><img class="b" src="'+csrc+'" alt=""></div>':'<div class="ps2-c"><img src="'+csrc+'" alt=""></div>');o.appendChild(cat);const ci=cat.firstChild;
  const goal=el('div','ps2-goal');o.appendChild(goal);const alarm=el('div','ps2-alarm','');o.appendChild(alarm);
- const WALK=[0,1,2,3].map(i=>A+'img/na_walk_'+i+'.png');let walkOk=false;if(top){const ti=new Image();ti.onload=()=>{walkOk=true;WALK.slice(1).forEach(u=>{const x=new Image();x.src=u})};ti.src=WALK[0]}
+
  const eg=o.querySelector('.ps2-eyeglow');
  const place=()=>{const [x,y]=map(PS_EYE[0],PS_EYE[1]);eg.style.left=x+'px';eg.style.top=y+'px';const g=map(P[P.length-1][0],P[P.length-1][1]);goal.style.left=g[0]+'px';goal.style.top=g[1]+'px'};place();addEventListener('resize',place);
  const btn=el('div','ps2-hold','Gedrückt halten zum Schleichen');o.appendChild(btn);
@@ -92,10 +92,10 @@ GAMES.p_schatten=()=>new Promise(async done=>{const W3=phWho(3);const fast=W3.ri
   if(state==='zu'&&el0>dur){state='warn';tState=t;o.classList.add('warn');sfx('drachenknurren',.8);alarm.textContent='Er regt sich …';try{navigator.vibrate&&navigator.vibrate(80)}catch(e){}}
   else if(state==='warn'&&el0>.9/fast){state='auf';tState=t;o.classList.remove('warn');o.classList.add('auf');sfx('drache',.5);alarm.textContent='Auge auf! Nicht bewegen!';try{navigator.vibrate&&navigator.vibrate([60,40,60])}catch(e){}}
   else if(state==='auf'&&el0>1.4){state='zu';tState=t;dur=(1.6+Math.random()*1.8)/fast;o.classList.remove('auf');alarm.textContent=''}
-  if(hold){pos+=dt*.075;fr++;if(walkOk&&fr%7===0)ci.src=WALK[(fr/7|0)%4];
+  if(hold){pos+=dt*.075;fr++;
    if(state==='auf'){caught++;hold=false;btn.classList.remove('on');pos=Math.max(0,pos-.15);sfx('katze',.6);toast(['Erwischt! Zurück in den Schatten.','Fast! Noch mal leise.','Er blinzelt nur. Weiter.'][Math.min(2,caught-1)],1400);o.classList.add('hit');setTimeout(()=>o.classList.remove('hit'),400)}}
   pos=Math.min(1,pos);const [u,v,ang]=at(pos);const [x,y,sc]=map(u,v);const sz=Math.max(72,Math.min(110,IW*sc*.1));
-  cat.style.width=sz+'px';cat.style.transform='translate('+x+'px,'+y+'px) translate(-50%,-50%) rotate('+(top?ang+90:0)+'deg)';ci.style.transform=hold?'translateX('+(Math.sin(fr*.25)*2)+'px) rotate('+(Math.sin(fr*.25)*4)+'deg)':'none';if(!hold&&walkOk&&ci.src!==WALK[1]&&state!=='zu')ci.src=WALK[1];
+  cat.style.width=sz+'px';cat.style.transform='translate('+x+'px,'+y+'px) translate(-50%,-50%) rotate('+(top?ang+90:0)+'deg)';cat.classList.toggle('walk',hold);
   cat.classList.toggle('hide',!hold&&state!=='zu');bar(o,'Weg zum Herzen',pos);
   if(pos>=1){run=false;removeEventListener('pointerup',up);removeEventListener('pointercancel',up);removeEventListener('resize',place);phEnd(o,'Geschafft. Der Schattenschlüssel öffnet die Kruste über dem Herzen.').then(()=>done(Math.max(.3,1-caught*.2)));return}
   requestAnimationFrame(tick)};requestAnimationFrame(tick)});
