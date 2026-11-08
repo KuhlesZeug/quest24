@@ -14,9 +14,11 @@ $('#btn-start').onclick=async()=>{ac();
  if(!st.ok){const h=await QZ.hash($('#code').value);if(h!==QZ.ACCESS){sfx('falsch');$('#code').animate([{transform:'translateX(-6px)'},{transform:'translateX(6px)'},{transform:'none'}],{duration:300});return toast('Dieser Zugangscode stimmt nicht.')}st.ok=1}
  st.start=st.start||Date.now();save();sfx('ui_klick');
  if(!st.intro){await playFilm('intro');st.intro=1;save()}
- if(!st.hero){if(!unlocked(1)){return goMap()}return goDay1()}
+ if(!st.hero){await playSession0();if(!st.hero)return goMap();if(!unlocked(1))return goMap();return goDay1()}
  goMap()};
 async function goDay1(){await playDay(1,false)}
+async function playSession0(){stopSfx(.4);show('#s-scene');numberSteps('s0',SITZUNG0);SC.id='s0';SC.abort=0;SC.wgPrev=null;$('#s-scene').classList.remove('real');$('#sc-bg').innerHTML='';BGWANT=null;$('#sc-title').textContent='Sitzung Null';renderHud();
+ await run(SITZUNG0);SC.abort=0;hideBox()}
 
 // Musik startet erst nach der ersten Berührung (Vorgabe der Browser)
 document.addEventListener('pointerdown',()=>{ac();if(curScreen==='#s-start'&&!st._m){st._m=1;music(A+'mus/titel.mp3',.45);atmo(A+'atmo/dorf_winter.mp3',.3)}},{once:false});

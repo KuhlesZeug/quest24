@@ -114,10 +114,10 @@ const STATN={str:'Stärke',dex:'Geschick',wis:'Weisheit'};
 async function probe(p){hideBox();const bonus=(st.hero[p.stat]||0)+(p.bonus?p.bonus():0)+itemBonus(p);
  const r=await rollD20({title:(p.name||'Probe auf '+STATN[p.stat]),sub:'W20 plus '+STATN[p.stat]+' '+bonus+', Ziel '+p.ziel,bonus,ziel:p.ziel});
  return r.total>=p.ziel}
-function itemBonus(p){let b=0;if(p.tag)st.inv.forEach(x=>{const I=ITEMS[x.id];if(I&&I.bonus&&I.bonus[p.tag])b+=I.bonus[p.tag]});return b}
+function itemBonus(p){let b=0;const tags=[p.tag,p.name==='Wahrnehmung'?'blick':null].filter(Boolean);st.inv.forEach(x=>{const I=ITEMS[x.id];if(I&&I.bonus)tags.forEach(t=>{if(I.bonus[t])b+=I.bonus[t]})});return b}
 
 // Sprechzeilen fest durchnummerieren (auch in Verzweigungen), damit jede Zeile ihre Aufnahme hat
-function numberSteps(id,steps){let n=0;const walk=a=>{(a||[]).forEach(s=>{if(s.s)s._vo=id+'_'+String(++n).padStart(3,'0');['ok','fail','then','else','wrong'].forEach(k=>walk(s[k]));if(s.choice)s.choice.forEach(o=>walk(o.go));if(s.code){walk(s.code.wrongSteps)}if(s.phases)s.phases.forEach(walk);})};walk(steps);return n}
+function numberSteps(id,steps){let n=0;const walk=a=>{(a||[]).forEach(s=>{if(s.s)s._vo=s.vo||(id+'_'+String(++n).padStart(3,'0'));['ok','fail','then','else','wrong'].forEach(k=>walk(s[k]));if(s.choice)s.choice.forEach(o=>walk(o.go));if(s.code){walk(s.code.wrongSteps)}if(s.phases)s.phases.forEach(walk);})};walk(steps);return n}
 
 // Zirpias Auftritt: Lied läuft, Bilder der Vorstellung wechseln, Tippen beendet
 async function songShow(name,imgs,o){const cur=$('#sc-bg .on');const prev=cur?cur.dataset.src:null;let skip=false;

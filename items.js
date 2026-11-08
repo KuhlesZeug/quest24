@@ -1,6 +1,7 @@
 // Gegenstände: Name, Beschreibung, Wirkung. Bild liegt unter a/items/<id>.png
 const ITEMS={
  // Geschichte
+ pinsel:{n:'Abenteuerpinsel',d:'Damit hast du dein erstes Abenteuer gemalt. Plus 1 auf Wahrnehmung, denn wer malt, schaut genauer hin.',bonus:{blick:1}},
  butterbrot:{n:'Butterbrot',d:'Von Aldric. Stellt 2 Lebenspunkte her.',use:{heal:2}},
  kompass:{n:'Kompass',d:'Plus 1 auf Proben zum Weg finden.',bonus:{weg:1}},
  korken:{n:'Korken',d:'Aus der Taverne. Völlig nutzlos. Vermutlich.'},

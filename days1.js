@@ -3,19 +3,48 @@ const DAYS={};
 const DORF={mus:'dorf',atmo:'dorf_winter',acc:['wind_boe','hund_fern','glocke_fern'],every:16};
 
 DAYS[1]={end:'Heute zum Ausdrucken: dein Heldenbogen, die Karte von Eldmark, Teil 1 der Landkarte und der Würfelbogen.',steps:[
+ {if:()=>!st.hero,then:[
+  {bg:'ort01',...DORF},
+  {s:'SL',t:'Willkommen zur Sitzung Null. Hier entsteht deine Figur. Das ist der wichtigste Moment des ganzen Abenteuers.'},
+  {s:'SL',t:'Also, einer der wichtigsten. Der Drache ist auch wichtig. Fangen wir an.'},
+  {fn:async()=>{hideBox();await buildHero();show('#s-scene');music(A+'mus/dorf.mp3',.45);atmo(A+'atmo/dorf_winter.mp3',.6)}}]},
+ {bg:'kammer',mus:'dorf',mv:.35,atmo:'dorf_winter',av:.35,acc:['wind_boe','glut_knistern'],every:18},
+ {s:'SL',vo:'d01_k01',t:'Der erste Dezember. Morgentau liegt unter einer dicken Schneedecke, und in einer kleinen Kammer brennt noch eine Kerze.'},
+ {s:'SL',vo:'d01_k02',t:'Dort sitzt du über einem leeren Blatt Papier und malst dir dein großes Abenteuer aus. Und zwar wortwörtlich. Mit Pinsel und Farbe.'},
+ {s:'SL',vo:'d01_k03',t:'Andere Helden träumen von ihren Abenteuern. Du machst gleich ein Kunstwerk daraus. Sehr effizient.'},
+ {s:'SL',vo:'d01_k04',t:'Tippe unten auf einen Farbtopf. Dann siehst du, wo diese Farbe hingehört. Tippe die Felder an, und sie füllen sich. Mit zwei Fingern kommst du näher heran, und wenn du ein Feld nicht findest, hilft dir die Lupe.'},
+ {game:'malen',bild:'krieger'},
+ {bg:'kammer_bild'},
+ {s:'SL',vo:'d01_k05',t:'Ein Krieger. Ein Drache. Ein Kampf auf Leben und Tod. Und du hast kaum über den Rand gemalt.'},
+ {s:'SL',vo:'d01_k06',t:'Dein Pinsel ist noch ganz warm vor Begeisterung. Behalte ihn. Wer malt, schaut genauer hin. Das wird dir noch nützen.'},
+ {item:'pinsel'},
+ {sfx:'klopfen'},
+ {s:'SL',vo:'d01_k07',t:'Da klopft es an der Tür. So spät klopft in Morgentau eigentlich nur der Wind. Oder jemand mit einem Auftrag.'},
  {bg:'ort01',...DORF},
- {s:'SL',t:'Willkommen zur Sitzung Null. Hier entsteht deine Figur. Das ist der wichtigste Moment des ganzen Abenteuers.'},
- {s:'SL',t:'Also, einer der wichtigsten. Der Drache ist auch wichtig. Fangen wir an.'},
- {fn:async()=>{if(!st.hero){hideBox();await buildHero();show('#s-scene');music(A+'mus/dorf.mp3',.45);atmo(A+'atmo/dorf_winter.mp3',.6)}}},
- {bg:'ort01'},
  {s:'ALT',t:'{NAME}. Du bist die Einzige, die sich gemeldet hat. Also, die Einzige, die nicht schnell genug weggelaufen ist.',tm:'{NAME}. Du bist der Einzige, der sich gemeldet hat. Also, der Einzige, der nicht schnell genug weggelaufen ist.'},
  {s:'ALT',t:'Der Drache haust im Aschenland, hinter den Eisgipfeln. Bring uns die Lichternacht zurück.'},
+ {s:'SL',vo:'d01_k08',t:'Ein Drache. Wie praktisch. Den hast du ja gerade schon geübt.'},
  {s:'SL',t:'Und damit beginnt die Reise. Mit einem Auftrag, einer Karte und …'},
  {s:'ALT',t:'… und einem Butterbrot.'},
  {s:'SL',t:'… und einem Butterbrot. Steht nicht in meinen Notizen, aber gut.'},
- {item:'butterbrot'},{gold:10},{hide:1}
+ {item:'butterbrot'},{gold:10},
+ {s:'SL',vo:'d01_k09',t:'Morgen früh geht es los. Und weißt du, wo jede große Reise beginnt? Ich verrate es dir morgen. Kleiner Tipp: Es gibt dort Bier und mindestens eine schlechte Frisur.'},
+ {hide:1}
 ]};
 
+// Sitzung Null: Heldenerschaffung schon vor dem 1. Dezember
+const SITZUNG0=[
+ {bg:'ort01',...DORF},
+ {s:'SL',vo:'d01_001',t:'Willkommen zur Sitzung Null. Hier entsteht deine Figur. Das ist der wichtigste Moment des ganzen Abenteuers.'},
+ {s:'SL',vo:'d01_002',t:'Also, einer der wichtigsten. Der Drache ist auch wichtig. Fangen wir an.'},
+ {fn:async()=>{hideBox();await buildHero();show('#s-scene');music(A+'mus/dorf.mp3',.45);atmo(A+'atmo/dorf_winter.mp3',.6)}},
+ {bg:'ort01_dunkel'},
+ {if:()=>!unlocked(1),then:[
+  {s:'SL',vo:'s0_01',t:'Deine Figur steht. Jetzt fehlt nur noch das Abenteuer, und das beginnt am ersten Dezember.'},
+  {s:'SL',vo:'s0_02',t:'Bis dahin bereitest du deine Abenteuerakte vor, legst die Würfel bereit und wirst bitte nicht zu nervös. Ich bin es schon für uns beide.'}],
+ else:[{s:'SL',vo:'s0_03',t:'Deine Figur steht. Und das Beste: Das Abenteuer wartet nicht. Es geht sofort los.'}]},
+ {hide:1}
+];
 DAYS[2]={end:'Der Kompass zeigt nach Norden. Fast immer.',steps:[
  {bg:'ort02',mus:'taverne',atmo:'taverne',acc:['krug','lachen','holz_knarzt'],every:12},
  {s:'SL',t:'Jedes große Abenteuer beginnt in einer Taverne. Das ist Gesetz. Ich habe nachgesehen.'},
