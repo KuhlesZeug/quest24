@@ -28,9 +28,9 @@ DAYS[8]={end:'Heute zum Ausdrucken: Teil 2 der Landkarte. Ab morgen geht die Rei
  {hide:1},{sfx:'eule',bg:'ort08'},{wait:1600},
  {s:'SL',t:'Ein Eulenbär. Bleib ganz ruhig. Keine schnellen Bewegungen.'},
  {choice:[
-  {t:'Leise vorbeischleichen',go:[{probe:{stat:'dex',ziel:10,name:'Schleichen'},ok:[{s:'SL',t:'Er schaut nur. Lange. Aber nur.'}],fail:[{s:'SL',t:'Er schaut. Sehr nah. Du riechst jetzt nach Eule.'}]}]},
-  {t:'Kann ich ihn streicheln?',go:[{s:'SL',t:'Natürlich fragt das jemand. Es fragt immer jemand.'},{sfx:'wuerfel'},{s:'SL',t:'Na gut. Du darfst.'},{s:'SL',t:'Er mag dich. Er mag dich zu sehr. Das ist jetzt deine Feder.'},{item:'eulenfeder'}]},
-  {t:'Grumbold vorschicken',go:[{s:'GR',t:'Guten Abend. Entschuldigung. Wir gehen nur vorbei.'},{s:'SL',t:'Der Eulenbär verbeugt sich. Ich wusste nicht, dass die das können.'}]}]},
+  {t:'Leise vorbeischleichen',go:[{probe:{stat:'dex',ziel:10,name:'Schleichen'},ok:[{bg:'eb_schau'},{s:'SL',t:'Er schaut nur. Lange. Aber nur.'}],fail:[{bg:'eb_nah'},{s:'SL',t:'Er schaut. Sehr nah. Du riechst jetzt nach Eule.'}]}]},
+  {t:'Kann ich ihn streicheln?',go:[{s:'SL',t:'Natürlich fragt das jemand. Es fragt immer jemand.'},{sfx:'wuerfel'},{s:'SL',t:'Na gut. Du darfst.'},{bg:'eb_kuschel'},{s:'SL',t:'Er mag dich. Er mag dich zu sehr. Das ist jetzt deine Feder.'},{item:'eulenfeder'}]},
+  {t:'Grumbold vorschicken',go:[{s:'GR',t:'Guten Abend. Entschuldigung. Wir gehen nur vorbei.'},{bg:'eb_gr'},{s:'SL',t:'Der Eulenbär verbeugt sich. Ich wusste nicht, dass die das können.'}]}]},
  {bg:'ort08_leer'},
  {s:'WG',note:1,wg:'wgc4',t:'Drei Optionen für einen Bären. Sie verwöhnen Ihre Gäste.'},
  {s:'SL',t:'Er ist ja nur halb Bär. Also eigentlich sechs Optionen pro Bär.'},
