@@ -1044,3 +1044,70 @@ img{display:block;max-width:100%}
 .al-img button.on{border-color:var(--gold);box-shadow:0 0 0 3px var(--gold),0 0 16px var(--gold);transform:scale(1.04);z-index:1}
 .al-img:has(.on) button:not(.on) img{filter:saturate(.55) brightness(.8)}
 .al-img button.on span{color:var(--gold)}
+/* Elemente groß und gut sichtbar */
+.bt-fn{gap:5px}
+.bt-fn .el,.bt-un .el{width:26px;height:26px;flex:none;border-radius:50%;background-color:rgba(28,18,10,.88);background-size:74%;background-position:center;border:2px solid #d9a441;box-shadow:0 2px 6px rgba(0,0,0,.6),inset 0 0 6px rgba(255,210,120,.25)}
+.bt-un .el{width:24px;height:24px;margin-left:2px}
+.el-pick .el{width:30px;height:30px}
+/* Einblendungen: Schaden, super effektiv, Patzer */
+.bt-pop{position:absolute;z-index:12;transform:translate(-50%,-50%);pointer-events:none;text-align:center;white-space:nowrap;font-family:var(--head);animation:bpop 2.2s cubic-bezier(.2,1.4,.4,1) forwards}
+.bt-pop b{display:block;font-size:2rem;line-height:1;color:#ffe08a;-webkit-text-stroke:1.5px #3a1d08;paint-order:stroke fill;text-shadow:0 3px 0 #3a1d08,0 0 18px rgba(255,190,80,.8)}
+.bt-pop small{display:block;margin-top:3px;font-family:var(--sc);font-size:.85rem;color:#fff4dc;text-shadow:0 1px 3px #000,0 0 6px #000}
+.bt-pop.dmg{animation:bdmg 1.25s ease-out forwards}
+.bt-pop.dmg b{font-size:2.6rem;color:#ff5a3c;text-shadow:0 3px 0 #3a0d05,0 0 14px rgba(255,80,40,.7)}
+.bt-pop.pdmg b{font-size:2.1rem}
+.bt-pop.super b{font-size:2.2rem;color:#ffd24a}
+.bt-pop.super{padding:10px 16px 8px;border-radius:16px;background:radial-gradient(ellipse at center,rgba(60,30,5,.85),rgba(60,30,5,.55) 60%,transparent 75%)}
+.bt-pop.weak b{font-size:1.7rem;color:#b9d4e8;text-shadow:0 3px 0 #1a2733}
+.bt-pop.crit b{font-size:2.3rem;color:#fff1a8;text-shadow:0 3px 0 #3a1d08,0 0 24px #ffd24a,0 0 40px #ffb300}
+.bt-pop.miss b{font-size:1.9rem;color:#e6e0d4;text-shadow:0 3px 0 #2b2620}
+.bt-pop.fumble b{font-size:2.1rem;color:#ff7a6b;text-shadow:0 3px 0 #3a0d05}
+.bp-els{display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:6px}
+.bp-els .el{width:46px;height:46px;border-radius:50%;background-color:rgba(28,18,10,.9);background-size:74%;background-position:center;border:3px solid #d9a441;box-shadow:0 0 14px rgba(255,200,90,.7)}
+.bt-pop.weak .bp-els .el{border-color:#8aa3b5;box-shadow:none}
+.bp-arr{width:26px;height:16px;background:#ffe08a;clip-path:polygon(0 35%,60% 35%,60% 0,100% 50%,60% 100%,60% 65%,0 65%);filter:drop-shadow(0 1px 1px #000)}
+.bt-pop.weak .bp-arr{background:#b9d4e8}
+@keyframes bpop{0%{opacity:0;transform:translate(-50%,-50%) scale(.3)}12%{opacity:1;transform:translate(-50%,-50%) scale(1.12)}22%{transform:translate(-50%,-50%) scale(1)}80%{opacity:1;transform:translate(-50%,-62%) scale(1)}100%{opacity:0;transform:translate(-50%,-75%) scale(.96)}}
+@keyframes bdmg{0%{opacity:0;transform:translate(-50%,-30%) scale(.5)}15%{opacity:1;transform:translate(-50%,-60%) scale(1.25)}30%{transform:translate(-50%,-70%) scale(1)}100%{opacity:0;transform:translate(-50%,-150%) scale(.9)}}
+/* Großes Effektbanner im Kampf */
+.bt-big{position:absolute;left:50%;z-index:13;width:min(92%,380px);transform:translate(-50%,-50%);pointer-events:none;text-align:center;animation:bbIn 2.7s cubic-bezier(.2,1.3,.4,1) forwards}
+.bb-rays{position:absolute;left:50%;top:42%;width:340px;height:340px;margin:-170px 0 0 -170px;border-radius:50%;background:repeating-conic-gradient(from 0deg,rgba(255,214,110,.55) 0deg 7deg,rgba(255,214,110,0) 7deg 20deg);-webkit-mask:radial-gradient(circle,#000 18%,transparent 68%);mask:radial-gradient(circle,#000 18%,transparent 68%);animation:bbRot 6s linear infinite;z-index:-1}
+.bt-big.weak .bb-rays{display:none}
+.bb-els{display:flex;align-items:flex-end;justify-content:center;gap:12px;margin-bottom:8px}
+.bb-el{display:flex;flex-direction:column;align-items:center;gap:3px}
+.bb-el .el{width:76px;height:76px;border-radius:50%;background-color:rgba(36,22,10,.92);background-size:72%;background-position:center;border:4px solid #e3b24f;box-shadow:0 0 0 3px #3a1d08,0 0 26px rgba(255,200,90,.9)}
+.bb-el i{font-style:normal;font-family:var(--sc);font-size:.95rem;font-weight:700;color:#fff4dc;text-shadow:0 1px 3px #000,0 0 8px #000}
+.bb-el:first-child .el{animation:bbHit .9s .25s ease-in-out both}
+.bb-arr{width:46px;height:30px;margin-bottom:30px;background:linear-gradient(#ffe7a0,#e3a63a);clip-path:polygon(0 33%,58% 33%,58% 0,100% 50%,58% 100%,58% 67%,0 67%);filter:drop-shadow(0 2px 0 #3a1d08);animation:bbArr .9s .2s ease-in-out infinite alternate}
+.bb-rib{position:relative;display:inline-block;padding:10px 34px 9px;background:url(a/ui/pergament.jpg) center/cover;border:3px solid #6b3f17;border-radius:10px;box-shadow:0 0 0 3px #e3b24f,0 8px 22px rgba(0,0,0,.7)}
+.bb-rib::before,.bb-rib::after{content:'';position:absolute;top:50%;width:22px;height:22px;margin-top:-11px;background:#e3b24f;border:3px solid #6b3f17;transform:rotate(45deg)}
+.bb-rib::before{left:-14px}.bb-rib::after{right:-14px}
+.bb-rib b{display:block;font-family:var(--head);font-size:2.35rem;line-height:1.05;color:#8a1f0e;text-shadow:0 1px 0 #fff3cf}
+.bb-rib small{display:block;margin-top:2px;font-family:var(--sc);font-size:1.05rem;font-weight:700;color:#3a1d08}
+.bt-big.weak .bb-el .el{border-color:#9fb8cc;box-shadow:0 0 0 3px #1a2733}
+.bt-big.weak .bb-arr{background:linear-gradient(#dfeaf3,#8aa3b5)}
+.bt-big.weak .bb-rib{box-shadow:0 0 0 3px #9fb8cc,0 8px 22px rgba(0,0,0,.7)}
+.bt-big.weak .bb-rib::before,.bt-big.weak .bb-rib::after{background:#9fb8cc}
+.bt-big.weak .bb-rib b{color:#2c4a63;font-size:2rem}
+.bt-big.crit .bb-rib b{color:#9a5a00}
+.bb-sp{position:absolute;left:50%;top:45%;width:12px;height:12px;margin:-6px;background:#fff1b0;clip-path:polygon(50% 0,62% 38%,100% 50%,62% 62%,50% 100%,38% 62%,0 50%,38% 38%);opacity:0;animation:bbSp 1.3s ease-out forwards}
+@keyframes bbIn{0%{opacity:0;transform:translate(-50%,-50%) scale(.3)}10%{opacity:1;transform:translate(-50%,-50%) scale(1.1)}18%{transform:translate(-50%,-50%) scale(1)}85%{opacity:1;transform:translate(-50%,-50%) scale(1)}100%{opacity:0;transform:translate(-50%,-58%) scale(.95)}}
+@keyframes bbRot{to{transform:rotate(360deg)}}
+@keyframes bbArr{to{transform:translateX(6px)}}
+@keyframes bbHit{0%,100%{transform:translateX(0)}45%{transform:translateX(14px) scale(1.08)}}
+@keyframes bbSp{0%{opacity:0;transform:translate(0,0) scale(.4)}20%{opacity:1}100%{opacity:0;transform:translate(var(--dx),var(--dy)) scale(1.3) rotate(90deg)}}
+/* Elementkreis in der Erklärung */
+.bt-coach.ekc{background:rgba(0,0,0,.6)}
+.bt-ekbox{position:absolute;left:50%;top:calc(70px + env(safe-area-inset-top));transform:translateX(-50%);width:min(84%,300px);padding:10px;background:url(a/ui/pergament.jpg) center/cover;border:4px solid var(--wood);border-radius:50%;box-shadow:0 0 0 3px #e3b24f,0 10px 30px rgba(0,0,0,.7);animation:bpop .5s ease-out both;animation-name:ekIn}
+@keyframes ekIn{from{opacity:0;transform:translateX(-50%) scale(.6)}to{opacity:1;transform:translateX(-50%) scale(1)}}
+.ek{position:relative;width:100%;aspect-ratio:1}
+.ek svg{position:absolute;inset:0;width:100%;height:100%}
+.ek-i{position:absolute;transform:translate(-50%,-50%);display:flex;flex-direction:column;align-items:center}
+.ek-i .el{width:58px;height:58px;border-radius:50%;background-color:rgba(36,22,10,.92);background-size:72%;background-position:center;border:3px solid #e3b24f;box-shadow:0 0 0 2px #3a1d08,0 3px 8px rgba(0,0,0,.5)}
+.ek-i b{margin-top:1px;font-family:var(--sc);font-size:.85rem;color:#3a1d08;background:rgba(255,244,214,.85);padding:0 6px;border-radius:6px}
+.ek-m{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);font-family:var(--head);font-size:1.15rem;color:#6b3f17;text-align:center}
+.bt-coach.ekc .bt-cb{bottom:calc(12px + env(safe-area-inset-bottom))}
+/* Elementsymbole in der Kampfanzeige etwas größer */
+.bt-fn .el{width:30px;height:30px}
+.bt-big::before{content:'';position:absolute;left:-30px;right:-30px;top:-60px;bottom:-40px;background:radial-gradient(ellipse at center,rgba(18,9,3,.78) 38%,rgba(18,9,3,0) 72%);z-index:-2}
+#battle .bt-int{transition:opacity .25s}#battle.bigfx .bt-int{opacity:0}

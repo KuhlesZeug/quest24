@@ -128,7 +128,7 @@ function render(){const fo=$('#bt-foes');$('#battle').classList.toggle('myturn',
   const it=d.querySelector('.bt-int');const txt=f.hp>0&&f.intent?(f.intent.pre?f.intent.pre.n+' kommt':f.intent.n):'';if(it.textContent!==txt)it.textContent=txt;it.style.display=txt?'':'none'});
  fitFoes();const pa=$('#bt-party');const vw=Math.min(innerWidth,480);const pw=Math.round(Math.min(150,innerHeight*.17/1.35*1.35,(vw-16)/(B.party.length+(B.party.some(p=>p.id==='gr')?.25:0))*(B.party.length>2?1.18:1)-6))+'px';if(pa._pw!==pw){pa._pw=pw;pa.style.setProperty('--pw',pw)}
  B.party.forEach((u,k)=>{const pose=u.hp<=0?3:(u.pose||0);let d=pa.querySelector('.bt-u[data-k="'+k+'"]');
-  if(!d){d=el('div','bt-u'+(u.id==='gr'?' big':'')+(u.id==='hu'||u.id==='zi'?' small':''),'<div class="bt-sp"></div><div class="bt-hp p"><i></i></div><div class="bt-un"><span class="bt-mini"></span><b></b></div>');d.dataset.k=k;pa.appendChild(d)}
+  if(!d){d=el('div','bt-u'+(u.id==='gr'?' big':'')+(u.id==='hu'||u.id==='zi'?' small':''),'<div class="bt-sp"></div><div class="bt-hp p"><i></i></div><div class="bt-un"><span class="bt-mini"></span><b></b>'+(u.el?'<span class="el el-'+u.el+'"></span>':'')+'</div>');d.dataset.k=k;pa.appendChild(d)}
   d.classList.toggle('down',u.hp<=0);d.classList.toggle('cur',B.cur===u);d.classList.toggle('atk',pose===1);d.classList.toggle('hurt',pose===2);
   setBI(d.querySelector('.bt-sp'),spriteSrc(u,pose));d.querySelector('.bt-hp i').style.width=Math.max(0,u.hp/u.max*100)+'%';
   setBI(d.querySelector('.bt-mini'),u.hero?heroImg():A+'img/p_'+u.id+'_'+(u.hp<=0?8:(u.face??0))+'.jpg');const t=u.hp+'/'+u.max;const bb=d.querySelector('.bt-un b');if(bb.textContent!==t)bb.textContent=t});markPick()}
@@ -171,11 +171,23 @@ async function pickAlly(down){const e=await pick('#bt-party .bt-u',e=>down?B.par
 async function attack(u,f,o){let bonus=u.atk+(B.buff.all||0)+(u.next||0)+(o.add||0)-(u.blind?2:0);u.next=0;
  let v;if(u.hero){if(B.tut){await tutOnce('t08');await tutOnce('t09')}const r=await rollD20({title:u.hit+' gegen '+f.n,sub:'W20 plus '+bonus+', Ziel '+f.def,bonus,ziel:f.def,force:o.crit?20:null});v=r}else{const x=rnd(20);v={v:x,total:x+bonus,crit:x===20,fumble:x===1}}
  poseFor(u,1,700);const pk=projKind(u,o);if(pk&&!(v.fumble&&u.hero))await shoot(u,f,pk,v.total<f.def&&!v.crit);else if(!u.hero)await sleep(250);
- if(v.fumble&&u.hero){await fumble();return}
- if(v.total<f.def&&!v.crit){blog(u.n+' verfehlt.');sfx('falsch',.5);await sleep(500);return}
+ if(v.fumble&&u.hero){popFx(foeEl(f),'fumble','Patzer!','Eine 1 gewürfelt');await fumble();return}
+ if(v.total<f.def&&!v.crit){popFx(foeEl(f),'miss','Daneben!',u.hero?v.total+' reicht nicht, Ziel '+f.def:'');blog(u.n+' verfehlt.');sfx('falsch',.5);await sleep(500);return}
  let dmg=o.fixed||(Math.ceil(d10()/2)+u.dmg+(o.dmgAdd||0));const el_=o.el||u.el;let m=o.ignore?Math.max(1,elemMul(el_,f.el)):elemMul(el_,f.el);
  if(v.crit)dmg*=2;if(u.hero&&B.first&&st.hero.cls==='schurke'){dmg*=2;B.first=false}if(u.ballad){dmg*=2;u.ballad=0}if(o.double)dmg*=2;
- dmg=Math.max(1,Math.round(dmg*m));u.face=m>1||v.crit?3:6;setTimeout(()=>{u.face=0;if(B)render()},800);hurtFoe(f,dmg,u,null,m);if(m>1)superEff(u,f);if(v.crit&&u.hero)critLine();await sleep(650)}
+ dmg=Math.max(1,Math.round(dmg*m));u.face=m>1||v.crit?3:6;setTimeout(()=>{u.face=0;if(B)render()},800);hurtFoe(f,dmg,u,null,m);if(v.crit)setTimeout(()=>popFx(foeEl(f),'crit','Kritischer Treffer!','Doppelter Schaden'),200);if(m>1&&el_&&f.el)setTimeout(()=>popFx(foeEl(f),'super','Super effektiv!','Doppelter Schaden',[el_,f.el],v.crit?110:0),v.crit?700:200);else if(m<1&&el_&&f.el)setTimeout(()=>popFx(foeEl(f),'weak','Nicht sehr wirksam','Halber Schaden',[el_,f.el]),200);if(m>1)superEff(u,f);if(v.crit&&u.hero)critLine();await sleep(650)}
+// Großes Banner in der Bildmitte mit Strahlenkranz, Elementsymbolen und Schmuckschrift
+function popBig(kind,main,sub,els,dy){const ov=$('#battle');if(!ov)return;
+ const d=el('div','bt-big '+kind,'<div class="bb-rays"></div>'+(els?'<div class="bb-els"><span class="bb-el"><span class="el el-'+els[0]+'"></span><i>'+ELEM[els[0]]+'</i></span><span class="bb-arr"></span><span class="bb-el"><span class="el el-'+els[1]+'"></span><i>'+ELEM[els[1]]+'</i></span></div>':'')+'<div class="bb-rib"><b>'+esc(main)+'</b>'+(sub?'<small>'+esc(sub)+'</small>':'')+'</div>');
+ const fo=$('#bt-foes'),o=ov.getBoundingClientRect(),r=fo?fo.getBoundingClientRect():o;d.style.top=(r.top-o.top+r.height*.55+(dy?90:0))+'px';ov.appendChild(d);
+ if(kind==='super'||kind==='crit')sparkle(d);ov.classList.add('bigfx');clearTimeout(ov._bf);ov._bf=setTimeout(()=>ov.classList.remove('bigfx'),2600);setTimeout(()=>d.remove(),2700)}
+function sparkle(d){for(let i=0;i<14;i++){const s=el('i','bb-sp');const a=Math.random()*Math.PI*2,r=70+Math.random()*90;s.style.setProperty('--dx',Math.cos(a)*r+'px');s.style.setProperty('--dy',Math.sin(a)*r*.7+'px');s.style.animationDelay=(Math.random()*.25)+'s';d.appendChild(s)}}
+// Große Einblendungen im Kampf: Schaden, super effektiv, Treffer und Patzer
+function popFx(target,kind,main,sub,els,dy){if(!target||!$('#battle'))return;if(kind==='super'||kind==='weak'||kind==='crit')return popBig(kind,main,sub,els,dy);const ov=$('#battle'),r=target.getBoundingClientRect(),o=ov.getBoundingClientRect();
+ const d=el('div','bt-pop '+kind,(els?'<div class="bp-els"><span class="el el-'+els[0]+'"></span><i class="bp-arr"></i><span class="el el-'+els[1]+'"></span></div>':'')+'<b>'+esc(main)+'</b>'+(sub?'<small>'+esc(sub)+'</small>':''));
+ d.style.left=(r.left-o.left+r.width/2)+'px';d.style.top=(r.top-o.top+r.height*(kind==='dmg'||kind==='heal'?.35:.25)+(dy||0))+'px';ov.appendChild(d);const hw=d.offsetWidth/2+8,cx=r.left-o.left+r.width/2;d.style.left=Math.max(hw,Math.min(o.width-hw,cx))+'px';setTimeout(()=>d.remove(),kind==='dmg'||kind==='heal'?1300:2300)}
+function foeEl(f){return $('#bt-foes .bt-f[data-i="'+f.i+'"] .bt-fi')}
+function unitEl(u){return $('#bt-party .bt-u[data-k="'+B.party.indexOf(u)+'"] .bt-sp')}
 // Fliegende Angriffe: Pfeil, Zauber, Stein, Noten
 const PROJ={feuer:['p_feuer_0','p_feuer_1'],eis:['p_eis_0','p_eis_1'],blitz:['p_blitz_0','p_blitz_1'],pfeil:['p_pfeil'],gift:['p_giftpfeil'],stein:['p_stein_0','p_stein_1'],noten:['p_note_0','p_note_1'],dolch:['p_dolch'],stern:['p_stern'],natur:['p_blatt'],erde:['p_stein_0','p_stein_1'],bombe:['p_bombe']};
 const PSFX={feuer:'feuerball',eis:'eis_knackt',blitz:'donner',pfeil:'wuerfel',gift:'wuerfel',stein:'stein',noten:'zauber',stern:'zauber',natur:'zauber',erde:'stein',bombe:'puff',dolch:'schwert_ziehen'};
@@ -195,7 +207,7 @@ async function shoot(u,f,kind,miss){const ov=$('#battle');const ue=$('#bt-party 
  p.remove();if(!miss){const fxk=kind==='feuer'?'hit':kind==='eis'||kind==='blitz'||kind==='stern'||kind==='noten'||kind==='natur'?'magic':kind==='bombe'?'smoke':'hit';fx(fxk,fe)}}
 // Mehrere Ziele auf einmal
 async function shootAll(u,kind){const al=B.foes.filter(f=>f.hp>0);await Promise.all(al.map((f,i)=>sleep(i*120).then(()=>shoot(u,f,kind,false))))}
-function hurtFoe(f,d,u,why,m){f.hp=Math.max(0,f.hp-d);if(B&&B.F.phases&&f.boss){const th=B.F.phases[B.phI];if(th!==undefined&&th>0)f.hp=Math.max(f.hp,Math.ceil(th*f.max))}sfx('treffer',.8);blog((u?u.n:why)+' trifft '+f.n+': '+d+' Schaden'+(m>1?', super effektiv':m<1?', nicht sehr wirksam':''));render();
+function hurtFoe(f,d,u,why,m){f.hp=Math.max(0,f.hp-d);if(B&&B.F.phases&&f.boss){const th=B.F.phases[B.phI];if(th!==undefined&&th>0)f.hp=Math.max(f.hp,Math.ceil(th*f.max))}sfx('treffer',.8);popFx(foeEl(f),'dmg',String(d),'Schaden');blog((u?u.n:why)+' trifft '+f.n+': '+d+' Schaden'+(m>1?', super effektiv':m<1?', nicht sehr wirksam':''));render();
  f.fr=2;setTimeout(()=>{f.fr=0;if(B)render()},450);render();const e=$('#bt-foes .bt-f[data-i="'+f.i+'"]');if(e){fx('hit',e.querySelector('.bt-fi'));e.classList.add('hit');const n=el('div','dmg',''+d);e.appendChild(n);setTimeout(()=>e.classList.remove('hit'),400)}if(f.hp<=0)blog(f.n+' ist besiegt.')}
 async function foeTurn(f){const a=f.intent;if(!a||a.pre){blog(f.n+' holt aus. Achtung, nächste Runde kommt '+a.pre.n+'.');await sleep(800);return}
  const alive=B.party.filter(p=>p.hp>0&&!p.hidden);if(!alive.length)return;
@@ -211,7 +223,7 @@ function hurtUnit(u,d,f,an){if(u.block){u.block=0;blog(an+' prallt am Steinwall 
  if(u.dodge){u.dodge=0;blog(u.n+' springt in den Schatten. Daneben.');return}
  if(u.mirror){u.mirror=0;blog(an+' trifft nur ein Spiegelbild.');return}
  if(u.hero&&st.hero.skills.includes('ausweichen')&&!B.used.ausw){B.used.ausw=1;d=Math.ceil(d/2)}
- u.hp=Math.max(0,u.hp-d);sfx('au',.6);u.face=5;if(u.hp>0)poseFor(u,2,650);setTimeout(()=>{u.face=0;if(B)render()},700);blog(f.n+': '+an+' trifft '+u.n+', '+d+' Schaden.');
+ u.hp=Math.max(0,u.hp-d);sfx('au',.6);popFx(unitEl(u),'dmg pdmg',String(d),'Schaden');u.face=5;if(u.hp>0)poseFor(u,2,650);setTimeout(()=>{u.face=0;if(B)render()},700);blog(f.n+': '+an+' trifft '+u.n+', '+d+' Schaden.');
  if(u.hp<=0&&u.hero&&st.hero.skills.includes('eisernwille')&&!B.used.wille){B.used.wille=1;u.hp=1;blog('Eiserner Wille: '+u.n+' bleibt stehen.')}
  render();const e=$('#bt-party .bt-u[data-k="'+B.party.indexOf(u)+'"]');if(e){e.classList.add('hit');setTimeout(()=>e.classList.remove('hit'),400)}}
 async function useSkill(u,s){const S=SK[s];if(S.once)B.used[u.id+s]=1;sfx('zauber',.7);poseFor(u,1,800);fx('magic',$('#bt-party .bt-u[data-k="'+B.party.indexOf(u)+'"]'),110);
@@ -286,10 +298,15 @@ const TUT={
  t09:[null,'Zwei Zahlen sind besonders. Eine Zwanzig ist ein kritischer Treffer und macht doppelten Schaden. Eine Eins ist ein Patzer, dann geht leider etwas schief.'],
  t10:['#bt-party','Jetzt waren die Gegner dran. Ihre Treffer ziehen euch Lebenspunkte ab. Gewonnen habt ihr, wenn alle Gegner besiegt sind. Und keine Angst: Verliert ihr, dürft ihr den Kampf einfach noch einmal versuchen.'],
  t11:[null,'Super effektiv! Jedes Element ist gegen ein anderes besonders stark. Feuer schlägt Natur, Natur schlägt Erde, Erde schlägt Blitz, Blitz schlägt Eis, und Eis schlägt Feuer. Trifft das starke Element, gibt es doppelten Schaden. Andersherum gibt es nur halben Schaden.']};
+// Elementkreis als Grafik: jedes Element schlägt das nächste im Uhrzeigersinn
+function elKreis(){const O=['feuer','natur','erde','blitz','eis'],R=92,C=120;const pt=i=>{const a=-Math.PI/2+i*2*Math.PI/5;return[C+R*Math.cos(a),C+R*Math.sin(a)]};
+ let arr='';for(let i=0;i<5;i++){const a0=-Math.PI/2+i*2*Math.PI/5+.36,a1=-Math.PI/2+(i+1)*2*Math.PI/5-.36;const x0=C+R*Math.cos(a0),y0=C+R*Math.sin(a0),x1=C+R*Math.cos(a1),y1=C+R*Math.sin(a1);arr+='<path d="M'+x0.toFixed(1)+' '+y0.toFixed(1)+' A'+R+' '+R+' 0 0 1 '+x1.toFixed(1)+' '+y1.toFixed(1)+'" marker-end="url(#ekp)"/>'}
+ const ic=O.map((e,i)=>{const[x,y]=pt(i);return '<div class="ek-i" style="left:'+(x/2.4)+'%;top:'+(y/2.4)+'%"><span class="el el-'+e+'"></span><b>'+ELEM[e]+'</b></div>'}).join('');
+ return '<div class="ek"><svg viewBox="0 0 240 240"><defs><marker id="ekp" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="4.5" markerHeight="4.5" orient="auto"><path d="M0 0L10 5L0 10z" fill="#b8741a"/></marker></defs><g fill="none" stroke="#b8741a" stroke-width="5" stroke-linecap="round">'+arr+'</g></svg>'+ic+'<div class="ek-m">schlägt</div></div>'}
 async function coach(id){const T0=TUT[id];if(!T0||!$('#battle'))return;const [sel,txt]=T0;const ov=$('#battle');
  const c=el('div','bt-coach');const tg=sel?ov.querySelector(sel):null;let top=false;
  if(tg){const r=tg.getBoundingClientRect(),o=ov.getBoundingClientRect();const pad=6;const sp=el('div','bt-spot');sp.style.cssText='left:'+(r.left-o.left-pad)+'px;top:'+(r.top-o.top-pad)+'px;width:'+(r.width+pad*2)+'px;height:'+(r.height+pad*2)+'px';c.appendChild(sp);top=(r.top+r.height/2-o.top)>o.height/2}else c.classList.add('dim');
- const bx=el('div','bt-cb'+(top?' top':''),'<div class="bt-cf" style="background-image:url('+A+'img/p_sl.jpg)"></div><div class="bt-ct"><b>Der Spielleiter</b><p>'+esc(txt)+'</p><button class="pbtn">Weiter</button></div>');c.appendChild(bx);ov.appendChild(c);
+ const bx=el('div','bt-cb'+(top?' top':''),'<div class="bt-cf" style="background-image:url('+A+'img/p_sl.jpg)"></div><div class="bt-ct"><b>Der Spielleiter</b><p>'+esc(txt)+'</p><button class="pbtn">Weiter</button></div>');if(id==='t11'){c.classList.add('ekc');c.insertAdjacentHTML('beforeend','<div class="bt-ekbox">'+elKreis()+'</div>')}c.appendChild(bx);ov.appendChild(c);
  const a=playVo(A+'vo/tut_'+id+'.mp3',on=>bx.classList.toggle('talk',on));
  await new Promise(r=>bx.querySelector('button').onclick=()=>{sfx('ui_klick',.5);r()});if(a)stopVo();c.remove()}
 async function tutorial(){st.flags.tut_done=1;save();for(const k of ['t01','t02','t03','t04','t05','t06','t12'])await coach(k)}
