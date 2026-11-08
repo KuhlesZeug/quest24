@@ -1517,3 +1517,28 @@ img{display:block;max-width:100%}
 .tk2-sn{width:12%}
 .tk2-zi.stomp .tk2-body{animation:none}
 .tk2-n{transition:opacity .25s}
+/* Zirpias Schlagzeug (Rock Band Ansicht) */
+.rk{position:fixed;inset:0;z-index:60;background:#120c06;opacity:0;transition:opacity .45s;touch-action:none;user-select:none;-webkit-user-select:none;overflow:hidden}
+.rk.on{opacity:1}
+.rk-bgb{background-image:url(a/img/buehne_blick.jpg)}
+.rk-st{position:absolute;top:0;bottom:0;left:50%;transform:translateX(-50%);width:min(100vw,calc(100vh*9/16));background:url(a/img/buehne_blick.jpg) center/cover;overflow:hidden;box-shadow:0 0 40px rgba(0,0,0,.7)}
+.rk-st::after{content:'';position:absolute;inset:0;background:radial-gradient(ellipse at 50% 30%,transparent 45%,rgba(10,5,0,.4));pointer-events:none}
+.rk.m2 .rk-st::after{background:radial-gradient(ellipse at 50% 30%,rgba(255,210,120,.15) 35%,rgba(10,5,0,.25))}
+.rk-hw{position:absolute;inset:0;width:100%;height:100%;z-index:1;pointer-events:none}
+.rk-notes{position:absolute;inset:0;z-index:3;pointer-events:none}
+.rk-n{position:absolute;left:0;top:0;width:54px;height:30px;border-radius:50%;opacity:0;box-shadow:0 0 0 3px #2a1608,0 0 14px 3px currentColor,inset 0 -6px 0 rgba(0,0,0,.25),inset 0 4px 0 rgba(255,255,255,.5);transition:opacity .2s}
+.rk-n.l0{background:#ff7a4a;color:#ff7a4a}.rk-n.l1{background:#ffd23f;color:#ffd23f}.rk-n.l2{background:#5fd16a;color:#5fd16a}.rk-n.l3{background:#5ab8ff;color:#5ab8ff}
+.rk-pad{position:absolute;width:22%;aspect-ratio:1;transform:translate(-50%,-50%);z-index:2;pointer-events:none}
+.rk-pad img{width:100%;height:100%;object-fit:contain;filter:drop-shadow(0 6px 6px rgba(0,0,0,.5))}
+.rk-pad.hit img{animation:rkHit .16s}
+@keyframes rkHit{50%{transform:scale(.88)}}
+.rk-arm{position:absolute;width:auto;z-index:4;transform-origin:50% 100%;pointer-events:none;transition:transform .07s ease-out,height .07s ease-out;filter:drop-shadow(0 6px 6px rgba(0,0,0,.45))}
+.rk-combo{position:absolute;left:0;right:0;top:27%;text-align:center;z-index:6;font-family:var(--head);font-size:1.4rem;color:#fff3c4;text-shadow:0 2px 0 #3a1d08,0 0 8px #000}
+.rk-combo.bump{animation:tk2Bump .25s}
+.rk-pop{position:absolute;left:0;right:0;top:calc(73.5% - 120px);text-align:center;z-index:6;font-family:var(--head);font-size:1.6rem;color:#fff3c4;text-shadow:0 2px 0 #6b1d10,0 0 10px #000;opacity:0;transform:scale(.7);transition:opacity .12s,transform .12s;pointer-events:none}
+.rk-pop.on{opacity:1;transform:none}.rk-pop.p{color:#ffe27a}.rk-pop.g{color:#bff5a8}
+.rk-help{position:absolute;left:8%;right:8%;top:20%;z-index:6;text-align:center;font-family:var(--sc);font-size:.9rem;color:#fff4dc;text-shadow:0 1px 3px #000;background:rgba(30,16,6,.6);border-radius:10px;padding:6px 10px;transition:opacity .6s}
+.rk-help.weg{opacity:0}
+.rk-load{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;z-index:9;font-family:var(--sc);color:#fff4dc;background:rgba(20,10,4,.6)}
+.rk.ende .rk-notes,.rk.ende .rk-help,.rk.ende .rk-combo{opacity:0}
+.rk-st::before{content:'';position:absolute;left:0;right:0;bottom:0;height:22%;background:linear-gradient(rgba(20,10,4,0),rgba(20,10,4,.85));z-index:1;pointer-events:none}
