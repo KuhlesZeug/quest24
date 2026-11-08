@@ -25,7 +25,7 @@ function renderMap(){const m=$('#map-in');m.querySelectorAll('.wp,.token,.trail'
  const at=Math.max(1,Math.min(24,nd>24?24:(st.done[nd-1]?nd-1:Math.max(1,nd-1))));const tp=WP[Object.keys(st.done).length?Math.max(...Object.keys(st.done).map(Number)):1];
  const tk=el('div','token','<i class="tk-sh"></i><div class="tk-sp" style="background-image:url('+runImg(0)+')"></div>');tk.style.left=tp[0]+'%';tk.style.top=tp[1]+'%';m.appendChild(tk);standBeside(tk,Object.keys(st.done).length?Math.max(...Object.keys(st.done).map(Number)):1);for(let i=0;i<4;i++){const im=new Image();im.src=runImg(i)}
  const sc=$('#map');requestAnimationFrame(()=>{const w=m.offsetWidth;sc.scrollLeft=Math.max(0,tp[0]/100*w-sc.clientWidth/2)});
- $('#map-foot').innerHTML=nd>24?'Das Abenteuer ist bestanden. Du kannst jeden Tag noch einmal erleben.':unlocked(nd)?'Tippe auf Wegpunkt '+nd+', um weiterzuspielen.':lockMsg(nd)}
+ $('#map-foot').innerHTML=nd>24?'Das Abenteuer ist bestanden. Du kannst jeden Tag noch einmal erleben.<button class="pbtn" onclick="openUrkunde()">Deine Heldenurkunde</button>':unlocked(nd)?'Tippe auf Wegpunkt '+nd+', um weiterzuspielen.':lockMsg(nd)}
 // Mini Figur auf der Karte: steht, rennt von Punkt zu Punkt und bleibt stehen
 const RUNF={schurke_1:[1,3],schurke_2:[1,3]};
 // Steht neben dem Wegpunkt, auf der Seite weg vom nächsten Punkt, damit keine Zahl verdeckt wird
@@ -54,7 +54,7 @@ async function playDay(d,again){const D=DAYS[d];if(!D){toast('Dieser Tag wird ge
  show('#s-scene');SC.id='d'+String(d).padStart(2,'0');if(!D._n)D._n=numberSteps(SC.id,D.steps)||1;SC.abort=0;SC.wgPrev=null;$('#s-scene').classList.remove('real');$('#sc-bg').innerHTML='';BGWANT=null;const fg=$('#sc-fig');if(fg)fg.classList.remove('on');$('#sc-title').textContent='Tag '+d+' · '+DAYN[d];renderHud();
  await run(D.steps);if(SC.abort){SC.abort=0;return goMap()}
  hideBox();if(!again){st.done[d]=Date.now();save()}
- if(d===24&&!again){goMap();setTimeout(()=>toast('Heute zum Ausdrucken: deine Heldenurkunde. Du hast sie dir verdient.',9000),1800);return}await countdownCard(d);goMap()}
+ if(d===24&&!again){goMap();setTimeout(()=>openUrkunde(),1200);return}await countdownCard(d);goMap()}
 async function countdownCard(d){const n=nights();const o=$('#card');o.innerHTML='<div class="cd-card"><div class="cd-big"><img class="cd-body" src="'+A+'ui/kerze.png" alt=""><img class="cd-flame" src="'+A+'ui/flamme.png" alt=""></div><h3>'+(n?'Noch '+n+' '+(n===1?'Nacht':'Nächte')+' bis zur Lichternacht':'Lichternacht!')+'</h3><p>'+(DAYS[d].end?T(DAYS[d].end):'Morgen geht die Reise weiter.')+'</p><button class="pbtn">Zur Karte</button></div>';
  o.classList.add('on');sfx('kerze',.6);await new Promise(r=>o.querySelector('button').onclick=r);o.classList.remove('on')}
 
