@@ -205,7 +205,7 @@ GAMES.schloss=()=>new Promise(async done=>{
 // Tag 15: Der Laden in Goldhafen
 GAMES.laden=()=>new Promise(done=>{
  const W=[['htklein',6],['htmittel',12],['htgross',20],['mut',8],['rauch',10],['wetzstein',9],['stange',5]];const sold=st.flags.ladenSold||(st.flags.ladenSold=[]);
- const area=gameShell('Der Markt von Goldhafen','Tippe an, was du kaufen möchtest. Jede Ware gibt es nur einmal.');
+ const area=gameShell('Frostkauf<small class="shop-slogan">Alles außer Drachennahrung</small>','Tippe an, was du kaufen möchtest. Jede Ware gibt es nur einmal.');
  const draw=()=>{const left=W.filter(([id])=>!sold.includes(id));area.innerHTML='<div class="inv-gold">'+UI('gold')+' '+st.gold+' Gold</div><div class="shop">'+(left.length?left.map(([id,p])=>'<button class="shop-it" data-id="'+id+'" data-p="'+p+'"'+(st.gold<p?' disabled':'')+'><img src="'+A+'items/'+id+'.png" alt=""><b>'+ITEMS[id].n+'</b><span>'+p+' Gold</span></button>').join(''):'<p class="shop-leer">Ausverkauft. Bob ist sehr zufrieden.</p>')+'</div><button class="pbtn big shop-done">Fertig</button>';
   area.querySelectorAll('.shop-it').forEach(b=>b.onclick=()=>{const p=+b.dataset.p,id=b.dataset.id;if(st.gold<p||b.classList.contains('weg'))return;st.gold-=p;const ex=st.inv.find(x=>x.id===id);if(ex)ex.n=(ex.n||1)+1;else st.inv.push({id,n:1});sold.push(id);save();sfx('muenzen',.7);toast(ITEMS[id].n+' gekauft');renderHud();b.classList.add('weg');setTimeout(draw,520)});
   area.querySelector('.shop-done').onclick=()=>{gameEnd();done()}};draw()});

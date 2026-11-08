@@ -51,7 +51,7 @@ GAMES.malen=(s)=>new Promise(async done=>{hideBox();
  const draw=()=>{if(raf)return;raf=requestAnimationFrame(()=>{raf=0;cx.setTransform(dpr,0,0,dpr,0,0);cx.clearRect(0,0,vw,vh);
   cx.save();cx.shadowColor='rgba(0,0,0,.45)';cx.shadowBlur=18;cx.fillStyle='#fff';cx.fillRect(tx,ty,W*sc,H*sc);cx.restore();
   cx.imageSmoothingEnabled=true;cx.imageSmoothingQuality='high';cx.drawImage(work,tx,ty,W*sc,H*sc);
-  cx.globalAlpha=Math.min(1,.35+sc/fit*.15);cx.drawImage(imU,tx,ty,W*sc,H*sc);cx.globalAlpha=1;
+  cx.drawImage(imU,tx,ty,W*sc,H*sc);
   cx.textAlign='center';cx.textBaseline='middle';
   cx.lineJoin='round';for(let r=1;r<=N;r++){if(filled[r])continue;const R=D.r[r-1],rr=R[3]*D.s*sc;if(rr<5)continue;const x=tx+R[1]*D.s*sc,y=ty+R[2]*D.s*sc;if(x<-20||y<-20||x>vw+20||y>vh+20)continue;
    const on=R[0]===sel,fs=Math.max(10,Math.min(on?22:19,rr*1.15));cx.font='700 '+fs+'px Georgia,serif';cx.lineWidth=Math.max(3,fs*.28);cx.strokeStyle='rgba(255,255,255,.95)';cx.strokeText(R[0]+1,x,y);cx.fillStyle=on?'#000':'#3d3630';cx.fillText(R[0]+1,x,y)}

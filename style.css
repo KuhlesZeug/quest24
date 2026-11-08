@@ -1408,3 +1408,5 @@ img{display:block;max-width:100%}
 .pbn-glanz i{position:absolute;width:10px;height:10px;background:radial-gradient(circle,#fff,#ffd76a 40%,transparent 70%);border-radius:50%;opacity:0;animation:pbnFunk 1.8s ease-in-out infinite}
 @keyframes pbnFunk{0%,100%{opacity:0;transform:scale(.3)}50%{opacity:1;transform:scale(1.4)}}
 .pbn-done{margin-top:18px;font-family:var(--head);font-size:1.8rem;color:#ffe7a8;text-shadow:0 0 14px rgba(255,190,80,.9),0 3px 0 #3a1d08}
+
+.shop-slogan{display:block;margin-top:2px;font-family:var(--sc);font-size:.8rem;font-style:italic;letter-spacing:.03em;opacity:.8}

@@ -18,7 +18,7 @@ DAYS[1]={end:'Heute zum Ausdrucken: dein Heldenbogen, die Karte von Eldmark, Tei
  {s:'SL',vo:'d01_k05',t:'Ein Krieger. Ein Drache. Ein Kampf auf Leben und Tod. Und du hast kaum über den Rand gemalt.'},
  {s:'SL',vo:'d01_k06',t:'Dein Pinsel ist noch ganz warm vor Begeisterung. Behalte ihn. Wer malt, schaut genauer hin. Das wird dir noch nützen.'},
  {item:'pinsel'},
- {sfx:'klopfen'},
+ {sfx:'klopfen'},{bg:'klopfen_tuer',look:1800},
  {s:'SL',vo:'d01_k07',t:'Da klopft es an der Tür. So spät klopft in Morgentau eigentlich nur der Wind. Oder jemand mit einem Auftrag.'},
  {bg:'ort01',...DORF},
  {s:'ALT',t:'{NAME}. Du bist die Einzige, die sich gemeldet hat. Also, die Einzige, die nicht schnell genug weggelaufen ist.',tm:'{NAME}. Du bist der Einzige, der sich gemeldet hat. Also, der Einzige, der nicht schnell genug weggelaufen ist.'},
