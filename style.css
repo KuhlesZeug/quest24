@@ -1501,3 +1501,8 @@ img{display:block;max-width:100%}
 .tk2-jub{opacity:0;transition:opacity .12s;object-fit:contain}
 .tk2-zi.jub .tk2-jub{opacity:1}.tk2-zi.jub .tk2-rig{opacity:0}
 .tk2-n{opacity:0}
+.tk2-zi{aspect-ratio:1281/2133}
+.tk2-leg{display:none}
+.tk2-lg{position:absolute;inset:0;width:100%;height:100%}
+.tk2-lg.l{transform-origin:40% 73%}
+.tk2-lg.r{transform-origin:62.5% 73%}

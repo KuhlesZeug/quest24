@@ -17,13 +17,13 @@ GAMES.takt=()=>new Promise(async done=>{hideBox();
  const MEL=[E4,G4,A4,G4,E4,D4,C4,D4,E4,G4,A4,C5,A4,G4,
   E4,G4,A4,C5,D5,C5,A4,G4,A4,C5,D5,E5,D5,C5,A4,G4,
   C5,D5,E5,D5,C5,A4,G4,A4,C5,D5,E5,E5,D5,C5,A4,G4,A4,G4,E4,C5];
- const N=CH.length;const FR=[A+'ui/zi_koerper.png',A+'ui/zi_bein.png',A+'ui/zi_jubel.png'];FR.forEach(u=>{const i=new Image();i.src=u});
+ const N=CH.length;const FR=[A+'ui/zi_koerper.png',A+'ui/zi_bein_l.png',A+'ui/zi_jubel.png',A+'ui/zi_bein_r.png'];FR.forEach(u=>{const i=new Image();i.src=u});
  const o=el('div','tk2');o.innerHTML='<div class="tk2-bg"></div><div class="tk2-st"><div class="tk2-top"><div class="tk2-t">Zirpias großer Auftritt</div><div class="tk2-meter"><i></i><b>Begeisterung</b></div></div>'+
-  '<div class="tk2-zi"><div class="tk2-rig"><div class="tk2-leg l"><img src="'+A+'ui/zi_bein.png" alt=""></div><div class="tk2-leg r"><img src="'+A+'ui/zi_bein.png" alt=""></div><img class="tk2-body" src="'+A+'ui/zi_koerper.png" alt=""></div><img class="tk2-jub" src="'+FR[2]+'" alt=""></div><div class="tk2-snails"></div>'+
+  '<div class="tk2-zi"><div class="tk2-rig"><img class="tk2-lg l" src="'+A+'ui/zi_bein_l.png" alt=""><img class="tk2-lg r" src="'+A+'ui/zi_bein_r.png" alt=""><img class="tk2-body" src="'+A+'ui/zi_koerper.png" alt=""></div><img class="tk2-jub" src="'+FR[2]+'" alt=""></div><div class="tk2-snails"></div>'+
   '<div class="tk2-lanes"><div class="tk2-ln l"><div class="tk2-rail"></div><div class="tk2-hit"><img src="'+A+'ui/trommel.png" alt=""></div></div><div class="tk2-ln r"><div class="tk2-rail"></div><div class="tk2-hit"><img src="'+A+'ui/trommel.png" alt=""></div></div><div class="tk2-notes"></div></div>'+
   '<div class="tk2-combo"></div><div class="tk2-pop l"></div><div class="tk2-pop r"></div><div class="tk2-help">Linke Note: links tippen. Rechte Note: rechts tippen. Am besten mit beiden Daumen.</div><div class="tk2-count"></div></div>';
  document.body.appendChild(o);requestAnimationFrame(()=>o.classList.add('on'));
- const $o=s=>o.querySelector(s),notesEl=$o('.tk2-notes'),hits=[...o.querySelectorAll('.tk2-hit')],pops=[$o('.tk2-pop.l'),$o('.tk2-pop.r')],comboEl=$o('.tk2-combo'),meter=$o('.tk2-meter i'),zi=$o('.tk2-zi'),lanes=$o('.tk2-lanes'),stg=$o('.tk2-st');
+ const $o=s=>o.querySelector(s),notesEl=$o('.tk2-notes'),hits=[...o.querySelectorAll('.tk2-hit')],pops=[$o('.tk2-pop.l'),$o('.tk2-pop.r')],comboEl=$o('.tk2-combo'),meter=$o('.tk2-meter i'),zi=$o('.tk2-zi'),legs=[...o.querySelectorAll('.tk2-lg')],lanes=$o('.tk2-lanes'),stg=$o('.tk2-st');
  const SN=[[4,0,1],[22,5,.9],[40,1,1.05],[60,6,.92],[80,0,1]];const snails=SN.map(([x,y,s],i)=>{const e=el('img','tk2-sn');e.src=A+'ui/schnecke.png';e.style.left=x+'%';e.style.bottom=(2+y)+'%';e.style.setProperty('--s',s*(i%2?-1:1));e.style.animationDelay=(i*.13)+'s';$o('.tk2-snails').appendChild(e);return e});
  if(TEST){const tb=el('button','pbn-test','Test: fertig');tb.style.cssText='position:absolute;right:8px;top:70px;z-index:9';tb.onclick=()=>{res.hits=N;res.perfect=N;finish()};stg.appendChild(tb)}
  const c=ac();const LAT=(c.outputLatency||c.baseLatency||0);
@@ -59,7 +59,9 @@ GAMES.takt=()=>new Promise(async done=>{hideBox();
    while(next<N&&notes[next].st&&notes[next].t<now-.4)next++;
    // Zirpia stampft im Wechsel auf jeden Schlag
    const bt=Math.floor((now-t0)/IV),ph=((now-t0)/IV)%1;
-   if(now>t0-4*IV&&now<t0+48*IV){if(bt!==lastBeat){lastBeat=bt;zi.classList.toggle('b1',bt%2!==0);zi.classList.remove('stomp');void zi.offsetWidth;zi.classList.add('stomp');o.classList.remove('beat');void o.offsetWidth;o.classList.add('beat')}}
+   if(now>t0-4*IV&&now<t0+48*IV){if(bt!==lastBeat){lastBeat=bt;zi.classList.remove('stomp');void zi.offsetWidth;zi.classList.add('stomp');o.classList.remove('beat');void o.offsetWidth;o.classList.add('beat')}}
+   {const u=(((now-t0)/IV)%2+2)%2,ll=u<1?Math.sin(Math.PI*u):0,rr=u>=1?Math.sin(Math.PI*(u-1)):0;
+    legs[0].style.transform='translateY('+(-ll*7)+'%) rotate('+(ll*7)+'deg)';legs[1].style.transform='translateY('+(-rr*7)+'%) rotate('+(-rr*7)+'deg)'}
    if(now>t0+CH[N-1][0]*IV+1.2){o.removeEventListener('pointerdown',tap);finish();return}
    raf=requestAnimationFrame(loop)};raf=requestAnimationFrame(loop)};
  async function finish(){if(fin)return;fin=1;cancelAnimationFrame(raf);hush(false);o.classList.add('ende');
