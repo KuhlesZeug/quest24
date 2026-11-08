@@ -276,7 +276,7 @@ GAMES.schilder=(s)=>new Promise(done=>{const sc=$('#s-scene');const IW=1080,IH=1
   if(spots.every(x=>x.go.classList.contains('on')))o.querySelector('.pg-top').textContent='Welchem Weg folgst du?'};
   sp.go.onclick=async()=>{if(walking)return;walking=true;stopVo();sfx('schritte_schnee',.7);spots.forEach(x=>x.b.classList.remove('talk'));
    if(sp.g.k==='m'){o.classList.add('out');setTimeout(()=>o.remove(),500);removeEventListener('resize',lay);return done()}
-   o.style.display='none';await run(s.wrong||[]);hideBox();o.style.display='';walking=false}});
+   o.style.display='none';await run((sp.g.k==='r'&&s.wrongR)||s.wrong||[]);hideBox();o.style.display='';walking=false}});
  o.querySelector('.pg-tip').onclick=()=>{const h=HINTS[Math.min(hint,2)];toast(h,7000);readAloud(h);hint++};
 });
 

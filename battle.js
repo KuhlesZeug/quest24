@@ -153,14 +153,18 @@ async function partyTurn(u){B.cur=u;render();const act=$('#bt-act');
  let ch=null;
  while(!ch){const main=[{k:'atk',t:u.hit}];if(sks.length)main.push({k:'skm',t:'Fähigkeiten',d:sks.length+' zur Auswahl'});if(pots.length)main.push({k:'itm',t:'Gegenstand',d:pots.length+' im Gepäck'});
   const m=await choose(u.n+' ist dran',main);
-  if(m.k==='atk'){ch=m;break}
+  if(m.k==='atk'){const f=await pickFoeBack(act);if(f){ch=m;ch.f=f}continue}
   if(m.k==='skm'){const s=await choose('Fähigkeit wählen',sks,'sheet',1);if(s)ch=s;continue}
   if(m.k==='itm'){const it=await choose('Gegenstand wählen',pots.map(x=>({k:'item',it:x,t:ITEMS[x.id].n,d:ITEMS[x.id].d})),'sheet',1);if(it)ch=it;continue}}
- act.className='bt-act';act.innerHTML='<div class="bt-who">'+esc(ch.k==='atk'?'Wähle ein Ziel':ch.t)+'</div>';
- if(ch.k==='atk'){const f=await pickFoe();await attack(u,f,{});}
+ act.className='bt-act';act.innerHTML='<div class="bt-who">'+esc(ch.k==='atk'?u.hit:ch.t)+'</div>';
+ if(ch.k==='atk'){await attack(u,ch.f,{});}
  else if(ch.k==='item'){await useItemBattle(u,ch.it)}
  else await useSkill(u,ch.s);
  act.innerHTML='';B.cur=null}
+async function pickFoeBack(act){const alive=B.foes.filter(f=>f.hp>0);if(alive.length===1)return alive[0];
+ act.className='bt-act';act.innerHTML='<div class="bt-who">Wähle ein Ziel</div><p class="bt-hint">Tippe auf einen Gegner.</p>';const b=el('button','bt-back','Zurück');act.appendChild(b);
+ const back=new Promise(r=>{b.onclick=()=>{sfx('ui_klick',.5);const Q=B.picking;B.picking=null;if(Q)$$(Q.sel).forEach(x=>{x.classList.remove('pickable');x.onclick=null});r(null)}});
+ const f=await Promise.race([pickFoe(),back]);return f}
 async function pickFoe(){const alive=B.foes.filter(f=>f.hp>0);if(alive.length===1)return alive[0];const e=await pick('#bt-foes .bt-f',e=>B.foes[+e.dataset.i].hp>0);return B.foes[+e.dataset.i]}
 async function pickAlly(down){const e=await pick('#bt-party .bt-u',e=>down?B.party[+e.dataset.k].hp<=0:B.party[+e.dataset.k].hp>0);return B.party[+e.dataset.k]}
 async function attack(u,f,o){let bonus=u.atk+(B.buff.all||0)+(u.next||0)+(o.add||0)-(u.blind?2:0);u.next=0;

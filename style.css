@@ -969,3 +969,4 @@ img{display:block;max-width:100%}
 .fball{transition:left .95s cubic-bezier(.4,0,.8,.6),top .95s cubic-bezier(.4,0,.8,.6)}
 .fball img{transform:scale(.06)}
 .fball.go img{transform:scale(5)}
+.bt-hint{margin:2px 0 0;font-size:.9rem;color:var(--ink2)}

@@ -9,7 +9,7 @@ DAYS[7]={end:'Die Laterne leuchtet. Der Wald flüstert trotzdem weiter.',steps:[
  {s:'SL',t:'Das sagen sie zu jedem. Machen die immer so.'},
  {bg:'f_schild_weg'},
  {s:'SL',t:'Drei Wege, drei Wegweiser. Die Waldgeister haben sie verhext. Zwei von ihnen lügen, nur einer sagt die Wahrheit. Und nur das ehrliche Schild steht vor dem Weg nach Norden.'},
- {game:'schilder',wrong:[{s:'GR',t:'Den Baum kenne ich. Ich hab ihn Gerhard genannt.'},{s:'SL',t:'Zurück an den Anfang. Gerhard grüßt.'}]},
+ {game:'schilder',wrong:[{s:'GR',t:'Den Baum kenne ich. Ich hab ihn Gerhard genannt.'},{s:'SL',t:'Zurück an den Anfang. Gerhard grüßt.'}],wrongR:[{s:'GR',t:'Den Baum kenne ich auch. Den hab ich Gisela genannt.',_vo:'d07_w1'},{s:'SL',t:'Wieder am Anfang. Gisela raschelt zum Abschied.',_vo:'d07_w2'}]},
  {bg:'f_schild_m'},{s:'SCHM',t:'Na endlich. Ich bin das ehrliche Schild. Die zwei anderen schwindeln den ganzen Tag. Geradeaus geht es nach Norden.'},
  {bg:'f_schild_r'},{s:'SCHR',t:'Hihi. Erwischt.'},
  {bg:'ort07'},
