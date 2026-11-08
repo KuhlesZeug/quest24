@@ -84,8 +84,9 @@ DAYS[21]={end:'Heute zum Ausdrucken: die Tagebuchseiten und die Drehscheibe. Du 
  {s:'NA',t:'Die Frostkralle hatte ich schon immer drauf. Ich hatte nur keine Lust.',e:'sly'},
  {s:'ZI',t:'Und meine Ballade schwächt jetzt Gegner! Also, alle meine Lieder bewirken etwas. Dieses aber messbar.',e:'laugh'},
  {fight:'asche'},
+ {bg:'d21h',alt:'ort21',mus:'asche'},
  {s:'SL',t:'Die Wächter zerfallen wieder zu Asche. Ganz leise. Fast erleichtert.'},
- {bg:'d21s',alt:'ort21',mus:'asche',look:1600},
+ {bg:'d21s',alt:'ort21',look:1600},
  {s:'SL',t:'Zwischen den Aschehaufen liegt etwas Dunkles. Eine Schuppe. So groß wie Nachtigall.'},
  {s:'NA',t:'Die ist von ihm. Er hat Schuppen verloren. Das ist nicht gut.',e:'worried'},
  {item:'drachenschuppe'},{loot:1},{hide:1}
