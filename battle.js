@@ -109,9 +109,9 @@ async function battle(F,key,tries){const ov=$('#battle');ov.innerHTML='';ov.clas
  B={F,key,phI:F.phases?(st.flags.dph||0):0,round:0,foes:F.foes.map((f,i)=>({...f,i,max:f.hp,skip:0,minus:0,poison:0,intent:null})),party:partyUnits(),used:{},buff:{},first:true,log:[]};
  if(F.phases&&B.phI){const f=B.foes.find(x=>x.boss);if(f)f.hp=Math.max(1,Math.ceil(F.phases[B.phI-1]*f.max)-2)}
  if(st.hero.skills.includes('waldsegen'))B.party.forEach(p=>p.hp=Math.min(p.max,p.hp+3));
- ov.innerHTML='<div class="bt-bg" style="background-image:url('+A+'img/'+F.bg+'.jpg)"></div><div class="bt-top"><div class="bt-t">'+esc(F.t)+'</div><div class="bt-r" id="bt-r"></div><button class="bt-help" id="bt-help" aria-label="Erklärung">?</button></div><div class="bt-foes" id="bt-foes"></div><div class="bt-log" id="bt-log"></div><div class="bt-party" id="bt-party"></div><div class="bt-act" id="bt-act"></div>';
+ ov.innerHTML='<div class="bt-bg" style="background-image:url('+A+'img/'+F.bg+'.jpg)"></div><div class="bt-top"><div class="bt-t">'+esc(F.t)+'</div><div class="bt-r" id="bt-r"></div><button class="bt-ekb" id="bt-ekb" aria-label="Elementkreis"></button><button class="bt-help" id="bt-help" aria-label="Erklärung">?</button></div><div class="bt-foes" id="bt-foes"></div><div class="bt-log" id="bt-log"></div><div class="bt-party" id="bt-party"></div><div class="bt-act" id="bt-act"></div>';
  preloadSprites();sfx('schwert_ziehen');setTimeout(()=>{if(B){B._fszLock=0;fitFoes(true);B._fszLock=1}},700);if(tries&&TIPS[key])blog('Tipp: '+TIPS[key],1);
- B.tut=!!(F.tut&&!st.flags.tut_done);$('#bt-help').onclick=()=>{sfx('ui_klick',.5);tutHelp()};
+ B.tut=!!(F.tut&&!st.flags.tut_done);$('#bt-help').onclick=()=>{sfx('ui_klick',.5);tutHelp()};$('#bt-ekb').classList.toggle('on',!!st.flags.tut_t11);$('#bt-ekb').onclick=()=>{sfx('pergament',.5);ekShow()};
  while(true){B.round++;const rr=$('#bt-r');rr.innerHTML='<img src="'+A+'ui/sanduhr.png" alt=""><span>Runde</span><b>'+B.round+'</b>';rr.classList.remove('pop');void rr.offsetWidth;rr.classList.add('pop');planFoes();render();
   if(B.tut&&B.round===1){await sleep(400);await tutorial()}
   for(const u of B.party){if(u.hp<=0)continue;if(u.web){u.web=0;blog(u.n+' hängt im Netz fest und setzt aus.');render();await sleep(900);continue}
@@ -170,7 +170,7 @@ async function partyTurn(u){B.cur=u;render();const act=$('#bt-act');
  if(ch.k==='atk'){await attack(u,ch.f,{});}
  else if(ch.k==='item'){await useItemBattle(u,ch.it)}
  else await useSkill(u,ch.s);
- act.innerHTML='';if(B&&B._elT){B._elT=0;await coach('t11')}B.cur=null}
+ act.innerHTML='';if(B&&B._elT){B._elT=0;await coach('t11');const k=$('#bt-ekb');if(k){k.classList.add('on','new');setTimeout(()=>k.classList.remove('new'),4000)}}B.cur=null}
 async function pickFoeBack(act){const alive=B.foes.filter(f=>f.hp>0);if(alive.length===1)return alive[0];
  act.className='bt-act';act.innerHTML='<div class="bt-who">Wähle ein Ziel</div><p class="bt-hint">Tippe auf einen Gegner.</p>';const b=el('button','bt-back','Zurück');act.appendChild(b);
  const back=new Promise(r=>{b.onclick=()=>{sfx('ui_klick',.5);const Q=B.picking;B.picking=null;if(Q)$$(Q.sel).forEach(x=>{x.classList.remove('pickable');x.onclick=null});r(null)}});
@@ -312,6 +312,7 @@ function elKreis(){const O=['feuer','natur','erde','blitz','eis'],R=92,C=120;con
  let arr='';for(let i=0;i<5;i++){const a0=-Math.PI/2+i*2*Math.PI/5+.36,a1=-Math.PI/2+(i+1)*2*Math.PI/5-.36;const x0=C+R*Math.cos(a0),y0=C+R*Math.sin(a0),x1=C+R*Math.cos(a1),y1=C+R*Math.sin(a1);arr+='<path d="M'+x0.toFixed(1)+' '+y0.toFixed(1)+' A'+R+' '+R+' 0 0 1 '+x1.toFixed(1)+' '+y1.toFixed(1)+'" marker-end="url(#ekp)"/>'}
  const ic=O.map((e,i)=>{const[x,y]=pt(i);return '<div class="ek-i" style="left:'+(x/2.4)+'%;top:'+(y/2.4)+'%"><span class="el el-'+e+'"></span><b>'+ELEM[e]+'</b></div>'}).join('');
  return '<div class="ek"><svg viewBox="0 0 240 240"><defs><marker id="ekp" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="4.5" markerHeight="4.5" orient="auto"><path d="M0 0L10 5L0 10z" fill="#b8741a"/></marker></defs><g fill="none" stroke="#b8741a" stroke-width="5" stroke-linecap="round">'+arr+'</g></svg>'+ic+'<div class="ek-m">schlägt</div></div>'}
+function ekShow(){const ov=$('#battle');if(!ov||ov.querySelector('.ek-big'))return;const c=el('div','ek-big','<div class="bt-ekbox">'+elKreis()+'</div><p>Jedes Element schlägt das nächste in Pfeilrichtung: doppelter Schaden. Andersherum gibt es nur halben Schaden.</p><button class="pbtn">Schließen</button>');ov.appendChild(c);c.onclick=e=>{if(e.target.closest('.ek'))return;sfx('ui_klick',.5);c.remove()}}
 async function coach(id){const T0=TUT[id];if(!T0||!$('#battle'))return;const [sel,txt]=T0;const ov=$('#battle');
  const c=el('div','bt-coach');const tg=sel?ov.querySelector(sel):null;let top=false;
  if(tg){const r=tg.getBoundingClientRect(),o=ov.getBoundingClientRect();const pad=6;const sp=el('div','bt-spot');sp.style.cssText='left:'+(r.left-o.left-pad)+'px;top:'+(r.top-o.top-pad)+'px;width:'+(r.width+pad*2)+'px;height:'+(r.height+pad*2)+'px';c.appendChild(sp);top=(r.top+r.height/2-o.top)>o.height/2}else c.classList.add('dim');
