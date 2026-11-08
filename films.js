@@ -87,7 +87,9 @@ function skyFx(d,kind,o){const L=el('div','sky '+kind);d.appendChild(L);o=o||{};
  if(kind.includes('shoot')){const go=()=>{if(!L.isConnected)return;const s=el('i','sh');s.style.left=(10+Math.random()*70)+'%';s.style.top=(2+Math.random()*(o.sky||30)*.7)+'%';L.appendChild(s);setTimeout(()=>s.remove(),1400);setTimeout(go,900+Math.random()*1600)};setTimeout(go,400)}
  if(kind.includes('snow'))L.appendChild(el('div','sn'));
  if(kind.includes('lantern'))for(let i=0;i<16;i++){const t=el('i','ln');t.style.left=(5+Math.random()*90)+'%';t.style.animationDelay=(Math.random()*7)+'s';t.style.animationDuration=(7+Math.random()*5)+'s';L.appendChild(t)}
- if(kind.includes('flare')){const f=el('i','fl');f.style.left=(o.x||50)+'%';f.style.top=(o.y||15)+'%';L.appendChild(f)}}
+ if(kind.includes('flare')){const f=el('i','fl');L.appendChild(f);
+  // Stern im Bild: Position in Bildkoordinaten (1080x1920) auf die tatsächliche Darstellung mit cover umrechnen
+  const ix=(o.x||50)/100,iy=(o.y||15)/100,IW=1080,IH=1920;const lay=()=>{if(!L.isConnected){removeEventListener('resize',lay);return}const W=d.clientWidth,H=d.clientHeight;if(!W)return requestAnimationFrame(lay);const k=Math.max(W/IW,H/IH);f.style.left=((W-IW*k)/2+ix*IW*k)+'px';f.style.top=((H-IH*k)/2+iy*IH*k)+'px';f.style.width=(IW*k*.44)+'px'};requestAnimationFrame(lay);addEventListener('resize',lay)}}
 
 // Zirpias Ballade: Text und Einsätze der vier Fassungen (Sekunden ab Liedbeginn)
 const BALLADE=['Ich bin nicht größer als ein Daumen, nicht mehr,<br>doch sing ich lauter als ein ganzer Bär.','Nach meinem Auftritt wirft man mir nie Hosen,<br>man wirft mir duftende, rote Rosen.','Zirpia, Zirpia, die Größte im Land,<br>mit Walnussgeige und Federhut in der Hand.','Die Spinne hielt mich fest, ich sang ganz laut,<br>da hat sie mich verliebt angeschaut.','Und ist mein Lied auch viel zu lang, juchhei,<br>es ist erst morgen früh vorbei.'];
@@ -114,7 +116,7 @@ const FILMS={
   {img:'f_tisch',s:'SL',t:'Ja. Natürlich. Also.'},
   {img:'f_intro1',tilt:1,mus:'intro',fx2:'snow',fx:'twinkle shoot',fxo:{sky:23,clip:'0 0,100% 0,100% 24.6%,90% 26.1%,80% 25.4%,72% 28.4%,60% 27.6%,48% 24.6%,40% 23.1%,34% 20.9%,28% 23.9%,18% 24.6%,8% 26.9%,0 27.6%'},s:'SL',t:'In einer Zeit vor unserer Zeit …'},
   {img:'f_intro1',s:'SL',t:'… in einem Königreich voller Licht …'},
-  {img:'f_intro2',pan:0,fx2:'lantern',fx:'twinkle shoot flare',fxo:{sky:45,x:50,y:35.0,clip:'0 0,100% 0,100% 51.6%,88% 51.6%,82% 53.1%,74% 55.3%,62% 56.1%,48% 55.3%,36% 53.8%,26% 50.9%,18% 49.4%,10% 50.9%,0 52.4%'},s:'SL',t:'… feierte man jedes Jahr die Lichternacht.'},
+  {img:'f_intro2',pan:0,fx2:'lantern',fx:'twinkle shoot flare',fxo:{sky:45,x:50,y:31.7,clip:'0 0,100% 0,100% 51.6%,88% 51.6%,82% 53.1%,74% 55.3%,62% 56.1%,48% 55.3%,36% 53.8%,26% 50.9%,18% 49.4%,10% 50.9%,0 52.4%'},s:'SL',t:'… feierte man jedes Jahr die Lichternacht.'},
   {img:'f_intro3',mus:'intro_dunkel',s:'SL',t:'Doch seit sechzig Jahren ist der Lichternachtstern nicht mehr aufgegangen. Und in diesem Winter … verschwinden auch die Lichter in den Fenstern.'},
   {img:'f_intro4',s:'SL',t:'Vharkon. Der Aschenkönig. Jede Nacht holt er sich ein Licht. Und niemand weiß, warum.'},
   {img:'ort01',s:'SL',t:'In vierundzwanzig Nächten ist Lichternacht. Wenn bis dahin das letzte Licht erlischt … bleibt Eldmark für immer im Dunkeln.',fade:{img:'ort01_dunkel',at:4900,sfx:'laterne_zischt'}},

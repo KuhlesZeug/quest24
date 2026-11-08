@@ -1339,3 +1339,7 @@ img{display:block;max-width:100%}
 .hud-candle span{color:#ffe9b0}
 .map-coach{position:absolute;inset:0;z-index:30}
 @media (max-width:440px){.hud{gap:5px;padding-left:6px;padding-right:6px}.hb{width:40px;height:40px}.hb .ui-ic{width:30px;height:30px}.hud-btns{gap:7px}.hud-stat{padding:2px 7px 2px 3px;font-size:.95rem}.hud-stat .ui-ic{width:1.45em;height:1.45em}.hud-candle{padding:2px 7px 2px 3px}.hud-candle span{font-size:.62rem}}
+/* Zwischensequenzen: kein heller Streifen am Bildrand (Überstand, ganze Pixel) */
+.film{background:#000}
+.fs .bg{inset:-4px;backface-visibility:hidden;will-change:transform}
+@keyframes kb9{from{transform:scale(1.012)}to{transform:scale(1.06)}}
