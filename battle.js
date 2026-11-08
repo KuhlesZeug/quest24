@@ -100,16 +100,17 @@ async function battle(F,key,tries){const ov=$('#battle');ov.innerHTML='';ov.clas
  B={F,key,phI:F.phases?(st.flags.dph||0):0,round:0,foes:F.foes.map((f,i)=>({...f,i,max:f.hp,skip:0,minus:0,poison:0,intent:null})),party:partyUnits(),used:{},buff:{},first:true,log:[]};
  if(F.phases&&B.phI){const f=B.foes.find(x=>x.boss);if(f)f.hp=Math.max(1,Math.ceil(F.phases[B.phI-1]*f.max)-2)}
  if(st.hero.skills.includes('waldsegen'))B.party.forEach(p=>p.hp=Math.min(p.max,p.hp+3));
- ov.innerHTML='<div class="bt-bg" style="background-image:url('+A+'img/'+F.bg+'.jpg)"></div><div class="bt-top"><div class="bt-t">'+esc(F.t)+'</div><div class="bt-r" id="bt-r"></div></div><div class="bt-foes" id="bt-foes"></div><div class="bt-log" id="bt-log"></div><div class="bt-party" id="bt-party"></div><div class="bt-act" id="bt-act"></div>';
+ ov.innerHTML='<div class="bt-bg" style="background-image:url('+A+'img/'+F.bg+'.jpg)"></div><div class="bt-top"><div class="bt-t">'+esc(F.t)+'</div><div class="bt-r" id="bt-r"></div><button class="bt-help" id="bt-help" aria-label="Erklärung">?</button></div><div class="bt-foes" id="bt-foes"></div><div class="bt-log" id="bt-log"></div><div class="bt-party" id="bt-party"></div><div class="bt-act" id="bt-act"></div>';
  preloadSprites();sfx('schwert_ziehen');setTimeout(()=>{if(B){B._fszLock=0;fitFoes(true);B._fszLock=1}},700);if(tries&&TIPS[key])blog('Tipp: '+TIPS[key],1);
- if(F.tut&&!st.flags.tut_done)await tutorial();
+ B.tut=!!(F.tut&&!st.flags.tut_done);$('#bt-help').onclick=()=>{sfx('ui_klick',.5);tutHelp()};
  while(true){B.round++;$('#bt-r').textContent='Runde '+B.round;planFoes();render();
+  if(B.tut&&B.round===1){await sleep(400);await tutorial()}
   for(const u of B.party){if(u.hp<=0)continue;if(u.web){u.web=0;blog(u.n+' hängt im Netz fest und setzt aus.');render();await sleep(900);continue}
    if(u.pause){u.pause=0;blog(u.n+' holt Luft.');continue}
    await partyTurn(u);render();await phaseCheck();if(B.foes.every(f=>f.hp<=0))return win();}
   for(const f of B.foes){if(f.hp<=0)continue;if(f.poison>0){f.poison--;hurtFoe(f,2,null,'Gift');if(f.hp<=0)continue}
    if(f.skip){f.skip--;blog(f.n+' setzt aus.');render();await sleep(700);continue}
-   await foeTurn(f);render();if(B.party[0].hp<=0&&B.party.every(p=>p.hp<=0))return lose();if(B.party.every(p=>p.hp<=0))return lose()}
+   await foeTurn(f);render();if(B.tut&&B.foes.filter(x=>x.hp>0).slice(-1)[0]===f)await tutOnce('t10');if(B.party[0].hp<=0&&B.party.every(p=>p.hp<=0))return lose();if(B.party.every(p=>p.hp<=0))return lose()}
   if(B.party[0].hp<=0&&!B.party.slice(1).some(p=>p.hp>0))return lose();
   if(B.foes.every(f=>f.hp<=0))return win();
   B.buff.all=0;B.buff.shield=0;B.party.forEach(p=>{p.blind=Math.max(0,(p.blind||0)-1)})}
@@ -120,7 +121,7 @@ function planFoes(){B.foes.forEach(f=>{if(f.hp<=0)return;if(f.warned){f.intent=f
  const a=f.acts[(B.round+f.i)%f.acts.length];if(a.warn&&!f.intent?.warn){f.intent={n:'holt aus',pre:a};f.warned=a;return}f.intent=a})}
 // Neuzeichnen ohne den DOM jedes Mal neu zu bauen: Elemente bleiben, nur Werte ändern sich (flüssiger auf dem Handy)
 function setBI(e,u){if(e._u!==u){e._u=u;e.style.backgroundImage='url('+u+')'}}
-function render(){const fo=$('#bt-foes');fo.classList.toggle('many',B.foes.length>=3);
+function render(){const fo=$('#bt-foes');$('#battle').classList.toggle('myturn',!!B.cur);fo.classList.toggle('many',B.foes.length>=3);
  B.foes.forEach(f=>{let d=fo.querySelector('.bt-f[data-i="'+f.i+'"]');
   if(!d){d=el('div','bt-f'+(f.boss?' boss':''),'<div class="bt-fi"></div><div class="bt-hp"><i></i></div><div class="bt-fn">'+esc(f.n)+' <span class="el el-'+f.el+'"></span></div><div class="bt-int"></div>');d.dataset.i=f.i;fo.appendChild(d)}
   d.classList.toggle('down',f.hp<=0);setBI(d.querySelector('.bt-fi'),A+'img/'+f.img+'_'+(f.hp<=0?3:(f.fr||0))+'.png');d.querySelector('.bt-hp i').style.width=Math.max(0,f.hp/f.max*100)+'%';
@@ -152,7 +153,7 @@ async function partyTurn(u){B.cur=u;render();const act=$('#bt-act');
   if(back){const b=el('button','bt-back','Zurück');b.onclick=()=>{sfx('ui_klick',.5);r(null)};act.appendChild(b)}});
  let ch=null;
  while(!ch){const main=[{k:'atk',t:u.hit}];if(sks.length)main.push({k:'skm',t:'Fähigkeiten',d:sks.length+' zur Auswahl'});if(pots.length)main.push({k:'itm',t:'Gegenstand',d:pots.length+' im Gepäck'});
-  const m=await choose(u.n+' ist dran',main);
+  const mp=choose(u.n+' ist dran',main);if(u.hero&&B.tut)await tutOnce('t07');const m=await mp;
   if(m.k==='atk'){const f=await pickFoeBack(act);if(f){ch=m;ch.f=f}continue}
   if(m.k==='skm'){const s=await choose('Fähigkeit wählen',sks,'sheet',1);if(s)ch=s;continue}
   if(m.k==='itm'){const it=await choose('Gegenstand wählen',pots.map(x=>({k:'item',it:x,t:ITEMS[x.id].n,d:ITEMS[x.id].d})),'sheet',1);if(it)ch=it;continue}}
@@ -160,7 +161,7 @@ async function partyTurn(u){B.cur=u;render();const act=$('#bt-act');
  if(ch.k==='atk'){await attack(u,ch.f,{});}
  else if(ch.k==='item'){await useItemBattle(u,ch.it)}
  else await useSkill(u,ch.s);
- act.innerHTML='';B.cur=null}
+ act.innerHTML='';if(B&&B._elT){B._elT=0;await coach('t11')}B.cur=null}
 async function pickFoeBack(act){const alive=B.foes.filter(f=>f.hp>0);if(alive.length===1)return alive[0];
  act.className='bt-act';act.innerHTML='<div class="bt-who">Wähle ein Ziel</div><p class="bt-hint">Tippe auf einen Gegner.</p>';const b=el('button','bt-back','Zurück');act.appendChild(b);
  const back=new Promise(r=>{b.onclick=()=>{sfx('ui_klick',.5);const Q=B.picking;B.picking=null;if(Q)$$(Q.sel).forEach(x=>{x.classList.remove('pickable');x.onclick=null});r(null)}});
@@ -168,7 +169,7 @@ async function pickFoeBack(act){const alive=B.foes.filter(f=>f.hp>0);if(alive.le
 async function pickFoe(){const alive=B.foes.filter(f=>f.hp>0);if(alive.length===1)return alive[0];const e=await pick('#bt-foes .bt-f',e=>B.foes[+e.dataset.i].hp>0);return B.foes[+e.dataset.i]}
 async function pickAlly(down){const e=await pick('#bt-party .bt-u',e=>down?B.party[+e.dataset.k].hp<=0:B.party[+e.dataset.k].hp>0);return B.party[+e.dataset.k]}
 async function attack(u,f,o){let bonus=u.atk+(B.buff.all||0)+(u.next||0)+(o.add||0)-(u.blind?2:0);u.next=0;
- let v;if(u.hero){const r=await rollD20({title:u.hit+' gegen '+f.n,sub:'W20 plus '+bonus+', Ziel '+f.def,bonus,ziel:f.def,force:o.crit?20:null});v=r}else{const x=rnd(20);v={v:x,total:x+bonus,crit:x===20,fumble:x===1}}
+ let v;if(u.hero){if(B.tut){await tutOnce('t08');await tutOnce('t09')}const r=await rollD20({title:u.hit+' gegen '+f.n,sub:'W20 plus '+bonus+', Ziel '+f.def,bonus,ziel:f.def,force:o.crit?20:null});v=r}else{const x=rnd(20);v={v:x,total:x+bonus,crit:x===20,fumble:x===1}}
  poseFor(u,1,700);const pk=projKind(u,o);if(pk&&!(v.fumble&&u.hero))await shoot(u,f,pk,v.total<f.def&&!v.crit);else if(!u.hero)await sleep(250);
  if(v.fumble&&u.hero){await fumble();return}
  if(v.total<f.def&&!v.crit){blog(u.n+' verfehlt.');sfx('falsch',.5);await sleep(500);return}
@@ -263,7 +264,7 @@ async function useItemBattle(u,it){const I=ITEMS[it.id];const U=I.use;
 async function fumble(){const F=FUMBLE[B.key]||'Du rutschst auf einem Käse aus. Natürlich. Es ist immer ein Käse.';blog('Patzer! '+F);sfx('patzer',.8);await sleep(1400)}
 const FUMBLE={ratten:'Du rutschst auf einem Käse aus. Es ist immer ein Käse.',spinne:'Du klebst am Netz fest.',krok:'Die Krone fällt ins Wasser, alle schauen hinterher, auch du.',eis:'Du frierst kurz am Boden fest. Oma Hulda: Kindchen, Socken.',asche:'Du niest in die Asche. Gesundheit, Kindchen.'};
 let effSaid={};
-function superEff(u,f){if(effSaid[B.key])return;effSaid[B.key]=1;blog(ELEM[u.el||'feuer']+' gegen '+ELEM[f.el]+': super effektiv!',1)}
+function superEff(u,f){if(!st.flags.tut_t11){st.flags.tut_t11=1;save();B._elT=1}if(effSaid[B.key])return;effSaid[B.key]=1;blog(ELEM[u.el||'feuer']+' gegen '+ELEM[f.el]+': super effektiv!',1)}
 function critLine(){blog('Natürliche Zwanzig! Der Spielleiter muss sich kurz setzen.',1)}
 async function phaseCheck(){const F=B&&B.F;if(!F||!F.phases)return;const f=B.foes.find(x=>x.boss);if(!f)return;
  while(B.phI<F.phases.length&&f.hp<=Math.ceil(F.phases[B.phI]*f.max)){const i=B.phI;const ov=$('#battle');ov.classList.remove('on');ov.style.visibility='hidden';
@@ -271,4 +272,26 @@ async function phaseCheck(){const F=B&&B.F;if(!F||!F.phases)return;const f=B.foe
   const nt=F.phases[B.phI];f.hp=nt===undefined?0:Math.max(0,Math.min(f.hp,Math.ceil(F.phases[i]*f.max))-2);render();if(nt!==undefined)blog('Phase '+(B.phI+1)+' von '+F.phases.length+': '+PHASEN[B.phI][0],1)}}
 async function win(){render();sfx('sieg');await sleep(900);$('#battle').classList.remove('on');B=null;effSaid={};return true}
 async function lose(){blog('Die Gruppe ist am Boden.');sfx('niederlage');await sleep(1600);$('#battle').classList.remove('on');B=null;return false}
-async function tutorial(){st.flags.tut_done=1;save();const t=el('div','bt-tut','<h3>So funktioniert der Kampf</h3><p>Du bist dran: Tippe auf einen Angriff und dann auf einen Gegner.</p><p>Du würfelst mit dem W20 und zählst deinen Wert dazu. Erreichst du das Ziel, triffst du. Der Schaden wird mit dem W10 bestimmt.</p><p>Über jedem Gegner steht, was er als Nächstes vorhat. Eine 20 ist ein kritischer Treffer, eine 1 ein Patzer.</p><button class="pbtn">Verstanden</button>');$('#battle').appendChild(t);await new Promise(r=>t.querySelector('button').onclick=r);t.remove()}
+// Geführte Erklärung beim ersten Kampf: der Spielleiter zeigt auf jedes Element der Anzeige und spricht dazu
+const TUT={
+ t01:[null,'Jetzt wird gekämpft! Keine Sorge, ich erkläre dir alles in Ruhe. Ein Kampf läuft in Runden ab. In jeder Runde ist zuerst deine Gruppe dran, danach die Gegner.'],
+ t02:['#bt-foes','Hier oben stehen deine Gegner. Der rote Balken unter jedem Gegner zeigt seine Lebenspunkte. Mit jedem Treffer wird er kürzer. Ist er leer, ist der Gegner besiegt.'],
+ t03:['.bt-f .bt-int','Auf diesem Schild steht, was der Gegner als Nächstes vorhat. So weißt du schon vorher, was auf dich zukommt.'],
+ t04:['.bt-f .el','Das kleine Zeichen neben dem Namen ist sein Element. Manche Elemente sind gegen andere besonders stark. Das erkläre ich dir, sobald es wichtig wird.'],
+ t05:['#bt-party','Unten steht deine Gruppe. Der grüne Balken und die Zahlen zeigen eure Lebenspunkte: vorne, wie viele ihr gerade habt, hinten, wie viele ihr höchstens haben könnt. Wer auf null fällt, ist erst einmal außer Gefecht.'],
+ t06:['#bt-r','Hier siehst du, in welcher Runde ihr gerade seid.'],
+ t12:['#bt-help','Wenn du etwas vergessen hast, tippe einfach auf das Fragezeichen. Dann erkläre ich dir alles noch einmal.'],
+ t07:['#bt-act','Jetzt bist du dran. Wer am Zug ist, leuchtet. Tippe hier auf deinen Angriff. Fähigkeiten und Gegenstände findest du gleich daneben. Danach tippst du auf den Gegner, den du treffen willst.'],
+ t08:[null,'Jetzt entscheidet der Würfel. Das ist ein W20, ein Würfel mit zwanzig Seiten. Zu deinem Wurf kommt dein Angriffswert dazu. Ist das Ergebnis mindestens so hoch wie die Zielzahl des Gegners, triffst du. Wie viel Schaden ein Treffer macht, rechnet das Spiel für dich aus.'],
+ t09:[null,'Zwei Zahlen sind besonders. Eine Zwanzig ist ein kritischer Treffer und macht doppelten Schaden. Eine Eins ist ein Patzer, dann geht leider etwas schief.'],
+ t10:['#bt-party','Jetzt waren die Gegner dran. Ihre Treffer ziehen euch Lebenspunkte ab. Gewonnen habt ihr, wenn alle Gegner besiegt sind. Und keine Angst: Verliert ihr, dürft ihr den Kampf einfach noch einmal versuchen.'],
+ t11:[null,'Super effektiv! Jedes Element ist gegen ein anderes besonders stark. Feuer schlägt Natur, Natur schlägt Erde, Erde schlägt Blitz, Blitz schlägt Eis, und Eis schlägt Feuer. Trifft das starke Element, gibt es doppelten Schaden. Andersherum gibt es nur halben Schaden.']};
+async function coach(id){const T0=TUT[id];if(!T0||!$('#battle'))return;const [sel,txt]=T0;const ov=$('#battle');
+ const c=el('div','bt-coach');const tg=sel?ov.querySelector(sel):null;let top=false;
+ if(tg){const r=tg.getBoundingClientRect(),o=ov.getBoundingClientRect();const pad=6;const sp=el('div','bt-spot');sp.style.cssText='left:'+(r.left-o.left-pad)+'px;top:'+(r.top-o.top-pad)+'px;width:'+(r.width+pad*2)+'px;height:'+(r.height+pad*2)+'px';c.appendChild(sp);top=(r.top+r.height/2-o.top)>o.height/2}else c.classList.add('dim');
+ const bx=el('div','bt-cb'+(top?' top':''),'<div class="bt-cf" style="background-image:url('+A+'img/p_sl.jpg)"></div><div class="bt-ct"><b>Der Spielleiter</b><p>'+esc(txt)+'</p><button class="pbtn">Weiter</button></div>');c.appendChild(bx);ov.appendChild(c);
+ const a=playVo(A+'vo/tut_'+id+'.mp3',on=>bx.classList.toggle('talk',on));
+ await new Promise(r=>bx.querySelector('button').onclick=()=>{sfx('ui_klick',.5);r()});if(a)stopVo();c.remove()}
+async function tutorial(){st.flags.tut_done=1;save();for(const k of ['t01','t02','t03','t04','t05','t06','t12'])await coach(k)}
+async function tutHelp(){if(!B||B._help)return;B._help=1;for(const k of ['t01','t02','t03','t04','t05','t07','t08','t09','t10','t11'])await coach(k);B._help=0}
+async function tutOnce(k){if(!B||!B.tut)return;const f='tut_'+k;if(st.flags[f])return;st.flags[f]=1;save();await coach(k)}
