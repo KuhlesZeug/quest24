@@ -1463,3 +1463,41 @@ img{display:block;max-width:100%}
 
 .tk2-help{transition:opacity .6s}.tk2-help.weg{opacity:0}
 .tk2-lane,.tk2-help,.tk2-combo,.tk2-pop{transition:opacity .4s}.tk2.ende .tk2-lane,.tk2.ende .tk2-help,.tk2.ende .tk2-combo{opacity:0}
+/* Zwei Trommeln, Noten von oben */
+.tk2-lane{display:none}
+.tk2-lanes{position:absolute;left:0;right:0;top:40%;bottom:7%;z-index:3}
+.tk2-ln{position:absolute;top:0;bottom:0;width:40%}
+.tk2-ln.l{left:6%}.tk2-ln.r{right:6%}
+.tk2-rail{position:absolute;left:50%;top:0;bottom:46px;width:58px;transform:translateX(-50%);border-radius:30px;background:linear-gradient(rgba(30,16,6,0),rgba(30,16,6,.55) 30%);box-shadow:inset 0 0 0 2px rgba(255,215,106,.25)}
+.tk2-rail::after{content:'';position:absolute;left:50%;top:10%;bottom:0;width:3px;transform:translateX(-50%);background:linear-gradient(rgba(255,215,106,0),#ffd76a);opacity:.35;transition:opacity .1s}
+.tk2.beat .tk2-rail::after{animation:tk2Rail .3s}
+@keyframes tk2Rail{0%{opacity:.95}100%{opacity:.35}}
+.tk2-ln .tk2-hit{position:absolute;left:50%;top:auto;bottom:0;width:92px;height:92px;transform:translateX(-50%)}
+.tk2-ln .tk2-hit.hit img{animation:tk2Hit .18s}
+.tk2-n{width:52px;height:52px;top:0;left:0}
+.tk2-pop{left:auto;top:auto;bottom:calc(7% + 104px);margin:0;width:46%}
+.tk2-pop.l{left:3%}.tk2-pop.r{right:3%}
+.tk2-combo{right:0;left:0;text-align:center;top:auto;bottom:calc(7% + 30px);z-index:6}
+.tk2-help{top:auto;bottom:calc(7% + 150px)}
+.tk2-sn{width:13%}
+.tk2-snails{height:14%;z-index:2}
+.tk2-zi{bottom:51%;height:23%}
+.tk2-zi.stomp{animation:tk2Stomp .28s ease-out}
+@keyframes tk2Stomp{0%{transform:translateX(-50%) translateY(3px) scaleY(.94)}100%{transform:translateX(-50%)}}
+/* Zirpia als Gliederpuppe: Körper mit zwei Beinen, die im Takt stampfen */
+.tk2-zi{position:absolute;left:49%;bottom:51%;height:23%;aspect-ratio:1285/2133;transform:translateX(-50%);z-index:2;pointer-events:none;filter:drop-shadow(0 6px 8px rgba(0,0,0,.5)) drop-shadow(0 0 2px #fff8e0)}
+.tk2-zi.stomp{animation:none}
+.tk2-rig,.tk2-jub{position:absolute;inset:0;width:100%;height:100%}
+.tk2-body{position:absolute;inset:0;width:100%;height:100%;transform-origin:50% 100%}
+.tk2-zi.stomp .tk2-body{animation:tk2Body .3s ease-out}
+@keyframes tk2Body{0%{transform:translateY(2.5%) scaleY(.97)}100%{transform:none}}
+.tk2-leg{position:absolute;top:75.71%;width:16.19%;transition:transform .16s ease-out}
+.tk2-leg img{width:100%;display:block}
+.tk2-leg.l{left:38.75%;transform-origin:26% 0}
+.tk2-leg.r{left:50.28%;transform-origin:74% 0}
+.tk2-leg.r img{transform:scaleX(-1)}
+.tk2-zi:not(.b1) .tk2-leg.l{transform:rotate(30deg) translateY(-6%)}
+.tk2-zi.b1 .tk2-leg.r{transform:rotate(-30deg) translateY(-6%)}
+.tk2-jub{opacity:0;transition:opacity .12s;object-fit:contain}
+.tk2-zi.jub .tk2-jub{opacity:1}.tk2-zi.jub .tk2-rig{opacity:0}
+.tk2-n{opacity:0}
