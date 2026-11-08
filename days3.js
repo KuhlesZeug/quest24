@@ -26,7 +26,7 @@ FILMS.z3={shots:[
  {s:'SL',t:'Hm.',gap:1600}
 ]};
 
-DAYS[14]={end:'Heute zum Ausdrucken: Oma Huldas Gefährtenbogen.',steps:[
+DAYS[14]={end:'Heute zum Ausdrucken: Oma Huldas Gefährtenbogen und die Ladenliste von Goldhafen für morgen.',steps:[
  {bg:'hu1',alt:'ort14',mus:'hafen',atmo:'lagerfeuer',acc:['pferd','wolf'],every:16},
  {s:'SL',t:'Eine arme alte Frau, gefangen von Banditen! Wir müssen …'},
  {bg:'hu2',look:1500},
@@ -59,7 +59,7 @@ DAYS[14]={end:'Heute zum Ausdrucken: Oma Huldas Gefährtenbogen.',steps:[
  {gold:40},{item:'stricknadel'},{hide:1}
 ]};
 
-DAYS[15]={end:'Heute zum Ausdrucken: die Ladenliste von Goldhafen.',steps:[
+DAYS[15]={end:'Bob winkt euch nach. Alle Bobs winken.',steps:[
  {bg:'ort15',mus:'hafen',atmo:'markt_goldhafen',acc:['moewe','glocke'],every:12},
  {s:'SL',t:'Goldhafen. Die reichste Stadt des Königreichs. Und Oma Huldas alte Heimat.'},
  {s:'HU',t:'Der da schuldet mir was. Die da auch. Und der. Der eigentlich nicht, aber er weiß es nicht.'},
@@ -119,7 +119,7 @@ FILMS.z4={shots:[
  {img:'f_tisch',sfx:'plattenkratzer',s:'SL',t:'Das fast immer hab ich mir notiert. Das ist wichtig. Ich weiß nur noch nicht, warum.'}
 ]};
 
-DAYS[17]={end:'Alle tragen jetzt einen roten Schal. Auch Herbert.',steps:[
+DAYS[17]={end:'Heute zum Ausdrucken: das Rätselblatt Eisbrücke mit den Figuren zum Ausschneiden. Du brauchst es morgen.',steps:[
  {bg:'ort17',mus:'eis',atmo:'lagerfeuer',acc:['wolf','eule'],every:16},
  {s:'SL',t:'Lange Rast. Alle Lebenspunkte und Fähigkeiten werden aufgefüllt. Und ich mache Tee. Also nicht wirklich, aber ich mache mir wirklich Tee. Hier am Tisch.'},
  {s:'ZI',t:'Es ist so k k kalt.'},
@@ -151,7 +151,7 @@ DAYS[17]={end:'Alle tragen jetzt einen roten Schal. Auch Herbert.',steps:[
  {s:'SL',t:'Sie hat mir einen Keks geschickt. Was bedeutet das? Ist das gut? Das ist gut, oder?'},{hide:1}
 ]};
 
-DAYS[18]={end:'Heute zum Ausdrucken: das Rätselblatt Eisbrücke mit den Figuren zum Ausschneiden.',steps:[
+DAYS[18]={end:'Die Brücke hat gehalten. Grumbold hat sich trotzdem bei ihr entschuldigt.',steps:[
  {bg:'ort18',mus:'eis',atmo:'eisbruecke',acc:['eis_knackt'],every:9},
  {s:'SL',t:'Die Eisbrücke. Sie trägt. Aber nicht alles. Und nicht jeden. Und nicht im Dunkeln.'},
  {s:'HU',t:'Die Brücke trägt höchstens hundert Stein. Wer ohne Licht geht, fällt.'},

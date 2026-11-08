@@ -1,7 +1,7 @@
 // Tag 19 bis 24: Frostturm, Gipfel der Winde, Aschenland, Drachenreiter, Hort
 const EIS_={mus:'eis',atmo:'bergwind',acc:['eis_knackt','wolf'],every:12};
 
-DAYS[19]={end:'Heute zum Ausdrucken: Nachtigalls Gefährtenbogen.',steps:[
+DAYS[19]={end:'Heute zum Ausdrucken: Nachtigalls Gefährtenbogen und die Gipfelkarte für morgen.',steps:[
  {bg:'ort19',...EIS_},
  {s:'SL',t:'Der Frostturm. Niemand weiß, wer ihn gebaut hat. Ich auch nicht. Ich hab ihn nur gezeichnet.'},
  {bg:'et1',alt:'ort19',look:1500},
@@ -36,7 +36,7 @@ DAYS[19]={end:'Heute zum Ausdrucken: Nachtigalls Gefährtenbogen.',steps:[
  {loot:1},{hide:1}
 ]};
 
-DAYS[20]={end:'Heute zum Ausdrucken: die Gipfelkarte und Teil 3 der Landkarte.',steps:[
+DAYS[20]={end:'Heute zum Ausdrucken: Teil 3 der Landkarte.',steps:[
  {bg:'ort20',mus:'eis',atmo:'bergwind',acc:['donner'],every:14},
  {s:'SL',t:'Der Gipfel der Winde. Hier oben wurde früher der Lichternachtstern entzündet.'},
  {s:'NA',t:'Ich weiß.',e:'sad'},
@@ -69,7 +69,7 @@ FILMS.z5={shots:[
  {img:'f_tisch',mus:null,sfx:'plattenkratzer',s:'SL',t:'Ich hab es kürzer gezeichnet, als es ist. Tut mir leid. Ich hab die Maßstabsleiste vergessen.'}
 ]};
 
-DAYS[21]={end:'Nachtigall trägt die Schuppe ganz vorsichtig.',steps:[
+DAYS[21]={end:'Heute zum Ausdrucken: die Tagebuchseiten und die Drehscheibe. Du brauchst sie morgen.',steps:[
  {bg:'ort21',mus:'asche',atmo:'aschenland',acc:['lava','drachenknurren'],every:15},
  {s:'SL',t:'Das Aschenland. Früher ein Meer aus Glut. Heute so kalt wie ein Montagmorgen.'},
  {s:'NA',t:'Es war schön hier. Früher.',e:'sad'},
@@ -91,7 +91,7 @@ DAYS[21]={end:'Nachtigall trägt die Schuppe ganz vorsichtig.',steps:[
  {item:'drachenschuppe'},{loot:1},{hide:1}
 ]};
 
-DAYS[22]={end:'Heute zum Ausdrucken: die Tagebuchseiten mit der Drehscheibe.',steps:[
+DAYS[22]={end:'Heute zum Ausdrucken: der Schlachtplan. Nachtigall erklärt ihn dir morgen.',steps:[
  {bg:'ort22',mus:'asche',atmo:'aschenland',acc:['wind_boe'],every:15},
  {s:'SL',t:'Das Lager der Drachenreiter. Früher lebten hier die Hüter, die Vharkon jedes Jahr begleitet haben. Heute … nur noch Staub. Und ein Tagebuch.'},
  {s:'SL',t:'Die letzte Seite ist verschlüsselt. Nimm die Drehscheibe von deinem Druckblatt.'},
@@ -121,7 +121,7 @@ FILMS.z6={shots:[
  {s:'WG',wg:'wgc7',t:'Weiter so.'}
 ]};
 
-DAYS[23]={end:'Heute zum Ausdrucken: der Schlachtplan.',steps:[
+DAYS[23]={end:'Heute zum Ausdrucken: der dritte Bogen Itemkarten für die Lichternacht.',steps:[
  {bg:'ort23',mus:'asche',atmo:'lagerfeuer',acc:['drachenknurren','wolf'],every:18},
  {s:'SL',t:'Die letzte Nacht vor der Lichternacht. Lange Rast. Alles wird aufgefüllt. Und ich trinke meinen letzten Tee vor der Bewertung. Ich zittere ein bisschen. Das ist der Tee.',e:'worried'},
  {bg:'n1',alt:'ort23',mus:'rueckblende',look:1500},

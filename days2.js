@@ -37,7 +37,7 @@ DAYS[8]={end:'Ein Irrlicht leuchtet jetzt im Glas. Es kichert manchmal.',steps:[
  {s:'WG',wg:'wgc8',t:'Bitte nicht rechnen.'},{hide:1}
 ]};
 
-DAYS[9]={end:'Heute zum Ausdrucken: Zirpias Gefährtenbogen.',steps:[
+DAYS[9]={end:'Heute zum Ausdrucken: Zirpias Gefährtenbogen und ihr Liedtext. Den brauchst du morgen.',steps:[
  {bg:'ort09',mus:'mine',atmo:'spinnennest',acc:['tropfen'],every:12},
  {hide:1},{fn:async()=>{let u=null;const p=playSong('zirpia_01',.9,16,()=>{u=songSubs('zirpia_01',16)});for(const [img,ms] of [['f_zi3',2600],['f_zi1',2700],['zi5',2600],['f_zi4',2600],['zi6',2700],['f_zi2',2600]]){setBg(A+'img/'+img+'.jpg');await sleep(ms)}await p;if(u)u();}},
  {bg:'f_zi3'},
@@ -62,7 +62,7 @@ DAYS[9]={end:'Heute zum Ausdrucken: Zirpias Gefährtenbogen.',steps:[
  {loot:1},{hide:1}
 ]};
 
-DAYS[10]={end:'Heute zum Ausdrucken: das Notenblatt Wiegenlied als Itemkarte.',steps:[
+DAYS[10]={end:'Heute zum Ausdrucken: der zweite Bogen Itemkarten mit dem Notenblatt Wiegenlied und das Rätselblatt Nebelsumpf für morgen.',steps:[
  {bg:'ort10',mus:'wald',atmo:'wald_tag',acc:['frosch','eule'],every:16},
  {s:'ZI',t:'Mein erster Auftritt. Vor echtem Publikum. Also, es sind Schnecken, aber echte Schnecken.'},
  {s:'ZI',t:'Ich hab nur ein winziges Problem. Mein Lied ist noch nicht fertig. Der Text hat Lücken.'},
@@ -81,7 +81,7 @@ DAYS[10]={end:'Heute zum Ausdrucken: das Notenblatt Wiegenlied als Itemkarte.',s
  {item:'wiegenlied'},{learn:'zi:schlaflied'},{hide:1}
 ]};
 
-DAYS[11]={end:'Heute zum Ausdrucken: das Rätselblatt Nebelsumpf.',steps:[
+DAYS[11]={end:'Der Sumpf liegt hinter euch. Die Stiefel sind trotzdem nass.',steps:[
  {bg:'ort11',mus:'sumpf',atmo:'nebelsumpf',acc:['frosch','rabe'],every:13},
  {s:'SL',t:'Der Nebelsumpf. Nur ein Pfad trägt. Alle anderen Steine … tragen nicht.'},
  {s:'GR',t:'Ich bin sehr schwer. Ich möchte das nur gesagt haben.'},

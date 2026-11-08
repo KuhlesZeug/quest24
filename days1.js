@@ -2,7 +2,7 @@
 const DAYS={};
 const DORF={mus:'dorf',atmo:'dorf_winter',acc:['wind_boe','hund_fern','glocke_fern'],every:16};
 
-DAYS[1]={end:'Heute zum Ausdrucken: dein Heldenbogen, Teil 1 der Landkarte und der Würfelbogen.',steps:[
+DAYS[1]={end:'Heute zum Ausdrucken: dein Heldenbogen, die Karte von Eldmark, Teil 1 der Landkarte und der Würfelbogen.',steps:[
  {bg:'ort01',...DORF},
  {s:'SL',t:'Willkommen zur Sitzung Null. Hier entsteht deine Figur. Das ist der wichtigste Moment des ganzen Abenteuers.'},
  {s:'SL',t:'Also, einer der wichtigsten. Der Drache ist auch wichtig. Fangen wir an.'},
@@ -74,7 +74,7 @@ DAYS[4]={end:'Heute zum Ausdrucken: Grumbolds Gefährtenbogen.',steps:[
  {join:'gr'},{hide:1}
 ]};
 
-DAYS[5]={end:'Heute zum Ausdrucken: die Runenschablone. Du brauchst sie morgen.',steps:[
+DAYS[5]={end:'Heute zum Ausdrucken: die Runenschablone und die Runenwand. Du brauchst beide morgen.',steps:[
  {bg:'ort05',mus:'mine',atmo:'hoehle',acc:['tropfen','stein_rieseln','laterne_zischt'],every:9},
  {s:'GR',t:'Wenn die Lampen ausgehen, dürfen wir dann einfach umkehren? Kleine Frage.'},
  {bg:'f_kiste1'},

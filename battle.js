@@ -7,7 +7,7 @@ function elemMul(a,d){if(!a||!d)return 1;if(BEATS[a]===d)return 2;if(BEATS[d]===
 // Gefährten mit ihren Grundwerten
 const COMP={
  gr:{n:'Grumbold',img:'k_gr',el:'erde',hp:24,atk:3,dmg:2,hit:'Steinfaust',skills:{steinwall:1}},
- zi:{n:'Zirpia',img:'k_zi',el:'natur',hp:11,atk:3,dmg:1,hit:'Geigenbogen',skills:{mutmach:1}},
+ zi:{n:'Zirpia',img:'k_zi',el:'natur',hp:11,atk:3,dmg:1,hit:'Lautenschlag',skills:{mutmach:1}},
  hu:{n:'Oma Hulda',img:'k_hu',el:'blitz',hp:15,atk:4,dmg:2,hit:'Stricknadel',skills:{taschendieb:1}},
  na:{n:'Nachtigall',img:'k_na',el:'eis',hp:16,atk:4,dmg:2,hit:'Krallenhieb',skills:{schattensprung:1}}
 };
