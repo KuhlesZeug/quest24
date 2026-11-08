@@ -76,11 +76,11 @@ function fnv32(s){let h=0x811c9dc5;for(let i=0;i<s.length;i++){h^=s.charCodeAt(i
 function readAloud(t){const n=hintNorm(t);if(!n||n.includes('{'))return null;return playVo(A+'vo/x/x_'+fnv32(n)+'.mp3')}
 function stopVo(){if(curVo){const a=curVo;curVo=null;a.stop();const u=a._ui;u&&u(false);duck(false)}}
 function playVo(src,ui){stopVo();if(!src||!st.sound)return null;ac();const a={ended:false,_err:0,_ui:ui,s:null};
- a.stop=()=>{a.ended=true;clearTimeout(a._t);if(a.s){try{a.s.stop()}catch(e){}}};
+ a.stop=()=>{a.ended=true;clearTimeout(a._t);if(a.s){try{const t=AC.currentTime;if(a.g){a.g.gain.cancelScheduledValues(t);a.g.gain.setValueAtTime(a.g.gain.value,t);a.g.gain.linearRampToValueAtTime(0,t+.05)}a.s.stop(t+.06)}catch(e){try{a.s.stop()}catch(e2){}}}};
  const end=()=>{if(a.ended&&curVo!==a)return;a.ended=true;clearTimeout(a._t);if(curVo===a){curVo=null;duck(false)}ui&&ui(false)};
  curVo=a;duck(true);ui&&ui(true);
  loadVo(src).then(b=>{if(curVo!==a||a.ended)return;if(!b){a._err=1;end();return}
-  const s=AC.createBufferSource();s.buffer=b;s.connect(voOut());s.onended=end;a.s=s;if(AC.state!=='running')AC.resume();s.start();
+  const s=AC.createBufferSource();s.buffer=b;const g=AC.createGain();s.connect(g);g.connect(voOut());a.g=g;s.onended=end;a.s=s;if(AC.state!=='running')AC.resume();const t0=AC.currentTime;g.gain.setValueAtTime(0,t0);g.gain.linearRampToValueAtTime(1,t0+.015);s.start(t0);
   a._t=setTimeout(end,(b.duration+1.2)*1000)});
  return a}
 function voDone(a){return new Promise(r=>{if(!a)return r(false);if(a._err)return r(false);const t=setInterval(()=>{if(a.ended||a._err||curVo!==a){clearInterval(t);r(!a._err)}},100)})}
