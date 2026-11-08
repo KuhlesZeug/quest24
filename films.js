@@ -18,13 +18,26 @@ async function playFilm(key){const F=FILMS[key];if(!F)return;stopSfx(.4);show('#
    const p=playSong('zirpia_13',.9);const AL=['f_intro2','ort01','f_tav_kap','f_wirt2','f_gr_licht','f_kiste4','f_z1c','f_schild_m','ort08','f_zi1','bl3','zs1','hx2','kr3','hu2','f_markt','zm3','hd2','f_z4b','zo2','et4','fl1','f_z5c','ph1','ph3','zw4','vh_warm','f_z7e','za1','za2','f_z7d'];const ai=[];AL.forEach(n=>{const im=new Image();im.onload=()=>ai.push(n);im.src=A+'img/'+n+'.jpg'});let ak=0;const at=setInterval(()=>{if(run!==filmRun||!ai.length){if(run!==filmRun)clearInterval(at);return}const ord=AL.filter(n=>ai.includes(n));if(ak>=ord.length){clearInterval(at);return}curImg=ord[ak];showImg({img:curImg});ak++},2900);
    const CR=[['Quest 24','Die Lichternacht von Eldmark',1],['In der Hauptrolle',heroName()],['Erzählt vom','Spielleiter (erstes Abenteuer, bestanden)'],['Bewertet von','Meisterin Wendelgard (Stempel inklusive)'],['Grumbold','Grumbold (zählt jetzt bis acht)'],['Herbert','Herbert, als Kiesel'],['Zirpia die Große','Zirpia (Welttournee in Planung)'],['Oma Hulda','Oma Hulda (Meisterdiebin im Ruhestand)'],['Nachtigall','Nachtigall (kein Vogel)'],['Vharkon','Vharkon, der Hüter (wieder warm)'],['Der Krokodilkönig','Der Krokodilkönig (hört immer zu)'],['Hexe Holunda','Hexe Holunda und ihre Hütte (die Beine gehören der Hütte)'],['Die drei Schilder','Die drei Schilder (zwei davon lügen)'],['Bob und Bob','Bob und Bob (einer betrügt, keiner gibt es zu)'],['Bandit Knorz','Bandit Knorz (weint beim Rap)'],['Wirt Bertram','Wirt Bertram (Krüge gespült: alle)'],['Dorfältester Aldric','Dorfältester Aldric (hat das Butterbrot geschmiert)'],['Besonderer Dank','Das Butterbrot. Bis heute unerklärt.'],['Hinweis','Bei diesem Abenteuer wurde kein Drache verletzt. Ein paar Schuppen vielleicht.'],['Gesucht','Die zweite Strophe des Wiegenlieds. Zuletzt gesehen in Zirpias Kopf.'],['Einkaufszettel','Milch, Eier, Drachen'],['Gedreht in','Eldmark. Gewürfelt am Küchentisch.'],['Und vor allem','Danke fürs Mitspielen.',1]];
    const cr=el('div','credits','<div class="cr-in">'+CR.map(([a,b,big])=>'<div class="cr-row'+(big?' big':'')+'"><i>'+esc(a)+'</i><b>'+esc(b)+'</b></div>').join('')+'</div>');(sub.parentNode||f).appendChild(cr);const ci=cr.firstChild;
-   const DUR=86;requestAnimationFrame(()=>{ci.style.transition='transform '+DUR+'s linear';ci.style.transform='translateY(calc(-100% - 20vh))'});
+   const DUR=84;requestAnimationFrame(()=>{const H=cr.clientHeight,last=ci.lastElementChild;const ty=H/2-last.offsetHeight/2-H-last.offsetTop;ci.style.transition='transform '+DUR+'s cubic-bezier(.3,0,.55,1)';ci.style.transform='translateY('+ty+'px)'});
    await Promise.race([p,new Promise(r=>{const iv=setInterval(()=>{if(skip||run!==filmRun){clearInterval(iv);r()}},300)})]);clearInterval(at);
    // Überblendung auf das Logo
    cr.classList.add('out');[...f.children].forEach(x=>{if(x!==cr)x.classList.remove('on')});await sleep(1200);cr.remove();
    if(run===filmRun){const lg=el('div','fs on logo-end','<div class="le-rays"></div><div class="le-emb"></div><div class="lg le-lg"><img class="lg-base" src="'+A+'ui/logo_leer.png" alt=""><img class="lg-dr" src="'+A+'ui/logo_drache.png" alt=""><i class="lg-glow"></i><img class="lg-fl" src="'+A+'ui/flamme.png" alt=""></div><p>Frohe Lichternacht</p>');f.appendChild(lg);
     const em=lg.querySelector('.le-emb');for(let i=0;i<30;i++){const e=el('i','');e.style.left=Math.random()*100+'%';e.style.animationDelay=(Math.random()*4)+'s';e.style.animationDuration=(3+Math.random()*3)+'s';const z=2+Math.random()*4;e.style.width=e.style.height=z+'px';em.appendChild(e)}
-    sfx('trommel',.6);setTimeout(()=>{sfx('feuer_entfacht',.7);lg.classList.add('lit')},1300);await sleep(skip?1500:6500);lg.classList.add('gone');await sleep(1400)}
+    sfx('trommel',.6);setTimeout(()=>{sfx('feuer_entfacht',.7);lg.classList.add('lit')},1300);await sleep(skip?1500:6000);
+    if(!skip&&run===filmRun){
+     // Der kleine Drache auf dem Logo holt Luft und spuckt einen Feuerstoß, der in die Karte überleitet
+     const L=lg.querySelector('.lg'),dr=L.querySelector('.lg-dr');const ds=el('img','lg-ds');ds.src=A+'ui/dr_s_0.png';L.appendChild(ds);
+     try{await Promise.all(DRF.map(i=>i.decode()))}catch(e){}
+     dr.style.animation='none';dr.style.transition='opacity .45s';ds.classList.add('on');dr.style.opacity=0;await sleep(650);
+     ds.src=A+'ui/dr_s_1.png';ds.className='lg-ds on look';sfx('drachenknurren',.6);await sleep(900);
+     ds.src=A+'ui/dr_s_2.png';ds.className='lg-ds on breath';sfx('wind_boe',.7);await sleep(1100);
+     ds.src=A+'ui/dr_s_3.png';ds.className='lg-ds on spit';sfx('feuerball',1);sfx('feuer_entfacht',.8);
+     const r=ds.getBoundingClientRect();const fb=el('div','fball','<img src="'+A+'ui/feuerball.png" alt="">');fb.style.position='fixed';fb.style.zIndex=9999;fb.style.left=(r.left+r.width*.27)+'px';fb.style.top=(r.top+r.height*.64)+'px';document.body.appendChild(fb);
+     requestAnimationFrame(()=>requestAnimationFrame(()=>{fb.classList.add('go');fb.style.left=(innerWidth/2)+'px';fb.style.top=(innerHeight*.55)+'px'}));await sleep(1150);
+     // nach dem Film erscheint die Karte, der Feuerschein blendet darüber aus
+     setTimeout(()=>{fb.classList.add('gone');setTimeout(()=>fb.remove(),1400)},700);lg.remove()}
+    else{lg.classList.add('gone');await sleep(1400)}}
    continue}
   if(sh.black){[...f.children].forEach(x=>x.classList.remove('on'))}
   if(sh.t){n++;const male=sh.tm&&st.hero&&!st.hero.f;const vo=A+'vo/f_'+key+'_'+String(n).padStart(3,'0')+(male?'m':'')+'.mp3';const who=WHO[sh.s]||WHO.SL;
@@ -64,8 +77,8 @@ async function titleReveal(f,stop){const w=t=>stop()?Promise.resolve():sleep(t);
  ds.src=A+'ui/dr_s_2.png';ds.className='lg-ds on breath';sfx('wind_boe',.7);await w(1150);
  ds.src=A+'ui/dr_s_3.png';ds.className='lg-ds on spit';sfx('feuerball',1);sfx('feuer_entfacht',.8);
  const r=ds.getBoundingClientRect(),R=f.getBoundingClientRect();
- const fb=el('div','fball','<img src="'+A+'ui/feuerball.png" alt="">');fb.style.left=(r.left-R.left+r.width*.17)+'px';fb.style.top=(r.top-R.top+r.height*.8)+'px';f.appendChild(fb);
- requestAnimationFrame(()=>requestAnimationFrame(()=>fb.classList.add('go')));
+ const fb=el('div','fball','<img src="'+A+'ui/feuerball.png" alt="">');fb.style.left=(r.left-R.left+r.width*.27)+'px';fb.style.top=(r.top-R.top+r.height*.64)+'px';f.appendChild(fb);
+ requestAnimationFrame(()=>requestAnimationFrame(()=>{fb.classList.add('go');fb.style.left=(R.width/2)+'px';fb.style.top=(R.height*.55)+'px'}));
  await w(1150);o.remove();music(A+'mus/intro.mp3',.45);fb.classList.add('gone');setTimeout(()=>fb.remove(),1300)}
 
 // Lebendiger Himmel über den gemalten Bildern

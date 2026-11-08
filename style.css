@@ -953,3 +953,19 @@ img{display:block;max-width:100%}
 .logo-end .lg .lg-base{width:100%;animation:none}
 .logo-end .lg .lg-dr{width:100%}
 .logo-end .lg .lg-fl{width:8.9%;animation:lgflick 1.3s ease-in-out infinite}
+.logo-end .lg .lg-ds{width:auto;height:56%;filter:none}
+.logo-end .lg .lg-ds:not(.look):not(.breath):not(.spit){animation:none}
+/* Gegner leicht hervorheben, damit dunkle Figuren (Vharkon) sich vom Hintergrund lösen */
+.bt-f:not(.down) .bt-fi{filter:drop-shadow(0 0 2px rgba(255,236,190,.95)) drop-shadow(0 0 9px rgba(255,200,110,.55)) drop-shadow(0 6px 10px rgba(0,0,0,.6))}
+.bt-f.pickable:not(.down) .bt-fi{filter:drop-shadow(0 0 3px #fff3c4) drop-shadow(0 0 16px #ffd34d)}
+.bt-f:not(.down)::before{content:'';position:absolute;left:12%;right:12%;bottom:52px;height:18px;border-radius:50%;background:radial-gradient(ellipse,rgba(255,190,90,.45),transparent 70%);pointer-events:none}
+.bt-f{position:relative}
+/* Nachtigall im Schleichspiel deutlicher: goldener Rand wie beim aktiven Kampfcharakter */
+.ps2-cat .ps2-c{filter:drop-shadow(0 0 2px #fff3c4) drop-shadow(0 0 3px #fff3c4) drop-shadow(0 0 10px #ffd76a) drop-shadow(0 6px 6px rgba(0,0,0,.85))}
+.ps2-cat::after{content:'';position:absolute;left:50%;top:50%;width:150%;aspect-ratio:1;translate:-50% -50%;border-radius:50%;background:radial-gradient(circle,rgba(255,210,110,.35),transparent 65%);z-index:-1;pointer-events:none}
+.ps2-cat.hide .ps2-c{filter:drop-shadow(0 0 2px rgba(255,243,196,.6)) drop-shadow(0 6px 6px rgba(0,0,0,.85))}
+.pn-dr{filter:drop-shadow(0 0 2px rgba(255,236,190,.9)) drop-shadow(0 0 10px rgba(255,200,110,.5)) drop-shadow(0 10px 18px rgba(0,0,0,.7))}
+/* Feuerstoß fliegt geradeaus auf den Spieler zu: vom Maul zur Bildmitte, wächst dabei ohne seitliche Drehung */
+.fball{transition:left .95s cubic-bezier(.4,0,.8,.6),top .95s cubic-bezier(.4,0,.8,.6)}
+.fball img{transform:scale(.06)}
+.fball.go img{transform:scale(5)}
