@@ -51,12 +51,20 @@ async function grumbold8(o,pts){const W=['Eins!','Zwei!','Drei!','Vier!','Fünf!
   await sleep(sp*.55);gr.src=A+'img/b_gr_0.png';await sleep(sp*.45)}
  await sleep(900);c.classList.add('out');await sleep(500);c.remove()}
 
+// Grumbold springt zur angetippten Schuppe, schlägt zu und ruft die Zahl
+function grJump(o,p,i){let g=o.querySelector('.g8-gr2');if(!g){g=el('img','g8-gr2');g.src=A+'img/b_gr_0.png';o.appendChild(g)}
+ g.style.left=(p.x*100)+'%';g.style.top=(p.y*100)+'%';g.src=A+'img/b_gr_1.png';g.classList.remove('punch');void g.offsetWidth;g.classList.add('punch');
+ setTimeout(()=>{const b=el('div','g8-boom');b.style.left=(p.x*100)+'%';b.style.top=(p.y*100)+'%';o.appendChild(b);setTimeout(()=>b.remove(),700);
+  for(let k=0;k<6;k++){const s=el('i','g8-sp');s.style.left=(p.x*100)+'%';s.style.top=(p.y*100)+'%';const a=Math.random()*Math.PI*2,r=40+Math.random()*50;s.style.setProperty('--dx',Math.cos(a)*r+'px');s.style.setProperty('--dy',Math.sin(a)*r+'px');o.appendChild(s);setTimeout(()=>s.remove(),700)}
+  sfx(i===7?'kritisch':'stein',.8);o.classList.remove('hit');void o.offsetWidth;o.classList.add('hit');setTimeout(()=>{g.src=A+'img/b_gr_0.png'},260)},180);
+ try{const a=new Audio(A+'vo/gr8_'+(i+1)+'.mp3');a.volume=st.sound===false?0:1;a.play().catch(()=>{})}catch(e){}}
+
 GAMES.p_glut=()=>new Promise(async done=>{const W1=phWho(1);const T=W1.right?9:6;
  const o=await phShell('pg2','mg_schuppen','ort24',W1.name+' schlägt mit dem Glutstein','Tippe die glühenden Schuppen der Reihe nach an, von eins bis acht. Jeder Schlag bricht die Asche auf.');
  const pts=[];const R=()=>({x:.14+Math.random()*.72,y:.24+Math.random()*.56});for(let i=0;i<8;i++){let p,tr=0;do{p=R();tr++}while(tr<60&&pts.some(q=>Math.hypot((q.x-p.x)*1.6,q.y-p.y)<.16));pts.push(p)}
  let next=0,t0=performance.now(),run=true;const W=['Eins','Zwei','Drei','Vier','Fünf','Sechs','Sieben','Acht'];
- pts.forEach((p,i)=>{const b=el('button','pg2-s','<b>'+(i+1)+'</b>');b.style.left=(p.x*100)+'%';b.style.top=(p.y*100)+'%';o.appendChild(b);b.onpointerdown=e=>{e.preventDefault();if(!run)return;if(i!==next){b.classList.add('nope');sfx('falsch',.4);setTimeout(()=>b.classList.remove('nope'),300);return}next++;b.classList.add('ok');sfx('feuerball',.45);const w=el('div','pg2-w',W[i]+(i===7?'!':'.'));w.style.left=b.style.left;w.style.top=b.style.top;o.appendChild(w);setTimeout(()=>w.remove(),900);if(next===8)fin(true)}});
- const fin=async ok=>{if(!run)return;run=false;const t=(performance.now()-t0)/1000;if(ok)await grumbold8(o,pts);await phEnd(o,ok?'Acht! Grumbold hat bis acht gezählt. Die Schuppen sind offen.':'Die Asche ist zäh. Aber ein paar Schuppen sind gebrochen.');done(ok?Math.max(.4,1-Math.max(0,t-TT*.5)/TT-tries*.15):next/8)};
+ pts.forEach((p,i)=>{const b=el('button','pg2-s','<b>'+(i+1)+'</b>');b.style.left=(p.x*100)+'%';b.style.top=(p.y*100)+'%';o.appendChild(b);b.onpointerdown=e=>{e.preventDefault();if(!run)return;if(i!==next){b.classList.add('nope');sfx('falsch',.4);setTimeout(()=>b.classList.remove('nope'),300);return}next++;b.classList.add('ok');grJump(o,p,i);const w=el('div','pg2-w',W[i]+(i===7?'!':'.'));w.style.left=b.style.left;w.style.top=b.style.top;o.appendChild(w);setTimeout(()=>w.remove(),900);if(next===8)setTimeout(()=>fin(true),900)}});
+ const fin=async ok=>{if(!run)return;run=false;const t=(performance.now()-t0)/1000;await phEnd(o,ok?'Acht! Grumbold hat bis acht gezählt. Die Schuppen sind offen.':'Die Asche ist zäh. Aber ein paar Schuppen sind gebrochen.');done(ok?Math.max(.4,1-Math.max(0,t-TT*.5)/TT-tries*.15):next/8)};
  let TT=T,tries=0;const again=()=>{tries++;TT=T*(1+.3*Math.min(2,tries));sfx('falsch',.5);toast(tries>1?'Zu langsam. Grumbold holt tief Luft. Noch einmal, du hast jetzt mehr Zeit.':'Zu langsam! Die Asche schließt sich wieder. Noch einmal von eins.',3200);next=0;o.querySelectorAll('.pg2-s').forEach(b=>b.classList.remove('ok'));setTimeout(()=>{t0=performance.now();run=true;tk()},1600)};
  const tk=()=>{if(!run)return;const left=TT-(performance.now()-t0)/1000;bar(o,'Zeit',left/TT);if(left<=0){run=false;return again()}requestAnimationFrame(tk)};tk()});
 
@@ -131,14 +139,16 @@ const PS_IMG=[1536,2720];const PS_EYE=[.34,.225];const PS_PATH=[[.72,.86],[.5,.9
 // Phase 5: Das Herz. Halte die Sonnenkerze ruhig in der warmen Zone, bis die Asche schmilzt.
 GAMES.p_herz=()=>new Promise(async done=>{const W4=phWho(4);const zone=W4.right?.26:.18;
  const o=await phShell('ph','mg_herz','ort24',W4.name+' mit der Sonnenkerze','Halte gedrückt, damit die Flamme steigt, lass los, damit sie sinkt. Bleib im goldenen Bereich, bis die Asche geschmolzen ist.');
- o.insertAdjacentHTML('beforeend','<div class="ph-glow"></div><div class="ph-meter"><i class="z"></i><i class="f"></i></div><img class="ph-k" src="'+A+'items/sonnenkerze.png" alt="">');
+ o.insertAdjacentHTML('beforeend','<div class="ph-glow"></div><div class="ph-band"><span>warm</span></div><div class="ph-meter"><i class="z"></i><i class="f"></i></div><div class="ph-kw"><i class="ph-fl"></i><img class="ph-k" src="'+A+'items/sonnenkerze.png" alt=""></div>');
  const btn=el('button','pbtn big ps-go','Kerze heben');o.appendChild(btn);
  let v=.3,vel=0,hold=false,prog=0,zc=.5,run=true,last=performance.now();
  const down=e=>{e.preventDefault();hold=true},up=()=>{hold=false};btn.addEventListener('pointerdown',down);addEventListener('pointerup',up);
- const z=o.querySelector('.ph-meter .z'),f=o.querySelector('.ph-meter .f'),gl=o.querySelector('.ph-glow');
+ const z=o.querySelector('.ph-meter .z'),f=o.querySelector('.ph-meter .f'),gl=o.querySelector('.ph-glow'),band=o.querySelector('.ph-band'),kw=o.querySelector('.ph-kw');const Y0=.16,Y1=.74;const yOf=t=>Y1-(Y1-Y0)*t;let spT=0;
  const tick=t=>{if(!run)return;const dt=Math.min(.05,(t-last)/1000);last=t;const s=t/1000;
   zc=.5+.28*Math.sin(s*.8)+.08*Math.sin(s*2.1);vel+=(hold?1.5:-1.3)*dt;vel*=.9;v=Math.max(0,Math.min(1,v+vel*dt*2.2));
   const inZ=Math.abs(v-zc)<zone/2;if(inZ)prog+=dt*.11;else prog=Math.max(0,prog-dt*.02);
   z.style.bottom=((zc-zone/2)*100)+'%';z.style.height=(zone*100)+'%';f.style.bottom=(v*100)+'%';f.classList.toggle('in',inZ);gl.style.opacity=.15+prog*.85;bar(o,'Wärme',prog);
+  band.style.top=(yOf(zc+zone/2)*100)+'%';band.style.height=((Y1-Y0)*zone*100)+'%';band.classList.toggle('in',inZ);kw.style.top=(yOf(v)*100)+'%';kw.classList.toggle('in',inZ);
+  if(inZ&&(spT-=dt)<0){spT=.12;const sp=el('i','ph-sp');sp.style.left=(46+Math.random()*8)+'%';sp.style.top=(yOf(v)*100-4)+'%';o.appendChild(sp);setTimeout(()=>sp.remove(),900)}
   if(prog>=1){run=false;removeEventListener('pointerup',up);sfx('feuer_entfacht',.8);phEnd(o,'Die Asche schmilzt. Darunter glimmt etwas.').then(()=>done(1));return}
   requestAnimationFrame(tick)};requestAnimationFrame(tick)});

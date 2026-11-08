@@ -12,9 +12,9 @@ function renderHud(){const h=$('#hud');if(!h)return;const n=nights();
  '<div class="hud-btns"><button class="hb" id="hb-party" aria-label="Gruppe">'+UI('herz')+'</button><button class="hb" id="hb-inv" aria-label="Rucksack">'+UI('rucksack')+'</button><button class="hb" id="hb-log" aria-label="Tagebuch">'+UI('tagebuch')+'</button><button class="hb btn-snd'+(st.sound?'':' off')+'" id="hb-snd" aria-label="Ton">'+UI('horn')+'</button></div>';
  $('#hb-inv').onclick=openInv;$('#hb-party').onclick=openParty;$('#hb-log').onclick=openLog;$('#hb-snd').onclick=()=>{setSound(!st.sound);renderHud()}}
 
-function goMap(){stopVo();stopSfx(.5);SC.abort=0;show('#s-map');renderHud();renderMap();music(A+'mus/karte.mp3',.4);atmo(A+'atmo/bergwind.mp3',.35);accents(null)}
+function goMap(){stopVo();stopSfx(.5);SC.abort=0;show('#s-map');renderHud();renderMap();music(A+'mus/karte.mp3',.4);atmo(A+'atmo/bergwind.mp3',.35);accents(null);if(!st.flags.map_tut&&!st.done[1])setTimeout(mapTutorial,900)}
 function renderMap(){const m=$('#map-in');m.querySelectorAll('.wp,.token,.trail,.map-urk').forEach(e=>e.remove());const nd=nextDay();
- if(nd>24){const u=el('button','map-urk','<span class="mu-p" style="background-image:url('+A+'ui/urk_bg.jpg)"><img class="mu-s" src="'+A+'ui/siegel.png" alt=""></span><b>Heldenurkunde</b>');u.onclick=e=>{e.stopPropagation();sfx('pergament',.6);openUrkunde()};m.appendChild(u)}
+ if(st.done&&st.done[24]){const u=el('button','map-urk','<span class="mu-p" style="background-image:url('+A+'ui/urk_bg.jpg)"><img class="mu-s" src="'+A+'ui/siegel.png" alt=""></span><b>Heldenurkunde</b>');u.onclick=e=>{e.stopPropagation();sfx('pergament',.6);openUrkunde()};m.appendChild(u)}
  // Gezeichneter Weg: geschafft als feste Spur, kommend gestrichelt
  const last=Object.keys(st.done).length?Math.max(...Object.keys(st.done).map(Number)):1;
  const pts=d=>WP.slice(1,d+1).map(p=>(p[0]*23.52).toFixed(1)+','+(p[1]*17.6).toFixed(1)).join(' ');
@@ -26,7 +26,7 @@ function renderMap(){const m=$('#map-in');m.querySelectorAll('.wp,.token,.trail,
  const at=Math.max(1,Math.min(24,nd>24?24:(st.done[nd-1]?nd-1:Math.max(1,nd-1))));const tp=WP[Object.keys(st.done).length?Math.max(...Object.keys(st.done).map(Number)):1];
  const tk=el('div','token','<i class="tk-sh"></i><div class="tk-sp" style="background-image:url('+runImg(0)+')"></div>');tk.style.left=tp[0]+'%';tk.style.top=tp[1]+'%';m.appendChild(tk);standBeside(tk,Object.keys(st.done).length?Math.max(...Object.keys(st.done).map(Number)):1);for(let i=0;i<4;i++){const im=new Image();im.src=runImg(i)}
  const sc=$('#map');requestAnimationFrame(()=>{const w=m.offsetWidth;sc.scrollLeft=Math.max(0,tp[0]/100*w-sc.clientWidth/2)});
- $('#map-foot').innerHTML=nd>24?'Das Abenteuer ist bestanden. Du kannst jeden Tag noch einmal erleben.<button class="pbtn" onclick="openUrkunde()">Deine Heldenurkunde</button>':unlocked(nd)?'Tippe auf Wegpunkt '+nd+', um weiterzuspielen.':lockMsg(nd)}
+ $('#map-foot').innerHTML=(nd>24||st.done[24])?'Das Abenteuer ist bestanden. Du kannst jeden Tag noch einmal erleben.<button class="pbtn" onclick="openUrkunde()">Deine Heldenurkunde</button>':unlocked(nd)?'Tippe auf Wegpunkt '+nd+', um weiterzuspielen.':lockMsg(nd)}
 // Mini Figur auf der Karte: steht, rennt von Punkt zu Punkt und bleibt stehen
 const RUNF={schurke_1:[1,3],schurke_2:[1,3]};
 // Steht neben dem Wegpunkt, auf der Seite weg vom nächsten Punkt, damit keine Zahl verdeckt wird
@@ -108,3 +108,17 @@ async function codeInput(c){hideBox();const o=$('#card');o.classList.remove('gbg
 function testPrep(d){if(!st.hero)st.hero={cls:'krieger',look:1,f:true,str:3,dex:2,wis:1,name:'Testheldin',skills:[]};
  const p=[];if(d>4)p.push('gr');if(d>9)p.push('zi');if(d>14)p.push('hu');if(d>19)p.push('na');for(const x of p)if(!st.party.includes(x))st.party.push(x);
  st.lvl=Math.max(st.lvl||1,1+(d>5)+(d>10)+(d>15)+(d>20));save()}
+
+// Erklärung der Karte beim ersten Besuch: der Spielleiter zeigt auf Wegpunkte, Kerze und Knöpfe
+const MAPTUT=[['.wp','Das hier ist die Karte von Eldmark. Jeder dieser roten Wegpunkte ist eine Nacht im Dezember. Vierundzwanzig Stück, von deinem Dorf bis hinauf zum Drachen.'],
+ [null,'Jeden Tag im Dezember öffnet sich um Mitternacht genau ein neuer Wegpunkt. Vorher bleibt er verschlossen. Auch wenn du sehr neugierig bist. Ich bin es übrigens auch.'],
+ ['.hud-candle','Die Kerze hier oben zeigt dir, wie viele Nächte es noch bis zur Lichternacht sind. Jeden Tag brennt sie ein Stückchen weiter herunter.'],
+ ['.hud-btns','Hier oben rechts findest du deine Gruppe, deinen Rucksack, das Tagebuch mit allen Hinweisen und den Ton.'],
+ ['.token','Und das hier bist du. Unterwegs warten Rätsel, Kämpfe und neue Gefährten auf dich. In der Lichternacht wollen wir gemeinsam die Lichter von Eldmark wieder zum Leuchten bringen. Tippe auf den ersten Wegpunkt, und das Abenteuer beginnt.']];
+async function mapTutorial(){if(st.flags.map_tut)return;st.flags.map_tut=1;save();const sc=$('#s-map');
+ for(let i=0;i<MAPTUT.length;i++){const [sel,txt]=MAPTUT[i];const tg=sel?sc.querySelector(sel):null;if(tg&&tg.scrollIntoView&&sel!=='.hud-candle'&&sel!=='.hud-btns')tg.scrollIntoView({block:'center',inline:'center',behavior:'smooth'});await sleep(sel?450:50);
+  const c=el('div','bt-coach map-coach');const o=sc.getBoundingClientRect();let top=false;
+  if(tg){const r=tg.getBoundingClientRect(),pad=8;const sp=el('div','bt-spot');sp.style.cssText='left:'+(r.left-o.left-pad)+'px;top:'+(r.top-o.top-pad)+'px;width:'+(r.width+pad*2)+'px;height:'+(r.height+pad*2)+'px';c.appendChild(sp);top=(r.top+r.height/2-o.top)>o.height/2}else c.classList.add('dim');
+  const bx=el('div','bt-cb'+(top?' top':''),'<div class="bt-cf" style="background-image:url('+A+'img/p_sl.jpg)"></div><div class="bt-ct"><b>Der Spielleiter</b><p>'+esc(txt)+'</p><button class="pbtn">'+(i<MAPTUT.length-1?'Weiter':'Los geht\'s')+'</button></div>');c.appendChild(bx);sc.appendChild(c);
+  const a=playVo(A+'vo/maptut_'+(i+1)+'.mp3',on=>bx.classList.toggle('talk',on));
+  await new Promise(r=>bx.querySelector('button').onclick=()=>{sfx('ui_klick',.5);r()});if(a)stopVo();c.remove()}}

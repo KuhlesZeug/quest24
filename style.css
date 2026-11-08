@@ -1307,3 +1307,35 @@ img{display:block;max-width:100%}
 .ek-big .bt-ekbox{position:relative;left:auto;top:auto;transform:none;width:min(86%,330px)}
 .ek-big p{max-width:340px;margin:0;padding:10px 14px;text-align:center;color:var(--ink);background:url(a/ui/pergament.jpg) center/cover;border:3px solid var(--wood);border-radius:12px;font-size:.98rem}
 .ek-big .bt-ekbox{animation:none}
+/* Grumbold springt zur Schuppe */
+.g8-gr2{position:absolute;left:50%;top:115%;width:min(42%,210px);transform:translate(-50%,-8%);z-index:6;pointer-events:none;transition:left .22s cubic-bezier(.3,1.4,.5,1),top .22s cubic-bezier(.3,1.4,.5,1);filter:drop-shadow(0 8px 14px rgba(0,0,0,.6)) drop-shadow(0 0 12px rgba(255,140,60,.4))}
+.g8-gr2.punch{animation:grPunch .4s ease-out}
+@keyframes grPunch{0%{transform:translate(-50%,-8%) scale(.9)}40%{transform:translate(-50%,-22%) scale(1.12) rotate(-4deg)}100%{transform:translate(-50%,-8%)}}
+.pg2 .g8-boom{z-index:7}
+/* Sonnenkerze: Kerze steigt und sinkt sichtbar, warme Zone als leuchtendes Band */
+.ph .ph-meter{right:10px;width:22px;border-width:2px;border-color:#e3b24f;background:rgba(20,10,4,.6)}
+.ph .ph-meter .f{width:26px;height:26px}
+.ph-band{position:absolute;left:6%;right:12%;z-index:6;border-radius:40px;pointer-events:none;background:radial-gradient(ellipse at 50% 50%,rgba(255,214,110,.42),rgba(255,170,60,.18) 55%,transparent 75%);border-top:2px dashed rgba(255,226,140,.55);border-bottom:2px dashed rgba(255,226,140,.55);transition:background .2s}
+.ph-band span{position:absolute;right:10px;top:50%;transform:translateY(-50%);font-family:var(--sc);font-weight:700;font-size:.8rem;color:#ffe9b0;text-shadow:0 1px 3px #000;letter-spacing:.08em}
+.ph-band.in{background:radial-gradient(ellipse at 50% 50%,rgba(255,226,140,.7),rgba(255,170,60,.3) 55%,transparent 78%)}
+.ph-kw{position:absolute;left:50%;top:60%;width:min(22%,110px);transform:translate(-50%,-30%);z-index:8;pointer-events:none;transition:top .06s linear}
+.ph .ph-kw .ph-k{position:static;display:block;width:100%;transform:none;bottom:auto;filter:drop-shadow(0 0 14px #ffcf5a) drop-shadow(0 6px 10px rgba(0,0,0,.6))}
+.ph-fl{position:absolute;left:50%;top:-6%;width:160%;aspect-ratio:1;transform:translate(-50%,-50%);border-radius:50%;background:radial-gradient(circle,rgba(255,240,190,.9),rgba(255,170,60,.45) 35%,transparent 68%);opacity:.55;transition:opacity .2s,transform .2s;mix-blend-mode:screen}
+.ph-kw.in .ph-fl{opacity:1;transform:translate(-50%,-50%) scale(1.35)}
+.ph-sp{position:absolute;width:6px;height:6px;margin:-3px;border-radius:50%;background:#ffe9a0;box-shadow:0 0 8px #ffb347;z-index:9;pointer-events:none;animation:phSp .9s ease-out forwards}
+@keyframes phSp{to{transform:translate(calc((var(--r,0) - .5) * 40px),-70px);opacity:0}}
+.ph-kw{width:min(30%,150px)}.ph-fl{width:200%}
+/* Kartenleiste: Symbole deutlicher als Medaillons */
+.hud{gap:8px}
+.hb{width:48px;height:48px;padding:0;border:0;-webkit-appearance:none;appearance:none;border-radius:50%;background:radial-gradient(circle at 50% 40%,#4a2f1c,#24150a 72%);box-shadow:0 0 0 2px #e3b24f,0 0 0 4px #3a2210,0 4px 8px rgba(0,0,0,.6);transition:transform .1s}
+.hb:active{transform:scale(.93)}
+.hb .ui-ic{width:36px;height:36px;filter:drop-shadow(0 2px 2px rgba(0,0,0,.7))}
+.hud-btns{gap:9px;padding-right:2px}
+.hud-stat{gap:4px;padding:3px 10px 3px 4px;border-radius:20px;background:rgba(28,16,8,.75);box-shadow:0 0 0 2px #e3b24f,0 3px 6px rgba(0,0,0,.5);font-size:1.05rem;color:#ffe9b0}
+.hud-stat b{font-size:1.15rem;color:#ffe08a;text-shadow:0 1px 2px #000}
+.hud-stat .ui-ic{width:1.7em;height:1.7em;filter:drop-shadow(0 1px 2px rgba(0,0,0,.7))}
+.hud-candle{padding:3px 10px 3px 4px;border-radius:20px;background:rgba(28,16,8,.75);box-shadow:0 0 0 2px #e3b24f,0 3px 6px rgba(0,0,0,.5);color:#ffe9b0}
+.hud-candle b{font-size:1.4rem;color:#ffe08a;text-shadow:0 1px 2px #000}
+.hud-candle span{color:#ffe9b0}
+.map-coach{position:absolute;inset:0;z-index:30}
+@media (max-width:440px){.hud{gap:5px;padding-left:6px;padding-right:6px}.hb{width:40px;height:40px}.hb .ui-ic{width:30px;height:30px}.hud-btns{gap:7px}.hud-stat{padding:2px 7px 2px 3px;font-size:.95rem}.hud-stat .ui-ic{width:1.45em;height:1.45em}.hud-candle{padding:2px 7px 2px 3px}.hud-candle span{font-size:.62rem}}
