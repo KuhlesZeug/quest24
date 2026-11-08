@@ -1,0 +1,28 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Quest 24 · Der Hort des Aschenkönigs</title>
+<meta name="theme-color" content="#1b1410">
+<meta name="robots" content="noindex">
+<style>
+html,body{margin:0;height:100%;overflow:hidden;background:#1b1410}
+.bg{position:fixed;inset:-40px;background:url(a/img/titel_pano.jpg) center/cover no-repeat;filter:blur(18px) brightness(.45) saturate(1.1)}
+.bg::after{content:"";position:fixed;inset:0;background:radial-gradient(ellipse at center,transparent 35%,rgba(10,7,5,.75))}
+iframe{position:fixed;top:0;bottom:0;left:50%;transform:translateX(-50%);height:100%;width:min(100vw,calc(100vh*.7));width:min(100vw,calc(100dvh*.7));border:0;background:#1b1410;box-shadow:0 0 60px rgba(0,0,0,.8)}
+</style>
+</head>
+<body>
+<div class="bg"></div>
+<iframe id="f" title="Quest 24" allow="autoplay; fullscreen; clipboard-write"></iframe>
+<script>
+(function(){
+  var p=new URLSearchParams(location.search);p.set('frame','1');
+  document.getElementById('f').src='index.html?'+p.toString()+location.hash;
+  // Einmalige Parameter nicht beim Neuladen wiederholen
+  if(p.get('neu')){p.delete('neu');p.delete('frame');history.replaceState(null,'',location.pathname+(p.toString()?'?'+p:'')+location.hash)}
+})();
+</script>
+</body>
+</html>
