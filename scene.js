@@ -36,7 +36,8 @@ function animFace(k,emo,on){clearInterval(faceTimer);const f=$('#sc-box .sb-face
 const SC={id:'',n:0,skip:false,tap:null};
 function scBox(){return $('#sc-box')}
 const BGOK={};
-function setBg(src,fast){if(BGOK[src]===false)return;if(!BGOK[src]){const im=new Image();im.onload=()=>{BGOK[src]=true;setBg(src,fast)};im.onerror=()=>{BGOK[src]=false;if(fast&&typeof fast==='string')setBg(fast)};im.src=src;BGOK[src]=0;return}
+let BGWANT=null;
+function setBg(src,fast){BGWANT=src;if(BGOK[src]===false)return;if(!BGOK[src]){const im=new Image();im.onload=()=>{BGOK[src]=true;if(BGWANT===src)setBg(src,fast)};im.onerror=()=>{BGOK[src]=false;if(BGWANT===src&&fast&&typeof fast==='string')setBg(fast)};im.src=src;BGOK[src]=0;return}
  const a=$('#sc-bg');const cur=a.querySelector('.on');if(cur&&cur.dataset.src===src)return;
  const i=el('div','bgi');i.dataset.src=src;i.style.backgroundImage='url('+src+')';a.appendChild(i);requestAnimationFrame(()=>requestAnimationFrame(()=>i.classList.add('on')));
  if(cur){cur.classList.remove('on');setTimeout(()=>cur.remove(),fast?300:1300)}}
