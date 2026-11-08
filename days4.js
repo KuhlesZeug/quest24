@@ -181,7 +181,7 @@ DAYS[24]={end:'Heute ist Lichternacht.',steps:[
  ]},
  {bg:'vh_warm',alt:'ort24',look:2500},
  {film:'z7'},
- {s:'VH',t:'Ein Hüter vergisst nicht, wer ihm geholfen hat.',e:6},
+ {s:'VH',t:'Ein Hüter vergisst nicht, wer ihm geholfen hat.',e:7},
  {s:'SL',t:'Für dich, {NAME}. Jemand hat ihn hier für dich hinterlegt.'},
  {game:'schatz'},
  {s:'SL',t:'Ich glaube, dieser Teil des Abenteuers gehört nur dir.'},

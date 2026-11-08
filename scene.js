@@ -29,9 +29,15 @@ const portrait=(k,e)=>{if(k==='HELD')return heroImg();const w=WHO[k];if(!w||!w.p
 function guessEmo(k,t,e){if(typeof e==='number')return e;if(e)return EMO[e]??0;if(k==='VH')return 0;if(/[Ee]ntschuldigung|Angst|Oh nein|zittert|k k kalt|schwer\b|traurig/.test(t))return EMO.worried;if(/^(Oh|Was|Moment|Halt)\b/.test(t)&&/[!.?]/.test(t))return EMO.shock;if(/!/.test(t))return EMO.smile;return EMO.neutral}
 // Sprechen: Mund auf und zu, Gefühl bleibt
 let faceTimer=null;
+// Gesichter vorladen, damit beim Wechsel nichts aufblitzt
+const FACEC={};function faceImg(u){let im=FACEC[u];if(!im){im=new Image();im.src=u;FACEC[u]=im}return im}
+function preFace(k){const w=WHO[k];if(!w||!w.p||k==='HELD')return;faceImg(A+'img/'+w.p+'.jpg');if(HASFACE.has(w.p))for(let e=0;e<9;e++)faceImg(A+'img/'+w.p+'_'+e+'.jpg')}
+function setFace(f,u){const im=faceImg(u);const go=()=>{f.style.backgroundImage='url('+u+')'};if(im.complete&&im.naturalWidth)go();else{f._want=u;im.addEventListener('load',()=>{if(f._want===u)go()},{once:true})}}
+// Vharkon mit Herz (Bild 7 und 8) leuchtet: kein Wechsel zurück auf die grauen Mundbilder
+const LIT=(k,emo)=>k==='VH'&&emo>=7;
 function animFace(k,emo,on){clearInterval(faceTimer);const f=$('#sc-box .sb-face');if(!f)return;const w=WHO[k];if(!w||!HASFACE.has(w.p)){f.classList.toggle('talking',on);return}
- const pair=emo===EMO.neutral?[0,1]:emo===EMO.smile?[2,3]:[emo,1];let i=0;f.style.backgroundImage='url('+portrait(k,emo)+')';f.classList.toggle('talking',on);
- if(!on)return;faceTimer=setInterval(()=>{i++;const fr=(emo===EMO.neutral||emo===EMO.smile)?pair[i%2]:(i%5===2?1:emo);f.style.backgroundImage='url('+portrait(k,fr)+')'},170)}
+ const pair=emo===EMO.neutral?[0,1]:emo===EMO.smile?[2,3]:[emo,1];let i=0;f._want=null;setFace(f,portrait(k,emo));f.classList.toggle('talking',on);
+ if(!on||LIT(k,emo))return;faceTimer=setInterval(()=>{i++;const fr=(emo===EMO.neutral||emo===EMO.smile)?pair[i%2]:(i%5===2?1:emo);const u=portrait(k,fr),im=faceImg(u);if(im.complete&&im.naturalWidth)f.style.backgroundImage='url('+u+')'},170)}
 
 const SC={id:'',n:0,skip:false,tap:null};
 function scBox(){return $('#sc-box')}
@@ -47,7 +53,7 @@ $('#s-scene').addEventListener('click',e=>{if(e.target.closest('button,input,.sc
 async function say(k,text,vo,e){const b=scBox(),w=WHO[k]||WHO.SL;const name=k==='HELD'?heroName():w.n;const emo=guessEmo(k,text,e);
 
  b.classList.add('on');b.classList.toggle('noface',!portrait(k));
- b.querySelector('.sb-face').style.backgroundImage=portrait(k)?'url('+portrait(k,emo)+')':'none';b.querySelector('.sb-face').classList.remove('pop');void b.offsetWidth;b.querySelector('.sb-face').classList.add('pop');
+ preFace(k);{const sf=b.querySelector('.sb-face');if(portrait(k))setFace(sf,portrait(k,emo));else{sf._want=null;sf.style.backgroundImage='none'}}b.querySelector('.sb-face').classList.remove('pop');void b.offsetWidth;b.querySelector('.sb-face').classList.add('pop');
  b.querySelector('.sb-name').textContent=name;const tx=b.querySelector('.sb-text');tx.innerHTML='';b.classList.remove('done');
  const full=T(text);const a=vo?playVo(vo,on=>animFace(k,emo,on)):null;if(!a)animFace(k,emo,true);
  // Schreiben wie mit der Feder
@@ -65,7 +71,7 @@ async function choice(opts){hideBox();const c=$('#sc-choices');c.innerHTML='';c.
 // Einzelne Schritte ausführen
 async function run(steps,ctx){ctx=ctx||{};for(let i=0;i<steps.length;i++){const s=steps[i];if(SC.abort)return;if(SC.wgPrev&&s.s!=='WG'&&!s.note){if(s.bg){SC.wgPrev=null;$('#s-scene').classList.remove('real')}else wgBack()}SC.nextBg=!!(steps[i+1]&&steps[i+1].bg)||(i===steps.length-1);preStep(steps,i);await step(s,ctx)}}
 // Die nächsten Stimmen, Geräusche und Bilder schon laden, während die aktuelle Zeile läuft
-function preStep(steps,i){for(let j=i;j<Math.min(steps.length,i+4);j++){const n=steps[j];if(!n)continue;if(n.s&&n._vo&&n.s!=='HELD'&&!n.novo){const male=n.tm&&st.hero&&!st.hero.f;preVo(A+'vo/'+n._vo+(male?'m':'')+'.mp3')}if(n.sfx)preSfx([n.sfx]);if(n.bg&&j>i){const im=new Image();im.src=A+'img/'+n.bg+'.jpg'}}}
+function preStep(steps,i){for(let j=i;j<Math.min(steps.length,i+4);j++){const n=steps[j];if(!n)continue;if(n.s)preFace(n.s);if(n.s&&n._vo&&n.s!=='HELD'&&!n.novo){const male=n.tm&&st.hero&&!st.hero.f;preVo(A+'vo/'+n._vo+(male?'m':'')+'.mp3')}if(n.sfx)preSfx([n.sfx]);if(n.bg&&j>i){const im=new Image();im.src=A+'img/'+n.bg+'.jpg'}}}
 // Meisterin Wendelgard: Schnitt aus der Geschichte an den echten Spieltisch
 const WGC=['wgc1','wgc2','wgc3','wgc4','wgc5','wgc6','wgc7','wgc8','wgc9','wgc10'];let wgI=0;
 function wgCut(img){const cur=$('#sc-bg .on');if(!SC.wgPrev)SC.wgPrev=cur?cur.dataset.src:null;img=img||WGC[(wgI++)%WGC.length];sfx('pergament',.5);setBg(A+'img/'+img+'.jpg',true);$('#s-scene').classList.add('real')}
