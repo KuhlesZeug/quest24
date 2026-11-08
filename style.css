@@ -651,7 +651,7 @@ img{display:block;max-width:100%}
 .bt-act{height:150px;min-height:0;overflow:hidden}
 .bt-act .bt-btns:not(.list){grid-template-columns:1fr 1fr}
 .bt-act .bt-b span{font-size:.8rem}
-.bt-act.sheet{position:absolute;left:8px;right:8px;bottom:calc(8px + env(safe-area-inset-bottom));height:auto;max-height:64vh;overflow-y:auto;-webkit-overflow-scrolling:touch;z-index:30;margin:0;box-shadow:0 -10px 30px rgba(0,0,0,.55);animation:sheetUp .25s ease-out}
+.bt-act.sheet{position:absolute;left:8px;right:8px;bottom:calc(8px + env(safe-area-inset-bottom));height:auto;max-height:64vh;overflow-y:auto;-webkit-overflow-scrolling:touch;z-index:30;margin:0;box-shadow:0 -10px 30px rgba(0,0,0,.55);animation:sheetUp .25s ease-out;background:url(a/ui/pergament.jpg) center/cover;align-items:initial}
 .bt-act.sheet .bt-btns.list{grid-template-columns:1fr;gap:6px}
 .bt-act.sheet .bt-b.it{display:grid;grid-template-columns:44px 1fr;column-gap:10px;align-items:center}
 .bt-act.sheet .bt-b.it img{width:44px;height:44px;object-fit:contain;grid-row:1/3}
