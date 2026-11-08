@@ -1,9 +1,9 @@
 // Minispiele. Alle Grafiken gemalt (a/ui), Lichtstrahlen und Bewegung im Code.
 const GAMES={};
 // Eigene Kulisse je Minispiel: passend zum Ort, abgedunkelt und weichgezeichnet, damit die Karte gut lesbar bleibt
-const GBG={spiegel:'ort05',irrlicht:'ort08',takt:'ort10',sumpf:'ort11',trank:'hx1',karten:'ort14',schloss:'ort16',laden:'f_markt',plan:'ort23',schatz:'ort01',becher:'f_wirt1'};
+const GBG={spiegel:'ort05',irrlicht:'ort08_leer',takt:'ort10',sumpf:'ort11',trank:'hx1',karten:'ort14',schloss:'ort16',laden:'f_markt',plan:'ort23',schatz:'ort01',becher:'f_wirt1'};
 function gameShell(title,help){const cd=$('#card');const k=window.GAMEKEY;cd.classList.toggle('gbg',!!(k&&GBG[k]));if(k&&GBG[k])cd.style.setProperty('--gbg','url('+A+'img/'+GBG[k]+'.jpg)');if(!/Reim/.test(help))setTimeout(()=>readAloud(help),350);const o=$('#card');o.innerHTML='<div class="c-card game"><div class="cc-k">Minispiel</div><h3>'+title+'</h3><p class="g-help">'+help+'</p><div class="g-area"></div><div class="g-foot"></div></div>';o.classList.add('on');return o.querySelector('.g-area')}
-function gameEnd(){const cd=$('#card');cd.classList.remove('on');setTimeout(()=>{if(!cd.classList.contains('on'))cd.classList.remove('gbg')},400)}
+function gameEnd(){const cd=$('#card');cd.classList.remove('on');cd.classList.remove('gbg')}
 
 // Tag 4: Licht in den Stollen. Spiegel drehen, bis das Licht in die Kammer fällt.
 GAMES.spiegel=()=>new Promise(done=>{

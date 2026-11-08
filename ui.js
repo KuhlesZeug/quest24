@@ -44,7 +44,7 @@ async function tapDay(d){sfx('ui_klick',.6);
  if(!unlocked(d)){await rollPercent({title:'Tageswurf',sub:'Noch nicht',locked:'Nachtigall: Geduld ist auch eine Tugend. Angeblich.'});return}
  if(d>nextDay()&&!TEST){toast('Erst Wegpunkt '+nextDay()+'. Die Reise geht der Reihe nach.');return}
  if(TEST)testPrep(d);
- if(st.done[d]){const o=$('#card');o.innerHTML='<div class="cd-card"><h3>Tag '+d+' · '+DAYN[d]+'</h3><p>Diesen Tag hast du schon erlebt. Möchtest du ihn noch einmal spielen?</p><button class="pbtn" data-r="1">Noch einmal spielen</button><button class="pbtn alt" data-r="0">Zurück zur Karte</button></div>';o.classList.add('on');const r=await new Promise(res=>o.querySelectorAll('button').forEach(b=>b.onclick=()=>{sfx('ui_klick',.6);res(+b.dataset.r)}));o.classList.remove('on');if(!r)return;return playDay(d,true)}
+ if(st.done[d]){const o=$('#card');o.classList.remove('gbg');o.innerHTML='<div class="cd-card"><h3>Tag '+d+' · '+DAYN[d]+'</h3><p>Diesen Tag hast du schon erlebt. Möchtest du ihn noch einmal spielen?</p><button class="pbtn" data-r="1">Noch einmal spielen</button><button class="pbtn alt" data-r="0">Zurück zur Karte</button></div>';o.classList.add('on');const r=await new Promise(res=>o.querySelectorAll('button').forEach(b=>b.onclick=()=>{sfx('ui_klick',.6);res(+b.dataset.r)}));o.classList.remove('on');if(!r)return;return playDay(d,true)}
  await rollPercent({title:'Tageswurf',sub:'W100 und W10 zeigen die Zahl des Tages',fixed:d,after:v=>'Auf zu Wegpunkt '+v+': '+DAYN[v]});
  // Figur zieht weiter
  await runTo(d)
@@ -55,7 +55,7 @@ async function playDay(d,again){const D=DAYS[d];if(!D){toast('Dieser Tag wird ge
  await run(D.steps);if(SC.abort){SC.abort=0;return goMap()}
  hideBox();if(!again){st.done[d]=Date.now();save()}
  if(d===24&&!again){goMap();setTimeout(()=>openUrkunde(),1200);return}await countdownCard(d);goMap()}
-async function countdownCard(d){const n=nights();const o=$('#card');o.innerHTML='<div class="cd-card"><div class="cd-big"><img class="cd-body" src="'+A+'ui/kerze.png" alt=""><img class="cd-flame" src="'+A+'ui/flamme.png" alt=""></div><h3>'+(n?'Noch '+n+' '+(n===1?'Nacht':'Nächte')+' bis zur Lichternacht':'Lichternacht!')+'</h3><p>'+(DAYS[d].end?T(DAYS[d].end):'Morgen geht die Reise weiter.')+'</p><button class="pbtn">Zur Karte</button></div>';
+async function countdownCard(d){const n=nights();const o=$('#card');o.classList.remove('gbg');o.innerHTML='<div class="cd-card"><div class="cd-big"><img class="cd-body" src="'+A+'ui/kerze.png" alt=""><img class="cd-flame" src="'+A+'ui/flamme.png" alt=""></div><h3>'+(n?'Noch '+n+' '+(n===1?'Nacht':'Nächte')+' bis zur Lichternacht':'Lichternacht!')+'</h3><p>'+(DAYS[d].end?T(DAYS[d].end):'Morgen geht die Reise weiter.')+'</p><button class="pbtn">Zur Karte</button></div>';
  o.classList.add('on');sfx('kerze',.6);await new Promise(r=>o.querySelector('button').onclick=r);o.classList.remove('on')}
 
 // Gegenstand erhalten
@@ -65,14 +65,14 @@ async function gainItem(id,n){const I=ITEMS[id];if(!I)return;const ex=st.inv.fin
 function dropItem(id,n){const i=st.inv.findIndex(x=>x.id===id);if(i<0)return;st.inv[i].n=(st.inv[i].n||1)-(n||1e9);if(st.inv[i].n<=0)st.inv.splice(i,1);save()}
 function addGold(g){st.gold+=g;save();renderHud();sfx('muenzen',.7);toast(UI('gold')+' plus '+g+' Gold')}
 function addXp(x){st.xp+=x;save()}
-async function showCard(h,snd){const o=$('#card');o.innerHTML='<div class="c-card">'+h+'<button class="pbtn">Weiter</button></div>';o.classList.add('on');if(snd)sfx(snd,.8);setTimeout(()=>fx('magic',o.querySelector('.cc-img,.cc-port'),220),250);await new Promise(r=>o.querySelector('button').onclick=r);sfx('ui_klick',.5);o.classList.remove('on')}
+async function showCard(h,snd){const o=$('#card');o.classList.remove('gbg');o.innerHTML='<div class="c-card">'+h+'<button class="pbtn">Weiter</button></div>';o.classList.add('on');if(snd)sfx(snd,.8);setTimeout(()=>fx('magic',o.querySelector('.cc-img,.cc-port'),220),250);await new Promise(r=>o.querySelector('button').onclick=r);sfx('ui_klick',.5);o.classList.remove('on')}
 const STECK={gr:['Herbert (ein Kiesel)','Dunkelheit','Entschuldigung, bevor ich zuschlage.'],zi:['Ihr Federhut','Leere Ränge','Applaus ist auch eine Mahlzeit.'],hu:['Ihr Strickzeug','Langeweile','Kindchen, das schließen wir ganz anders auf.'],na:['Sein Zylinder','Gefühle zeigen','Ich schnurre nicht.']};
 async function joinParty(id){if(!st.party.includes(id))st.party.push(id);save();const C=COMP[id],s=STECK[id];
  await showCard('<div class="cc-port" style="background-image:url('+A+'img/k_'+id+'.jpg)"></div><div class="cc-k">Neuer Gefährte</div><h3>'+C.n+'</h3><dl class="steck"><dt>Lieblingsding</dt><dd>'+s[0]+'</dd><dt>Größte Angst</dt><dd>'+s[1]+'</dd><dt>Spruch</dt><dd>'+s[2]+'</dd><dt>Element</dt><dd>'+ELEM[C.el]+'</dd></dl>','fanfare')}
 async function learnSkill(x){const [id,s]=x.split(':');const arr=st.flags['sk_'+id]||[];if(!arr.includes(s))arr.push(s);st.flags['sk_'+id]=arr;save();
  await showCard('<div class="cc-port" style="background-image:url('+A+'img/k_'+id+'.jpg)"></div><div class="cc-k">'+COMP[id].n+' lernt</div><h3>'+SK[s].n+'</h3><p>'+SK[s].d+'</p>','stufenaufstieg')}
 async function levelUp(lv){st.lvl=lv;save();sfx('stufenaufstieg');const [a,b]=LVL_SK[st.hero.cls][lv-2];
- const o=$('#card');o.innerHTML='<div class="c-card lv"><img class="cc-img" src="'+A+'ui/stern.png" alt=""><div class="cc-k">Stufenaufstieg</div><h3>Stufe '+lv+'</h3><p>Plus 3 Lebenspunkte. Wähle eine neue Fähigkeit:</p><div class="lv-ch"></div></div>';o.classList.add('on');
+ const o=$('#card');o.classList.remove('gbg');o.innerHTML='<div class="c-card lv"><img class="cc-img" src="'+A+'ui/stern.png" alt=""><div class="cc-k">Stufenaufstieg</div><h3>Stufe '+lv+'</h3><p>Plus 3 Lebenspunkte. Wähle eine neue Fähigkeit:</p><div class="lv-ch"></div></div>';o.classList.add('on');
  await new Promise(r=>[a,b].forEach(s=>{const bt=el('button','lv-b','<b>'+SK[s].n+'</b><span>'+SK[s].d+'</span>');bt.onclick=()=>{st.hero.skills.push(s);save();r()};o.querySelector('.lv-ch').appendChild(bt)}));
  o.classList.remove('on');renderHud()}
 async function lootRoll(){const v=await rollPercent({title:'Beutetabelle',sub:'W100 und W10. Schau auf dein Druckblatt.',after:x=>'Nummer '+x});
@@ -93,7 +93,7 @@ function openLog(){const days=Object.keys(st.done).map(Number).sort((a,b)=>a-b);
  $('#set-auto').onchange=e=>{st.auto=e.target.checked;save()};$('#set-own').onchange=e=>{st.flags.own=e.target.checked;save()}}
 
 // Rätsel mit Eingabe oder Auswahl und drei Tipps
-async function codeInput(c){hideBox();const o=$('#card');const key=SC.id+'_'+(c.id||'c');
+async function codeInput(c){hideBox();const o=$('#card');o.classList.remove('gbg');const key=SC.id+'_'+(c.id||'c');
  setTimeout(()=>readAloud(c.q),350);return new Promise(res=>{const draw=()=>{const n=st.hint[key]||0;
   o.innerHTML='<div class="c-card code"><div class="cc-k">'+esc(c.k||'Rätsel')+'</div><h3>'+T(c.q)+'</h3>'+(c.opts?'<div class="code-opts">'+c.opts.map((x,i)=>'<button class="code-o" data-i="'+i+'">'+T(x)+'</button>').join('')+'</div>':'<input class="code-in" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="'+(c.ph||'Lösung')+'"><button class="pbtn code-go">Prüfen</button>')+
   '<div class="hints">'+c.hints.map((h,i)=>'<button class="hint'+(i<n?' open':'')+'" data-i="'+i+'"><span>'+(i===2?'Lösung':'Tipp '+(i+1))+'</span>'+(i<n?T(h):i===n?'Antippen zum Aufdecken':'')+'</button>').join('')+'</div></div>';

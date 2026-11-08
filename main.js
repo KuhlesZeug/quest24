@@ -1,6 +1,6 @@
 // Ablauf: Start, Intro, Charakterbau, Karte
 $('#sc-back').innerHTML=UI('karte_ic');
-$('#sc-back').onclick=async()=>{const o=$('#card');o.innerHTML='<div class="c-card"><h3>Zurück zur Karte?</h3><p>Der heutige Tag beginnt dann beim nächsten Mal von vorn.</p><div class="hero-nav"><button class="pbtn" data-r="1">Zur Karte</button><button class="pbtn" data-r="0">Weiterspielen</button></div></div>';o.classList.add('on');
+$('#sc-back').onclick=async()=>{const o=$('#card');o.classList.remove('gbg');o.innerHTML='<div class="c-card"><h3>Zurück zur Karte?</h3><p>Der heutige Tag beginnt dann beim nächsten Mal von vorn.</p><div class="hero-nav"><button class="pbtn" data-r="1">Zur Karte</button><button class="pbtn" data-r="0">Weiterspielen</button></div></div>';o.classList.add('on');
  const r=await new Promise(res=>o.querySelectorAll('button').forEach(b=>b.onclick=()=>res(+b.dataset.r)));o.classList.remove('on');
  if(r){SC.abort=1;stopVo();if(SC.tap)SC.tap();setTimeout(goMap,200)}};
 
