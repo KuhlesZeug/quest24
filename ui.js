@@ -12,7 +12,7 @@ function renderHud(){const h=$('#hud');if(!h)return;const n=nights();
  '<div class="hud-btns"><button class="hb" id="hb-party" aria-label="Gruppe">'+UI('herz')+'</button><button class="hb" id="hb-inv" aria-label="Rucksack">'+UI('rucksack')+'</button><button class="hb" id="hb-log" aria-label="Tagebuch">'+UI('tagebuch')+'</button><button class="hb btn-snd'+(st.sound?'':' off')+'" id="hb-snd" aria-label="Ton">'+UI('horn')+'</button></div>';
  $('#hb-inv').onclick=openInv;$('#hb-party').onclick=openParty;$('#hb-log').onclick=openLog;$('#hb-snd').onclick=()=>{setSound(!st.sound);renderHud()}}
 
-function goMap(){stopVo();stopSfx(.5);SC.abort=0;show('#s-map');renderHud();renderMap();music(A+'mus/karte.mp3',.4);atmo(A+'atmo/bergwind.mp3',.35);accents(null);if(!st.flags.map_tut&&!st.done[1])setTimeout(mapTutorial,900)}
+function goMap(){stopVo();stopSfx(.5);SC.abort=0;show('#s-map');renderHud();renderMap();music(A+'mus/karte.mp3',.4);atmo(A+'atmo/bergwind.mp3',.35);accents(null);if(!st.flags.map_tut&&Object.keys(st.done).length<=1)setTimeout(mapTutorial,900)}
 function renderMap(){const m=$('#map-in');m.querySelectorAll('.wp,.token,.trail,.map-urk').forEach(e=>e.remove());const nd=nextDay();
  if(st.done&&st.done[24]){const u=el('button','map-urk','<span class="mu-p" style="background-image:url('+A+'ui/urk_bg.jpg)"><img class="mu-s" src="'+A+'ui/siegel.png" alt=""></span><b>Heldenurkunde</b>');u.onclick=e=>{e.stopPropagation();sfx('pergament',.6);openUrkunde()};m.appendChild(u)}
  // Gezeichneter Weg: geschafft als feste Spur, kommend gestrichelt
@@ -114,7 +114,7 @@ const MAPTUT=[['.wp','Das hier ist die Karte von Eldmark. Jeder dieser roten Weg
  [null,'Jeden Tag im Dezember öffnet sich um Mitternacht genau ein neuer Wegpunkt. Vorher bleibt er verschlossen. Auch wenn du sehr neugierig bist. Ich bin es übrigens auch.'],
  ['.hud-candle','Die Kerze hier oben zeigt dir, wie viele Nächte es noch bis zur Lichternacht sind. Jeden Tag brennt sie ein Stückchen weiter herunter.'],
  ['.hud-btns','Hier oben rechts findest du deine Gruppe, deinen Rucksack, das Tagebuch mit allen Hinweisen und den Ton.'],
- ['.token','Und das hier bist du. Unterwegs warten Rätsel, Kämpfe und neue Gefährten auf dich. In der Lichternacht wollen wir gemeinsam die Lichter von Eldmark wieder zum Leuchten bringen. Tippe auf den ersten Wegpunkt, und das Abenteuer beginnt.']];
+ ['.token','Und das hier bist du. Unterwegs warten Rätsel, Kämpfe und neue Gefährten auf dich. In der Lichternacht wollen wir gemeinsam die Lichter von Eldmark wieder zum Leuchten bringen. Sobald sich der nächste Wegpunkt öffnet, tippst du einfach darauf, und das Abenteuer geht weiter.']];
 async function mapTutorial(){if(st.flags.map_tut)return;st.flags.map_tut=1;save();const sc=$('#s-map');
  for(let i=0;i<MAPTUT.length;i++){const [sel,txt]=MAPTUT[i];const tg=sel?sc.querySelector(sel):null;if(tg&&tg.scrollIntoView&&sel!=='.hud-candle'&&sel!=='.hud-btns')tg.scrollIntoView({block:'center',inline:'center',behavior:'smooth'});await sleep(sel?450:50);
   const c=el('div','bt-coach map-coach');const o=sc.getBoundingClientRect();let top=false;

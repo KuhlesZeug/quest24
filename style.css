@@ -1343,3 +1343,8 @@ img{display:block;max-width:100%}
 .film{background:#000}
 .fs .bg{inset:-4px;backface-visibility:hidden;will-change:transform}
 @keyframes kb9{from{transform:scale(1.012)}to{transform:scale(1.06)}}
+/* Randkante in Zwischensequenzen sicher abdecken */
+.film{contain:paint;clip-path:inset(0)}
+.fs .bg{inset:-10px}
+.film::after{content:'';position:absolute;inset:0;z-index:50;pointer-events:none;box-shadow:inset 3px 0 0 #000,inset -3px 0 0 #000}
+.ttl-bg{inset:-6%}
