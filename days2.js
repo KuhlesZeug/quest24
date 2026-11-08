@@ -18,7 +18,7 @@ DAYS[7]={end:'Die Laterne leuchtet. Der Wald flüstert trotzdem weiter.',steps:[
  {item:'laterne'},{hide:1}
 ]};
 
-DAYS[8]={end:'Ein Irrlicht leuchtet jetzt im Glas. Es kichert manchmal.',steps:[
+DAYS[8]={end:'Heute zum Ausdrucken: Teil 2 der Landkarte. Ab morgen geht die Reise darauf weiter.',steps:[
  {bg:'ort08_leer',mus:'wald',atmo:'wald_nacht',acc:['eule','wolf'],every:14},
  {s:'SL',t:'Irrlichter. Wunderschön. Und hinterhältig. Wer ihnen folgt, landet im Sumpf. Wer sie ignoriert, landet … auch im Sumpf, aber später.'},
  {s:'GR',t:'Die sind so hell. Darf ich eins behalten?'},

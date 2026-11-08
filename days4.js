@@ -36,7 +36,7 @@ DAYS[19]={end:'Heute zum Ausdrucken: Nachtigalls Gefährtenbogen und die Gipfelk
  {loot:1},{hide:1}
 ]};
 
-DAYS[20]={end:'Heute zum Ausdrucken: Teil 3 der Landkarte.',steps:[
+DAYS[20]={end:'Der Schattenschlüssel ist eiskalt. Nachtigall sagt, das gehört so.',steps:[
  {bg:'ort20',mus:'eis',atmo:'bergwind',acc:['donner'],every:14},
  {s:'SL',t:'Der Gipfel der Winde. Hier oben wurde früher der Lichternachtstern entzündet.'},
  {s:'NA',t:'Ich weiß.',e:'sad'},
@@ -79,7 +79,7 @@ DAYS[21]={end:'Heute zum Ausdrucken: die Tagebuchseiten und die Drehscheibe. Du 
  {s:'GR',t:'Das ist traurig. Ich hab Herbert. Er hat nur Asche.',e:'sad'},
  {s:'NA',t:'Sie lassen niemanden zu ihm durch. Auch mich nicht.',e:'sad'},
  {s:'SL',t:'Würfelt Initiative! Das letzte Mal vor dem Drachen. Wahrscheinlich. Ich hab mir nicht alles aufgeschrieben.'},
- {s:'SL',t:'Vor dem letzten Kampf lernen zwei von euch etwas Neues. Nachtigall bekommt die Frostkralle, ein Hieb mit Eis gegen Feuerwesen. Zirpia bekommt die Ballade der Großen, ein Lied, das alle Gegner schwächt.'},
+ {s:'SL',t:'Vor dem letzten Kampf lernen zwei von euch etwas Neues. Nachtigall bekommt die Frostkralle, ein Hieb mit Eis gegen Feuerwesen. Zirpia bekommt die Heldenballade. Damit trifft der nächste Angriff doppelt.'},
  {fn:()=>{const a=st.flags.sk_na||[];if(!a.includes('frostkralle'))a.push('frostkralle');st.flags.sk_na=a;const z=st.flags.sk_zi||[];if(!z.includes('ballade'))z.push('ballade');st.flags.sk_zi=z;save()}},
  {s:'NA',t:'Die Frostkralle hatte ich schon immer drauf. Ich hatte nur keine Lust.',e:'sly'},
  {s:'ZI',t:'Und meine Ballade schwächt jetzt Gegner! Also, alle meine Lieder bewirken etwas. Dieses aber messbar.',e:'laugh'},

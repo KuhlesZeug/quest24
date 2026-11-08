@@ -51,7 +51,7 @@ DAYS[3]={end:'Heute zum Ausdrucken: die Beutetabelle und der erste Bogen Itemkar
  {bg:'ort03_leer',mus:'dorf'},
  {s:'SL',t:'Gewonnen! Und jetzt kommt mein Lieblingsteil. Die Beutetabelle.'},
  {s:'SL',t:'Ich habe sie selbst geschrieben. Nummer siebenundvierzig ist mein Lieblingseintrag. Mehr sage ich nicht.'},
- {loot:1},{item:'heiltrank'},{xp:10},{hide:1}
+ {loot:1},{item:'htmittel'},{xp:10},{hide:1}
 ]};
 
 DAYS[4]={end:'Heute zum Ausdrucken: Grumbolds Gefährtenbogen.',steps:[

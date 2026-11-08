@@ -1,7 +1,7 @@
 // Tag 13 bis 18: Moorsee, Banditenschlucht, Goldhafen, Lagerfeuer, Eisbrücke
 WHO.BOB2={n:'Bob der Zweite',p:'p_bob'};
 
-DAYS[13]={end:'Heute zum Ausdrucken: Teil 2 der Landkarte.',steps:[
+DAYS[13]={end:'Der Krokodilkönig schmollt jetzt im Moorsee. Er kommt darüber hinweg.',steps:[
  {bg:'kr1',alt:'ort13',mus:'sumpf',atmo:'nebelsumpf',acc:['frosch','rabe'],every:12},
  {s:'KROK',t:'Halt. Dies ist meine Furt. Wer hinüber will, zahlt. Oder kämpft. Oder zahlt und kämpft, das hatten wir auch schon.'},
  {bg:'kr2',look:1200},
@@ -26,7 +26,7 @@ FILMS.z3={shots:[
  {s:'SL',t:'Hm.',gap:1600}
 ]};
 
-DAYS[14]={end:'Heute zum Ausdrucken: Oma Huldas Gefährtenbogen und die Ladenliste von Goldhafen für morgen.',steps:[
+DAYS[14]={end:'Heute zum Ausdrucken: Oma Huldas Gefährtenbogen, Teil 3 der Landkarte und die Ladenliste von Goldhafen für morgen.',steps:[
  {bg:'hu1',alt:'ort14',mus:'hafen',atmo:'lagerfeuer',acc:['pferd','wolf'],every:16},
  {s:'SL',t:'Eine arme alte Frau, gefangen von Banditen! Wir müssen …'},
  {bg:'hu2',look:1500},
