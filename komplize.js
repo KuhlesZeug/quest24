@@ -15,7 +15,9 @@ window.openKomplize=function(){
   const an=$('#kp-an').value.trim();if(!an)return e.textContent='Bitte einen Namen eintragen.';
   const o={an,von:$('#kp-von').value.trim(),msg:$('#kp-msg').value.trim(),ort:$('#kp-ort').value.trim()};
   const link=location.href.split('#')[0].split('?')[0]+'#g='+await QZ.pack(o);sfx('richtig');
-  $('#kp-out').innerHTML='<div class="c-card" style="margin-top:16px;animation:none"><div class="cc-k">Dein Geschenklink</div><p style="word-break:break-all;font-size:.85rem">'+esc(link)+'</p><button class="pbtn" id="kp-cp">Link kopieren</button></div>';
+  $('#kp-out').innerHTML='<div class="c-card" style="margin-top:16px;animation:none"><div class="cc-k">Dein Geschenklink</div><p style="word-break:break-all;font-size:.85rem">'+esc(link)+'</p><button class="pbtn" id="kp-cp">Link kopieren</button><div id="kp-qr" style="margin-top:14px;text-align:center"></div></div>';
+  try{const q=qrcode(0,'M');q.addData(link);q.make();const n=q.getModuleCount(),c=8,m=4,W=(n+2*m)*c;const cv=document.createElement('canvas');cv.width=W;cv.height=W+70;const x=cv.getContext('2d');x.fillStyle='#fff';x.fillRect(0,0,W,W+70);x.fillStyle='#1a0d04';for(let r=0;r<n;r++)for(let k=0;k<n;k++)if(q.isDark(r,k))x.fillRect((k+m)*c,(r+m)*c,c,c);x.font='bold 30px Georgia,serif';x.textAlign='center';x.fillText('Quest 24 · Scan mich',W/2,W+44);
+   const url=cv.toDataURL('image/png');$('#kp-qr').innerHTML='<div class="cc-k">Dein QR Code für die Abenteuerakte</div><img src="'+url+'" alt="QR Code zum Geschenklink" style="width:200px;max-width:70%;border-radius:8px;margin:8px auto;display:block"><a class="pbtn" download="Quest24_Geschenk_QR.png" href="'+url+'">QR Code speichern</a>'}catch(err){$('#kp-qr').innerHTML='<p class="small">Die Nachricht ist zu lang für einen QR Code. Schick den Link einfach per Nachricht.</p>'}
   $('#kp-cp').onclick=()=>{(navigator.clipboard?navigator.clipboard.writeText(link):Promise.reject()).then(()=>toast('Link kopiert')).catch(()=>toast('Bitte den Link markieren und kopieren'))}}};
 if(location.hash.startsWith('#komplize'))setTimeout(()=>openKomplize(),300);
 })();
