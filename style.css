@@ -1506,3 +1506,14 @@ img{display:block;max-width:100%}
 .tk2-lg{position:absolute;inset:0;width:100%;height:100%}
 .tk2-lg.l{transform-origin:40% 73%}
 .tk2-lg.r{transform-origin:62.5% 73%}
+.tk2-rig{transform-origin:50% 97%}
+.tk2-lanes{bottom:17%}
+.tk2-ln .tk2-hit{width:80px;height:80px}
+.tk2-rail{bottom:40px}
+.tk2-pop{bottom:calc(17% + 92px)}
+.tk2-combo{bottom:calc(17% + 26px)}
+.tk2-help{bottom:calc(17% + 140px)}
+.tk2-snails{height:15%;z-index:4}
+.tk2-sn{width:12%}
+.tk2-zi.stomp .tk2-body{animation:none}
+.tk2-n{transition:opacity .25s}

@@ -23,10 +23,13 @@ GAMES.takt=()=>new Promise(async done=>{hideBox();
   '<div class="tk2-lanes"><div class="tk2-ln l"><div class="tk2-rail"></div><div class="tk2-hit"><img src="'+A+'ui/trommel.png" alt=""></div></div><div class="tk2-ln r"><div class="tk2-rail"></div><div class="tk2-hit"><img src="'+A+'ui/trommel.png" alt=""></div></div><div class="tk2-notes"></div></div>'+
   '<div class="tk2-combo"></div><div class="tk2-pop l"></div><div class="tk2-pop r"></div><div class="tk2-help">Linke Note: links tippen. Rechte Note: rechts tippen. Am besten mit beiden Daumen.</div><div class="tk2-count"></div></div>';
  document.body.appendChild(o);requestAnimationFrame(()=>o.classList.add('on'));
- const $o=s=>o.querySelector(s),notesEl=$o('.tk2-notes'),hits=[...o.querySelectorAll('.tk2-hit')],pops=[$o('.tk2-pop.l'),$o('.tk2-pop.r')],comboEl=$o('.tk2-combo'),meter=$o('.tk2-meter i'),zi=$o('.tk2-zi'),legs=[...o.querySelectorAll('.tk2-lg')],lanes=$o('.tk2-lanes'),stg=$o('.tk2-st');
+ const $o=s=>o.querySelector(s),notesEl=$o('.tk2-notes'),hits=[...o.querySelectorAll('.tk2-hit')],pops=[$o('.tk2-pop.l'),$o('.tk2-pop.r')],comboEl=$o('.tk2-combo'),meter=$o('.tk2-meter i'),zi=$o('.tk2-zi'),legs=[...o.querySelectorAll('.tk2-lg')],rig=o.querySelector('.tk2-rig'),lanes=$o('.tk2-lanes'),stg=$o('.tk2-st');
  const SN=[[4,0,1],[22,5,.9],[40,1,1.05],[60,6,.92],[80,0,1]];const snails=SN.map(([x,y,s],i)=>{const e=el('img','tk2-sn');e.src=A+'ui/schnecke.png';e.style.left=x+'%';e.style.bottom=(2+y)+'%';e.style.setProperty('--s',s*(i%2?-1:1));e.style.animationDelay=(i*.13)+'s';$o('.tk2-snails').appendChild(e);return e});
  if(TEST){const tb=el('button','pbn-test','Test: fertig');tb.style.cssText='position:absolute;right:8px;top:70px;z-index:9';tb.onclick=()=>{res.hits=N;res.perfect=N;finish()};stg.appendChild(tb)}
  const c=ac();const LAT=(c.outputLatency||c.baseLatency||0);
+ const SMP={};await Promise.all(['tr_tief','tr_hoch','schelle'].map(n=>loadVo(A+'sfx/'+n+'.mp3').then(b=>SMP[n]=b).catch(()=>{})));
+ const samp=(n,t,v)=>{const b=SMP[n];if(!b)return;const s=c.createBufferSource(),g=c.createGain();s.buffer=b;g.gain.value=v;s.connect(g);g.connect(drumOut());s.start(Math.max(t,c.currentTime))};
+ const band=(t0,n)=>{const B=[130.8,130.8,174.6,196];for(let i=0;i<n;i++){const t=t0+i*IV;samp(i%2?'tr_hoch':'tr_tief',t,i%2?.35:.55);samp('schelle',t+IV/2,.18);if(i%4===0)pluck(t,B[Math.floor(i/4)%4],.32)}};
  let res={hits:0,perfect:0},combo=0,mood=20,fin=0,raf=0,jubel=0;
  const say=(L,t,k)=>{const p=pops[L];p.textContent=t;p.className='tk2-pop '+(L?'r':'l')+' on '+(k||'');clearTimeout(p._t);p._t=setTimeout(()=>p.className='tk2-pop '+(L?'r':'l'),380)};
  const setMood=v=>{mood=Math.max(0,Math.min(100,v));meter.style.width=mood+'%';o.classList.toggle('m1',mood>40);o.classList.toggle('m2',mood>75)};
@@ -34,17 +37,17 @@ GAMES.takt=()=>new Promise(async done=>{hideBox();
  const run=async()=>{
   res={hits:0,perfect:0};combo=0;setMood(20);notesEl.innerHTML='';comboEl.textContent='';fin=0;$o('.tk2-help').classList.remove('weg');
   const t0=c.currentTime+4*IV+.3;hush(true);
-  for(let i=0;i<4;i++)hat(t0-(4-i)*IV,.35);
+  for(let i=0;i<4;i++)samp('schelle',t0-(4-i)*IV,.4);
   const cnt=$o('.tk2-count');['4','3','2','1'].forEach((n,i)=>setTimeout(()=>{cnt.textContent=n;cnt.className='tk2-count on';setTimeout(()=>cnt.className='tk2-count',IV*800)},Math.max(0,(t0-(4-i)*IV-c.currentTime)*1000)));
-  beatLoop(t0,48,IV);
+  band(t0,48);
   const notes=CH.map(([b,L],i)=>{const e=el('img','tk2-n');e.src=A+'ui/p_note_'+L+'.png';notesEl.appendChild(e);return {t:t0+b*IV,L,i,e,st:0}});
   let next=0;
   const tap=e=>{if(fin||e.target.closest('button'))return;e.preventDefault();const now=c.currentTime-LAT;
    const r=stg.getBoundingClientRect(),L=e.clientX<r.left+r.width/2?0:1,h=hits[L];
    h.classList.remove('hit');void h.offsetWidth;h.classList.add('hit');
    let k=-1,bd=9;for(let j=next;j<N&&notes[j].t<now+.3;j++){const n=notes[j];if(n.st||n.L!==L)continue;const d=Math.abs(now-n.t);if(d<bd){bd=d;k=j}}
-   if(k<0||bd>.17){(L?snare:kick)(c.currentTime);say(L,'Zu früh','d');return}
-   const n=notes[k];n.st=1;n.e.classList.add('hit');pluck(c.currentTime,MEL[k%MEL.length],.55);(L?snare:kick)(c.currentTime);
+   if(k<0||bd>.17){samp(L?'tr_hoch':'tr_tief',c.currentTime,.5);say(L,'Zu früh','d');return}
+   const n=notes[k];n.st=1;n.e.classList.add('hit');pluck(c.currentTime,MEL[k%MEL.length],.55);samp(L?'tr_hoch':'tr_tief',c.currentTime,.8);
    res.hits++;combo++;if(res.hits===4)$o('.tk2-help').classList.add('weg');
    if(bd<=.085){res.perfect++;say(L,'Perfekt!','p');setMood(mood+4.5);spark(L,true)}else{say(L,'Gut!','g');setMood(mood+2.5);spark(L,false)}
    comboEl.textContent=combo>=3?combo+' in Folge':'';comboEl.classList.remove('bump');void comboEl.offsetWidth;comboEl.classList.add('bump');
@@ -55,13 +58,13 @@ GAMES.takt=()=>new Promise(async done=>{hideBox();
    for(let j=next;j<N;j++){const n=notes[j];const dt=n.t-now;if(dt>LEAD+.2)break;
     if(!n.st&&dt<-.17){n.st=2;n.e.classList.add('miss');combo=0;comboEl.textContent='';setMood(mood-3.5)}
     const h=hits[n.L],hy=h.offsetTop+h.offsetHeight/2,hx=h.parentElement.offsetLeft+h.parentElement.offsetWidth/2;
-    const y=hy-(hy+30)*(dt/LEAD);n.e.style.transform='translate('+(hx-26)+'px,'+(y-26)+'px) scale('+(n.st===1?1.7:1)+')';n.e.style.opacity=n.st===1?0:(dt>LEAD?0:1)}
+    const y=hy-(hy+30)*(dt/LEAD);n.e.style.transform='translate('+(hx-26)+'px,'+(y-26)+'px) scale('+(n.st===1?1.7:1)+')';n.e.style.opacity=n.st?0:(dt>LEAD?0:1)}
    while(next<N&&notes[next].st&&notes[next].t<now-.4)next++;
    // Zirpia stampft im Wechsel auf jeden Schlag
    const bt=Math.floor((now-t0)/IV),ph=((now-t0)/IV)%1;
    if(now>t0-4*IV&&now<t0+48*IV){if(bt!==lastBeat){lastBeat=bt;zi.classList.remove('stomp');void zi.offsetWidth;zi.classList.add('stomp');o.classList.remove('beat');void o.offsetWidth;o.classList.add('beat')}}
    {const u=(((now-t0)/IV)%2+2)%2,ll=u<1?Math.sin(Math.PI*u):0,rr=u>=1?Math.sin(Math.PI*(u-1)):0;
-    legs[0].style.transform='translateY('+(-ll*7)+'%) rotate('+(ll*7)+'deg)';legs[1].style.transform='translateY('+(-rr*7)+'%) rotate('+(-rr*7)+'deg)'}
+    legs[0].style.transform='translateY('+(-ll*5)+'%) rotate('+(ll*9)+'deg)';legs[1].style.transform='translateY('+(-rr*5)+'%) rotate('+(-rr*9)+'deg)';rig.style.transform='rotate('+((rr-ll)*3.5)+'deg) translateY('+(-(ll+rr)*1.2)+'%)'}
    if(now>t0+CH[N-1][0]*IV+1.2){o.removeEventListener('pointerdown',tap);finish();return}
    raf=requestAnimationFrame(loop)};raf=requestAnimationFrame(loop)};
  async function finish(){if(fin)return;fin=1;cancelAnimationFrame(raf);hush(false);o.classList.add('ende');
