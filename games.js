@@ -44,14 +44,18 @@ function ballade(){if(!st.flags.ballade){st.flags.ballade=['zirpia_02','zirpia_0
 // Tag 8: Lichtfolge merken. Drei Runden mit 4, 6 und 8 Lichtern.
 GAMES.irrlicht=()=>new Promise(done=>{
  const area=gameShell('Lichtfolge merken','Schau genau hin, welche Irrlichter nacheinander leuchten. Dann tippe sie in derselben Reihenfolge an.');
- const N=5,TONES=[392,440,523,587,659];area.innerHTML='<div class="ir-wrap"><div class="ir-st">Runde 1 von 3</div><div class="ir-row"></div></div>';
- const row=area.querySelector('.ir-row');const L=[];for(let i=0;i<N;i++){const b=el('button','ir','<img src="'+A+'ui/irrlicht_'+(i+1)+'.png" alt="">');row.appendChild(b);L.push(b)}
- const flash=async(i,ms)=>{L[i].classList.add('on');tone(TONES[i],ms/1000*.9);await sleep(ms);L[i].classList.remove('on');await sleep(ms*.35)};
+ const N=5,TONES=[392,440,523,587,659],POS=[[15,60],[32,40],[50,30],[68,40],[85,60]],COL=['#9fdcff','#a6f08c','#ffe27a','#ffb3cf','#d6a6ff'];
+ area.innerHTML='<div class="ir2"><div class="ir2-stage" style="background-image:url('+A+'img/ort08_leer.jpg)"><div class="ir2-mist"></div><div class="ir2-st"><b>Runde 1 von 3</b><span>Schau genau hin</span></div><div class="ir2-dots"></div></div></div>';
+ const stage=area.querySelector('.ir2-stage'),dots=area.querySelector('.ir2-dots'),st2=area.querySelector('.ir2-st span');const L=[];
+ for(let i=0;i<N;i++){const b=el('button','ir2-w','<i class="ir2-halo"></i><img src="'+A+'ui/wisp_'+(i+1)+'.png" alt="">');b.style.left=POS[i][0]+'%';b.style.top=POS[i][1]+'%';b.style.setProperty('--c',COL[i]);b.style.animationDelay=(-i*0.7)+'s';stage.appendChild(b);L.push(b)}
+ const spark=i=>{for(let k=0;k<7;k++){const s=el('i','ir2-sp');const a=Math.random()*Math.PI*2,r=34+Math.random()*30;s.style.left=POS[i][0]+'%';s.style.top=POS[i][1]+'%';s.style.setProperty('--dx',Math.cos(a)*r+'px');s.style.setProperty('--dy',Math.sin(a)*r+'px');s.style.background=COL[i];stage.appendChild(s);setTimeout(()=>s.remove(),800)}};
+ const flash=async(i,ms)=>{L[i].classList.add('on');spark(i);tone(TONES[i],ms/1000*.9);await sleep(ms);L[i].classList.remove('on');await sleep(ms*.35)};
+ const showDots=n=>{dots.innerHTML=Array.from({length:seq.length},(_,k)=>'<i class="'+(k<n?'ok':'')+'"></i>').join('')};
  let round=0,fails=0,slow=1;const lens=[4,6,8];let seq=[];
- const play=async()=>{area.querySelector('.ir-st').textContent='Runde '+(round+1)+' von 3';row.classList.add('busy');await sleep(700);for(const i of seq)await flash(i,520*slow);row.classList.remove('busy');pos=0};
- let pos=0;L.forEach((b,i)=>b.onclick=async()=>{if(row.classList.contains('busy'))return;await flash(i,260);
-  if(seq[pos]!==i){sfx('falsch',.6);fails++;if(fails>=2&&slow===1){slow=1.6;toast('Ich spiele sie jetzt langsamer.')}return play()}
-  pos++;if(pos===seq.length){sfx('richtig',.7);round++;fails=0;if(round>=3){gameEnd();return done()}seq=mk(lens[round]);await sleep(600);play()}});
+ const play=async()=>{area.querySelector('.ir2-st b').textContent='Runde '+(round+1)+' von 3';st2.textContent='Schau genau hin';stage.classList.add('busy');showDots(0);await sleep(700);for(const i of seq)await flash(i,520*slow);stage.classList.remove('busy');st2.textContent='Jetzt du!';pos=0};
+ let pos=0;L.forEach((b,i)=>b.onclick=async()=>{if(stage.classList.contains('busy'))return;await flash(i,260);
+  if(seq[pos]!==i){sfx('falsch',.6);stage.classList.add('shake');setTimeout(()=>stage.classList.remove('shake'),450);fails++;if(fails>=2&&slow===1){slow=1.6;toast('Ich spiele sie jetzt langsamer.')}return play()}
+  pos++;showDots(pos);if(pos===seq.length){sfx('richtig',.7);round++;fails=0;st2.textContent='Richtig!';if(round>=3){L.forEach((x,k)=>setTimeout(()=>{x.classList.add('on');spark(k)},k*120));await sleep(1200);gameEnd();return done()}seq=mk(lens[round]);await sleep(700);play()}});
  const mk=n=>Array.from({length:n},()=>Math.floor(Math.random()*N));seq=mk(4);setTimeout(play,500)});
 function tone(f,d){const c=ac(),o=c.createOscillator(),g=c.createGain();o.type='triangle';o.frequency.value=f;const t=c.currentTime;g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(.18,t+.02);g.gain.exponentialRampToValueAtTime(.001,t+d);o.connect(g);g.connect(sfxBus);o.start(t);o.stop(t+d+.05)}
 
@@ -240,17 +244,18 @@ GAMES.plan=()=>new Promise(done=>{hideBox();
  const who=[['held',heroName(),heroImg()],['gr','Grumbold',A+'img/k_gr.jpg'],['zi','Zirpia',A+'img/k_zi.jpg'],['hu','Oma Hulda',A+'img/k_hu.jpg'],['na','Nachtigall',A+'img/k_na.jpg']];
  const W=Object.fromEntries(who.map(w=>[w[0],w]));const plan={...(st.flags.plan||{})};let sel=null;
  const help='Tippe eine Figur an und dann die Phase, in der sie vorangeht. Trag ein, was auf deinem Druckblatt steht.';
- const o=el('div','pg plt','<div class="pg-img" style="background-image:url('+A+'img/plan_tisch.jpg),url('+A+'img/ort23.jpg)"></div><div class="pg-top">Der Schlachtplan</div>'
-  +'<div class="plt-sheet"><div class="plt-h">Lichternacht</div>'+PHASEN.map((p,i)=>'<button class="plt-row" data-i="'+i+'"><span class="plt-n">'+(i+1)+'. '+esc(p[0])+'</span><span class="plt-slot"></span></button>').join('')
-  +'<div class="plt-tray">'+who.map(w=>'<button class="plt-tok" data-k="'+w[0]+'"><i style="background-image:url('+w[2]+')"></i><span>'+esc(w[1])+'</span></button>').join('')+'</div></div>'
-  +'<div class="plt-hb"></div><div class="plt-foot"><button class="pbtn big pl-go">Plan festlegen</button></div><div class="bg-help plt-help">'+help+'</div>');
+ const o=el('div','pg plt plt2','<div class="pg-img" style="background-image:url('+A+'img/ort23.jpg)"></div><div class="plt-board" style="background-image:url('+A+'img/plan_tisch.jpg)">'
+  +'<div class="plt-hb"></div><div class="plt-trayw"><div class="plt-tl">Wer geht voran?</div><div class="plt-tray">'+who.map(w=>'<button class="plt-tok" data-k="'+w[0]+'"><i style="background-image:url('+w[2]+')"></i><span>'+esc(w[1])+'</span></button>').join('')+'</div></div>'
+  +'<div class="plt-paper"><div class="plt-h">Schlachtplan<small>für die Lichternacht</small></div>'+PHASEN.map((p,i)=>'<button class="plt-row" data-i="'+i+'"><span class="plt-n"><b>'+(i+1)+'.</b> '+esc(p[0])+'</span><span class="plt-dots"></span><span class="plt-slot"></span></button>').join('')
+  +'</div>'
+  +'<div class="plt-foot"><button class="pbtn big pl-go">Plan festlegen</button></div></div><div class="bg-help plt-help">'+help+'</div>');
  $('#s-scene').appendChild(o);setTimeout(()=>readAloud(help),400);
  const tips=['Jeder Gefährte hat genau einen besonderen Gegenstand bekommen. Wer hat welchen?','Lies Nachtigalls Hinweise: Welcher Gegenstand passt zu welcher Phase?','Hulda mit dem Netz, Grumbold mit dem Glutstein, Zirpia mit dem Wiegenlied, Nachtigall mit dem Schattenschlüssel, du mit Sonnenkerze und Herzjuwel.'];let nt=0;
  const hb=o.querySelector('.plt-hb');const dH=()=>{hb.innerHTML=tips.map((t,i)=>'<button class="plt-tip'+(i<nt?' open':'')+'"'+(i>nt?' disabled':'')+'>'+(i===2?'Lösung':'Tipp '+(i+1))+'</button>').join('');[...hb.children].forEach((b,i)=>b.onclick=()=>{if(i>nt)return;if(i===nt){nt++;dH()}toast(tips[i],6000);readAloud(tips[i])})};dH();
- const draw=()=>{o.querySelectorAll('.plt-row').forEach(r=>{const k=plan[r.dataset.i];const sl=r.querySelector('.plt-slot');sl.innerHTML=k?'<i style="background-image:url('+W[k][2]+')"></i><span>'+esc(W[k][1])+'</span>':'<em>Wer?</em>';r.classList.toggle('set',!!k);r.classList.toggle('aim',!!sel)});
+ const draw=()=>{o.querySelectorAll('.plt-row').forEach(r=>{const k=plan[r.dataset.i];const sl=r.querySelector('.plt-slot');sl.innerHTML=k?'<i style="background-image:url('+W[k][2]+')"></i><span>'+esc(W[k][1])+'</span>':'<em>wer?</em>';r.classList.toggle('set',!!k);r.classList.toggle('aim',!!sel)});
   const used=Object.values(plan);o.querySelectorAll('.plt-tok').forEach(t=>{t.classList.toggle('sel',t.dataset.k===sel);t.classList.toggle('used',used.includes(t.dataset.k))})};
  o.querySelectorAll('.plt-tok').forEach(t=>t.onclick=()=>{sfx('ui_klick',.5);sel=sel===t.dataset.k?null:t.dataset.k;draw()});
- o.querySelectorAll('.plt-row').forEach(r=>r.onclick=()=>{const i=r.dataset.i;if(sel){Object.keys(plan).forEach(j=>{if(plan[j]===sel)delete plan[j]});plan[i]=sel;sel=null;sfx('pergament',.5)}else if(plan[i]){delete plan[i];sfx('ui_klick',.4)}else{toast('Tippe zuerst unten eine Figur an.');return}draw()});
+ o.querySelectorAll('.plt-row').forEach(r=>r.onclick=()=>{const i=r.dataset.i;if(sel){Object.keys(plan).forEach(j=>{if(plan[j]===sel)delete plan[j]});plan[i]=sel;sel=null;sfx('pergament',.5)}else if(plan[i]){delete plan[i];sfx('ui_klick',.4)}else{toast('Tippe zuerst oben eine Figur an.');return}draw()});
  draw();
  o.querySelector('.pl-go').onclick=async()=>{if(PHASEN.some((x,i)=>!plan[i]))return toast('Bitte jede Phase besetzen.');
   const p={};PHASEN.forEach((x,i)=>p[i]=plan[i]);st.flags.plan=p;save();sfx('buch_zu',.6);const ok=PHASEN.every((x,i)=>p[i]===x[1]);o.classList.add('out');await sleep(500);o.remove();if(!ok)await say('SL','Bist du sicher? Ich frag ja nur.',A+'vo/d23_plan.mp3');done()}});

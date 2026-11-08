@@ -92,9 +92,18 @@ function partyUnits(){const h=st.hero,c=CLS[h.cls];
  st.party.filter(id=>!(window.FIGHTKEY==='eis'&&id==='na')).forEach(id=>{const C=COMP[id];const ex=(st.flags['sk_'+id]||[]);u.push({id,n:C.n,img:C.img,el:C.el,hp:C.hp,max:C.hp,atk:C.atk,dmg:C.dmg,hit:C.hit,skills:[...Object.keys(C.skills),...ex]})});return u}
 
 let B=null;
+const ACIC={krieger:'ac_schwert',waldlaeufer:'ac_bogen',magier:'ac_stab',schurke:'ac_dolch',gr:'ac_steinfaust',zi:'ac_laute',hu:'ac_stricknadel',na:'ac_kralle'};
+function weapIc(u){return A+'ui/'+(ACIC[u.hero?st.hero.cls:u.id]||'ac_schwert')+'.png'}
+function unitFace(u){return u.hero?heroImg():A+'img/p_'+u.id+'_0.jpg'}
 async function fight(key){window.FIGHTKEY=key;const F=FOES[key];let tries=0;
  while(true){const r=await battle(F,key,tries);if(r)return true;tries++;
-  const again=await choice([{t:'Noch einmal antreten'+(tries>=1?' (mit Tipp)':'')}]);}}
+  await koScreen(key,tries);}}
+// Niederlage: Held liegt am Boden, Spruch vom Spielleiter, großer Knopf in der Mitte
+const KO=['Du bist nicht besiegt. Du machst nur eine sehr gründliche Bodenprüfung.','Game Over? Nicht bei mir. Hier gibt es unendlich viele Versuche und man braucht nicht mal Münzen.','Die Prinzessin ist übrigens in einem anderen Schloss. Ach nein, falsche Geschichte. Steh auf!','Zum Glück habe ich gespeichert. Ich speichere immer. Ich bin der Spielleiter.','Kleine Pause auf dem Boden. Der Boden ist kalt, aber er läuft wenigstens nicht weg.'];
+function koScreen(key,tries){return new Promise(r=>{const h=st.hero;const i=(tries-1)%KO.length;const tip=TIPS[key];
+ const o=el('div','ovl ko-ovl on','<div class="ko-bg" style="background-image:url('+A+'img/ko_'+h.cls+'_'+h.look+'.jpg)"></div><div class="ko-in"><div class="ko-t">Besiegt!</div><div class="ko-sl"><span class="ko-f" style="background-image:url('+A+'img/p_sl.jpg)"></span><p>'+esc(KO[i])+'</p></div>'+(tip?'<div class="ko-tip"><b>Tipp</b>'+esc(tip)+'</div>':'')+'</div><button class="ko-go"><span>Nochmal versuchen</span></button>');
+ document.body.appendChild(o);sfx('niederlage',.5);const a=playVo(A+'vo/ko_'+(i+1)+'.mp3');
+ o.querySelector('.ko-go').onclick=()=>{if(a)stopVo();sfx('schwert_ziehen',.7);o.classList.add('out');setTimeout(()=>{o.remove();r()},450)}})}
 
 async function battle(F,key,tries){const ov=$('#battle');ov.innerHTML='';ov.classList.add('on');music(A+'mus/'+(F.mus||'kampf')+'.mp3',.5);
  B={F,key,phI:F.phases?(st.flags.dph||0):0,round:0,foes:F.foes.map((f,i)=>({...f,i,max:f.hp,skip:0,minus:0,poison:0,intent:null})),party:partyUnits(),used:{},buff:{},first:true,log:[]};
@@ -103,7 +112,7 @@ async function battle(F,key,tries){const ov=$('#battle');ov.innerHTML='';ov.clas
  ov.innerHTML='<div class="bt-bg" style="background-image:url('+A+'img/'+F.bg+'.jpg)"></div><div class="bt-top"><div class="bt-t">'+esc(F.t)+'</div><div class="bt-r" id="bt-r"></div><button class="bt-help" id="bt-help" aria-label="Erklärung">?</button></div><div class="bt-foes" id="bt-foes"></div><div class="bt-log" id="bt-log"></div><div class="bt-party" id="bt-party"></div><div class="bt-act" id="bt-act"></div>';
  preloadSprites();sfx('schwert_ziehen');setTimeout(()=>{if(B){B._fszLock=0;fitFoes(true);B._fszLock=1}},700);if(tries&&TIPS[key])blog('Tipp: '+TIPS[key],1);
  B.tut=!!(F.tut&&!st.flags.tut_done);$('#bt-help').onclick=()=>{sfx('ui_klick',.5);tutHelp()};
- while(true){B.round++;$('#bt-r').textContent='Runde '+B.round;planFoes();render();
+ while(true){B.round++;const rr=$('#bt-r');rr.innerHTML='<img src="'+A+'ui/sanduhr.png" alt=""><span>Runde</span><b>'+B.round+'</b>';rr.classList.remove('pop');void rr.offsetWidth;rr.classList.add('pop');planFoes();render();
   if(B.tut&&B.round===1){await sleep(400);await tutorial()}
   for(const u of B.party){if(u.hp<=0)continue;if(u.web){u.web=0;blog(u.n+' hängt im Netz fest und setzt aus.');render();await sleep(900);continue}
    if(u.pause){u.pause=0;blog(u.n+' holt Luft.');continue}
@@ -148,11 +157,11 @@ function markPick(){const P=B&&B.picking;if(!P)return;$$(P.sel).forEach(e=>{cons
 async function partyTurn(u){B.cur=u;render();const act=$('#bt-act');
  const sks=[];[...new Set(u.skills)].forEach(s=>{const S=SK[s];if(!S||S.passive)return;if(S.once&&B.used[u.id+s])return;sks.push({k:'sk',s,t:S.n,d:S.d})});
  const pots=st.inv.filter(x=>ITEMS[x.id]&&ITEMS[x.id].use);
- const choose=(title,opts,cls,back)=>new Promise(r=>{act.className='bt-act'+(cls?' '+cls:'');act.innerHTML='<div class="bt-who">'+esc(title)+'</div>';const row=el('div','bt-btns'+(cls?' list':''));act.appendChild(row);
-  opts.forEach(o=>{const b=el('button','bt-b'+(o.k==='sk'?' sk':'')+(o.it?' it':''),(o.it?'<img src="'+A+'items/'+o.it.id+'.png" alt="">':'')+'<b>'+esc(o.t)+'</b>'+(o.d?'<span>'+esc(o.d)+'</span>':''));b.onclick=()=>{sfx('ui_klick',.6);r(o)};row.appendChild(b)});
+ const choose=(title,opts,cls,back)=>new Promise(r=>{act.className='bt-act'+(cls?' '+cls:'');act.innerHTML='<div class="bt-who"><span class="bt-wf" style="background-image:url('+unitFace(u)+')"></span>'+esc(title)+'</div>';const row=el('div','bt-btns'+(cls?' list':''));act.appendChild(row);
+  opts.forEach(o=>{const b=el('button','bt-b'+(o.k==='sk'?' sk':'')+(o.it?' it':'')+(o.ic?' ic':''),(o.it?'<img src="'+A+'items/'+o.it.id+'.png" alt="">':'')+(o.ic?'<img class="bt-ic" src="'+o.ic+'" alt="">':'')+'<b>'+esc(o.t)+'</b>'+(o.d?'<span>'+esc(o.d)+'</span>':''));b.onclick=()=>{sfx('ui_klick',.6);r(o)};row.appendChild(b)});
   if(back){const b=el('button','bt-back','Zurück');b.onclick=()=>{sfx('ui_klick',.5);r(null)};act.appendChild(b)}});
  let ch=null;
- while(!ch){const main=[{k:'atk',t:u.hit}];if(sks.length)main.push({k:'skm',t:'Fähigkeiten',d:sks.length+' zur Auswahl'});if(pots.length)main.push({k:'itm',t:'Gegenstand',d:pots.length+' im Gepäck'});
+ while(!ch){const main=[{k:'atk',t:u.hit,ic:weapIc(u)}];if(sks.length)main.push({k:'skm',t:'Fähigkeiten',d:sks.length+' zur Auswahl',ic:A+'ui/ac_faehigkeit.png'});if(pots.length)main.push({k:'itm',t:'Gegenstand',d:pots.length+' im Gepäck',ic:A+'ui/ac_gegenstand.png'});
   const mp=choose(u.n+' ist dran',main);if(u.hero&&B.tut)await tutOnce('t07');const m=await mp;
   if(m.k==='atk'){const f=await pickFoeBack(act);if(f){ch=m;ch.f=f}continue}
   if(m.k==='skm'){const s=await choose('Fähigkeit wählen',sks,'sheet',1);if(s)ch=s;continue}

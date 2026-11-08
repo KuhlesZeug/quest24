@@ -176,7 +176,7 @@ DAYS[24]={end:'Heute ist Lichternacht.',steps:[
   [{fn:()=>{music(A+'mus/rueckblende.mp3',.4)}},
    {bg:'ph5',alt:'ort24',look:1500},
    {s:'SL',t:'Jetzt liegt es an dir, {NAME}.',e:'worried'},{game:'p_herz'},
-   {choice:[{t:'Das Herzjuwel zurückgeben',go:[{s:'HU',t:'Es tut mir leid. Sechzig Jahre lang.',e:'sad'},{sfx:'feuer_entfacht'},{s:'VH',t:'Warm. Es ist … warm.',e:7}]},
+   {pick:{img:'ph5',t:'Was tust du?',spots:[{x:.658,y:.688,r:.075},{x:.356,y:.668,r:.075,up:1}]},choice:[{t:'Das Herzjuwel zurückgeben',go:[{s:'HU',t:'Es tut mir leid. Sechzig Jahre lang.',e:'sad'},{sfx:'feuer_entfacht'},{s:'VH',t:'Warm. Es ist … warm.',e:7}]},
     {t:'Den Stern selbst entzünden',go:[{sfx:'licht_an'},{s:'HU',t:'Kindchen, das gehört dir. Hat es immer.',e:'sad'},{sfx:'feuer_entfacht'},{s:'VH',t:'… Warm.',e:7}]}]}]
  ]},
  {bg:'vh_warm',alt:'ort24',look:2500},
@@ -195,11 +195,11 @@ DAYS[24]={end:'Heute ist Lichternacht.',steps:[
  {s:'WG',wg:'wgc5',t:'Abschlussbewertung. Erzählung: lebendig. Witze: zahlreich. Teilweise gut. Das Butterbrot: weiterhin unerklärt.',e:'neutral'},
  {fn:()=>zeugnis(2)},
  {s:'WG',wg:'wgc3',t:'Herz: vorhanden. Ergebnis: bestanden. Feste Anstellung bei der Ehrwürdigen Gilde der Erzähler.',e:'smile'},
+ {fn:()=>zeugnis('hide')},
  {sfx:'muenzen'},
  {s:'SL',t:'Danke. Danke! Meisterin Wendelgard, danke! Und danke an dich. Ja, dich. Du hast gewürfelt, gerätselt, gekämpft und jeden meiner Witze ertragen. Das war mein erstes Abenteuer. Und es war das beste.',e:'laugh'},
  {s:'WG',wg:'wgc4',t:'Der letzte Satz war kitschig.',e:'sly'},
  {s:'SL',t:'Ich weiß. Ich lass ihn drin.',e:'smile'},
- {fn:()=>zeugnis('hide')},
  {film:'abspann'},{hide:1}
 ]};
 FILMS.z7={shots:[

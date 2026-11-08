@@ -13,7 +13,8 @@ function renderHud(){const h=$('#hud');if(!h)return;const n=nights();
  $('#hb-inv').onclick=openInv;$('#hb-party').onclick=openParty;$('#hb-log').onclick=openLog;$('#hb-snd').onclick=()=>{setSound(!st.sound);renderHud()}}
 
 function goMap(){stopVo();stopSfx(.5);SC.abort=0;show('#s-map');renderHud();renderMap();music(A+'mus/karte.mp3',.4);atmo(A+'atmo/bergwind.mp3',.35);accents(null)}
-function renderMap(){const m=$('#map-in');m.querySelectorAll('.wp,.token,.trail').forEach(e=>e.remove());const nd=nextDay();
+function renderMap(){const m=$('#map-in');m.querySelectorAll('.wp,.token,.trail,.map-urk').forEach(e=>e.remove());const nd=nextDay();
+ if(nd>24){const u=el('button','map-urk','<span class="mu-p" style="background-image:url('+A+'ui/urk_bg.jpg)"><img class="mu-s" src="'+A+'ui/siegel.png" alt=""></span><b>Heldenurkunde</b>');u.onclick=e=>{e.stopPropagation();sfx('pergament',.6);openUrkunde()};m.appendChild(u)}
  // Gezeichneter Weg: geschafft als feste Spur, kommend gestrichelt
  const last=Object.keys(st.done).length?Math.max(...Object.keys(st.done).map(Number)):1;
  const pts=d=>WP.slice(1,d+1).map(p=>(p[0]*23.52).toFixed(1)+','+(p[1]*17.6).toFixed(1)).join(' ');

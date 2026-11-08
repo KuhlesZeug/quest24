@@ -83,7 +83,7 @@ async function step(s,ctx){
   if(s.note){sfx('rohrpost');await rohrpost()}
   if(s.s==='WG')wgCut(s.wg);
   await say(s.s,male?s.tm:s.t,vo,s.e)}
- if(s.choice){const i=await choice(s.choice);const o=s.choice[i];if(o.flag)flag(o.flag);if(o.go)await run(o.go,ctx)}
+ if(s.choice){const i=s.pick?await pickImg(s.pick,s.choice):await choice(s.choice);const o=s.choice[i];if(o.flag)flag(o.flag);if(o.go)await run(o.go,ctx)}
  if(s.probe){const r=await probe(s.probe);await run(r?s.ok||[]:s.fail||[],ctx)}
  if(s.code){const r=await codeInput(s.code);await run(r?s.ok||[]:s.fail||[],ctx)}
  if(s.fight){hideBox();window.PHASE_RUN=s.phases?async i=>{const st0=SC.wgPrev;await run(s.phases[i]||[]);hideBox()}:null;const r=await fight(s.fight);window.PHASE_RUN=null;if(!r)SC.abort=1;else{$('#sc-bg').innerHTML=''}}
@@ -132,10 +132,17 @@ async function songDur(n,max){const d=SDUR[n]||30;return max?Math.min(d,max):d}
 
 // Abschlussbewertung als Urkunde: Zeilen erscheinen nacheinander, am Ende der Stempel
 function zeugnis(phase){let z=$('#zeugnis');
- if(phase==='hide'){if(z){z.classList.add('out');setTimeout(()=>z.remove(),700)}return}
- if(!z){z=el('div','zeugnis','<div class="zg-k">Ehrwürdige Gilde der Erzähler</div><h3>Abschlussbewertung</h3><div class="zg-s">Probezeit des Spielleiters, vierundzwanzig Nächte</div><div class="zg-rows"></div><div class="zg-sig"><i>M. Wendelgard</i><span>Meisterin der Gilde</span></div><div class="zg-stamp">Bestanden</div><div class="zg-conf"></div>');z.id='zeugnis';$('#s-scene').appendChild(z);requestAnimationFrame(()=>z.classList.add('on'))}
+ if(phase==='hide'){if(!z)return;return (z._done||Promise.resolve()).then(()=>sleep(900)).then(()=>{z.classList.add('out');setTimeout(()=>z.remove(),700)})}
+ if(!z){z=el('div','zeugnis zg2','<div class="zg-in"><div class="zg-orn"></div><div class="zg-k">Ehrwürdige Gilde der Erzähler</div><h3>Abschlussbewertung</h3><div class="zg-s">Probezeit des Spielleiters · vierundzwanzig Nächte</div><div class="zg-rows"></div><div class="zg-foot"><div class="zg-stamp">Bestanden</div><div class="zg-sig"><i>M. Wendelgard</i><span>Meisterin der Gilde</span></div><img class="zg-seal" src="'+A+'ui/siegel.png" alt=""></div></div><div class="zg-conf"></div>');z.id='zeugnis';$('#s-scene').appendChild(z);requestAnimationFrame(()=>z.classList.add('on'))}
  const rows=z.querySelector('.zg-rows');const star=n=>'<span class="zg-st">'+'<b>★</b>'.repeat(n)+'<b class="o">★</b>'.repeat(5-n)+'</span>';
- const add=(l,v,r,d)=>setTimeout(()=>{const e=el('div','zg-r','<span class="zg-l">'+l+'</span><span class="zg-v">'+v+'</span>'+r);rows.appendChild(e);sfx('pergament',.4)},d);
- if(phase===1){add('Erzählung','lebendig',star(4),400);add('Witze','zahlreich, teilweise gut',star(3),2400);add('Das Butterbrot','weiterhin unerklärt','<span class="zg-st q">?</span>',4600)}
- if(phase===2){add('Herz','vorhanden',star(5),300);add('Mitspieler',heroName(),'<span class="zg-st">'+'<b>★</b>'.repeat(5)+'</span>',1800);
-  setTimeout(()=>{z.classList.add('stamp');sfx('treffer',1);sfx('fanfare',.7);const c=z.querySelector('.zg-conf');for(let i=0;i<40;i++){const e=el('i','');e.style.left=Math.random()*100+'%';e.style.background=['#ffd76a','#ff5ad1','#7ad7ff','#9cff7a','#ff8a5a'][i%5];e.style.animationDelay=(Math.random()*.6)+'s';e.style.animationDuration=(1.8+Math.random()*1.6)+'s';c.appendChild(e)}},3600)}}
+ const add=(ic,l,v,r,d)=>setTimeout(()=>{const e=el('div','zg-r','<img class="zg-ic" src="'+ic+'" alt=""><span class="zg-lv"><span class="zg-l">'+l+'</span><span class="zg-v">'+v+'</span></span>'+r);rows.appendChild(e);sfx('pergament',.4)},d);
+ if(phase===1){add(A+'ui/tagebuch.png','Erzählung','lebendig',star(4),400);add(A+'ui/stern.png','Witze','zahlreich, teilweise gut',star(3),2400);add(A+'items/butterbrot.png','Das Butterbrot','weiterhin unerklärt','<span class="zg-st q">?</span>',4600)}
+ if(phase===2){add(A+'ui/herz.png','Herz','vorhanden',star(5),300);add(heroImg(),'Mitspieler',heroName(),'<span class="zg-st">'+'<b>★</b>'.repeat(5)+'</span>',1800);
+  z._done=new Promise(res=>setTimeout(()=>{z.classList.add('stamp');sfx('treffer',1);sfx('fanfare',.7);const c=z.querySelector('.zg-conf');for(let i=0;i<40;i++){const e=el('i','');e.style.left=Math.random()*100+'%';e.style.background=['#ffd76a','#ff5ad1','#7ad7ff','#9cff7a','#ff8a5a'][i%5];e.style.animationDelay=(Math.random()*.6)+'s';e.style.animationDuration=(1.8+Math.random()*1.6)+'s';c.appendChild(e)}setTimeout(res,1800)},3600))}}
+
+// Entscheidung direkt im Bild: Gegenstände antippen statt Balken unten
+function pickImg(P,opts){return new Promise(r=>{hideBox();const sc=$('#s-scene');const IW=1080,IH=1920;
+ const o=el('div','pg pk','<div class="pg-img" style="background-image:url('+A+'img/'+P.img+'.jpg)"></div><div class="pk-dim"></div><div class="pg-top">'+esc(P.t||'Was tust du?')+'</div>');sc.appendChild(o);
+ const box=()=>{const W=o.clientWidth,H=o.clientHeight,k=Math.max(W/IW,H/IH);return {k,ox:(W-IW*k)/2,oy:(H-IH*k)/2}};
+ const sp=P.spots.map((q,i)=>{const b=el('button','pk-spot','<i class="pk-ring"></i><span class="pk-lab">'+esc(opts[i].t)+'</span>');o.appendChild(b);b.onclick=()=>{sfx('zauber',.6);b.classList.add('on');o.querySelectorAll('.pk-spot').forEach(x=>x.disabled=true);setTimeout(()=>{o.classList.add('out');setTimeout(()=>{o.remove();removeEventListener('resize',lay);r(i)},450)},700)};return {q,b}});
+ const lay=()=>{const {k,ox,oy}=box();sp.forEach(({q,b})=>{const R=q.r*IW*k;b.style.left=(ox+q.x*IW*k)+'px';b.style.top=(oy+q.y*IH*k)+'px';b.style.setProperty('--r',R+'px');b.classList.toggle('lb-up',!!q.up)})};lay();addEventListener('resize',lay)})}
