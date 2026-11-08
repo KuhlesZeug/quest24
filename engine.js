@@ -7,7 +7,7 @@ const sleep=ms=>new Promise(r=>setTimeout(r,ms));
 const rnd=n=>1+Math.floor(Math.random()*n);
 const params=new URLSearchParams(location.search);
 const KEY='kz_quest24_v1';
-if(params.get('neu')==='1'&&params.get('probe')){try{localStorage.removeItem(KEY)}catch(e){}history.replaceState(null,'',location.pathname+'?probe='+encodeURIComponent(params.get('probe'))+(params.get('test')==='1'?'&test=1':''))}
+if(params.get('neu')==='1'){try{localStorage.removeItem(KEY)}catch(e){}const pq=params.get('probe');history.replaceState(null,'',location.pathname+(pq?'?probe='+encodeURIComponent(pq)+(params.get('test')==='1'?'&test=1':''):''))}
 const A='a/';
 
 const ST0=()=>({ok:0,intro:0,sound:true,auto:true,hero:null,party:[],inv:[],gold:0,xp:0,lvl:1,done:{},hint:{},flags:{},seen:{},log:[],start:0,insp:0});
