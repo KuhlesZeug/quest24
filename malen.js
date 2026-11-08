@@ -2,7 +2,7 @@
 // Daten aus tools/pbn.py: a/pbn/<name>/bild.jpg, linie.png, felder.png, umriss.png, felder.json
 GAMES.malen=(s)=>new Promise(async done=>{hideBox();
  const B=A+'pbn/'+(s.bild||'krieger')+'/';
- const o=el('div','pbn');o.innerHTML='<div class="pbn-top"><div class="pbn-t">Male dein Abenteuer</div><div class="pbn-bar"><i></i></div><button class="pbn-lupe" aria-label="Hinweis"><img src="'+A+'ui/pbn_lupe.png" alt=""><b>3</b></button></div><div class="pbn-stage"><canvas></canvas><div class="pbn-load">Pinsel werden ausgepackt …</div></div><div class="pbn-pal"></div>';
+ const o=el('div','pbn');o.innerHTML='<div class="pbn-top"><div class="pbn-t">Male dein Abenteuer</div><div class="pbn-bar"><i></i></div><button class="pbn-lupe" aria-label="Hinweis"><img src="'+A+'ui/pbn_lupe.png" alt=""><b>6</b></button></div><div class="pbn-stage"><canvas></canvas><div class="pbn-load">Pinsel werden ausgepackt …</div></div><div class="pbn-pal"></div>';
  document.body.appendChild(o);requestAnimationFrame(()=>o.classList.add('on'));
  const stage=o.querySelector('.pbn-stage'),cv=o.querySelector('canvas'),cx=cv.getContext('2d');
  const load=src=>new Promise((r,j)=>{const i=new Image();i.crossOrigin='anonymous';i.onload=()=>r(i);i.onerror=j;i.src=src});
@@ -26,7 +26,7 @@ GAMES.malen=(s)=>new Promise(async done=>{hideBox();
  const paintReg=(r,mode,cx0,cy0,rad)=>{ // mode 0 leer, 1 markiert, 2 gefüllt
   const b=bb[r-1];for(let k=off[r];k<off[r+1];k++){const i=list[k],p=i*4;
    if(mode===2){if(rad!=null){const x=i%W-cx0,y=(i/W|0)-cy0;if(x*x+y*y>rad*rad)continue}w[p]=orig[p];w[p+1]=orig[p+1];w[p+2]=orig[p+2]}
-   else if(mode===1){const x=i%W,y=(i/W)|0;const h=((x+y)%14)<5;const l=lin[p]*(h?.78:.9);w[p]=l;w[p+1]=l;w[p+2]=l*1.02}
+   else if(mode===1){const x=i%W,y=(i/W)|0;const h=((x+y)%16)<7;const l=lin[p];if(h){w[p]=l*.52;w[p+1]=l*.52;w[p+2]=l*.56}else{w[p]=l*.86;w[p+1]=l*.86;w[p+2]=l*.88}}
    else{w[p]=lin[p];w[p+1]=lin[p+1];w[p+2]=lin[p+2]}}
   wg.putImageData(wd,0,0,b[0],b[1],b[2]-b[0]+1,b[3]-b[1]+1)};
  const mark=(c,on)=>{for(let r=1;r<=N;r++)if(!filled[r]&&D.r[r-1][0]===c)paintReg(r,on?1:0)};
@@ -53,8 +53,8 @@ GAMES.malen=(s)=>new Promise(async done=>{hideBox();
   cx.imageSmoothingEnabled=true;cx.imageSmoothingQuality='high';cx.drawImage(work,tx,ty,W*sc,H*sc);
   cx.globalAlpha=Math.min(1,.35+sc/fit*.15);cx.drawImage(imU,tx,ty,W*sc,H*sc);cx.globalAlpha=1;
   cx.textAlign='center';cx.textBaseline='middle';
-  for(let r=1;r<=N;r++){if(filled[r])continue;const R=D.r[r-1],rr=R[3]*D.s*sc;if(rr<6)continue;const x=tx+R[1]*D.s*sc,y=ty+R[2]*D.s*sc;if(x<-20||y<-20||x>vw+20||y>vh+20)continue;
-   const fs=Math.min(18,rr*1.0);cx.font='600 '+fs+'px Georgia,serif';cx.fillStyle=R[0]===sel?'#1d140b':'rgba(60,52,44,.72)';cx.fillText(R[0]+1,x,y)}
+  cx.lineJoin='round';for(let r=1;r<=N;r++){if(filled[r])continue;const R=D.r[r-1],rr=R[3]*D.s*sc;if(rr<5)continue;const x=tx+R[1]*D.s*sc,y=ty+R[2]*D.s*sc;if(x<-20||y<-20||x>vw+20||y>vh+20)continue;
+   const on=R[0]===sel,fs=Math.max(10,Math.min(on?22:19,rr*1.15));cx.font='700 '+fs+'px Georgia,serif';cx.lineWidth=Math.max(3,fs*.28);cx.strokeStyle='rgba(255,255,255,.95)';cx.strokeText(R[0]+1,x,y);cx.fillStyle=on?'#000':'#3d3630';cx.fillText(R[0]+1,x,y)}
   if(pulse){const t=(performance.now()-pulse.t)/1400;if(t<1){const R=D.r[pulse.r-1];cx.strokeStyle='rgba(255,200,60,'+(1-t)+')';cx.lineWidth=4;cx.beginPath();cx.arc(tx+R[1]*D.s*sc,ty+R[2]*D.s*sc,(R[3]*D.s*sc)+10+t*40,0,7);cx.stroke();draw()}else pulse=null}
  })};
  addEventListener('resize',size);size();o.querySelector('.pbn-load').remove();
@@ -84,8 +84,8 @@ GAMES.malen=(s)=>new Promise(async done=>{hideBox();
   if(left[c]===0){const pb=pal.children[c];pb.classList.add('done');pb.classList.remove('on');sfx('richtig',.5);sel=-1;const nx=left.findIndex((v,i)=>v>0&&i>c),n2=nx>=0?nx:left.findIndex(v=>v>0);if(n2>=0)setTimeout(()=>pick(n2),350)}
   if(nFill===N)setTimeout(finish,500)};
  // Lupe
- let hints=3;const lb=o.querySelector('.pbn-lupe');
- lb.onclick=async()=>{if(sel<0){const n=left.findIndex(v=>v>0);if(n>=0)pick(n)}if(hints<=0&&!TEST){toast('Die Lupe ist erschöpft. Schau genau hin, du schaffst das.');return}
+ let hints=6;const lb=o.querySelector('.pbn-lupe');
+ lb.onclick=async()=>{if(sel<0){const n=left.findIndex(v=>v>0);if(n>=0)pick(n)}if(hints<=0){toast('Die Lupe ist erschöpft. Schau genau hin, du schaffst das.');return}
   let best=0,bs=1e9;for(let r=1;r<=N;r++)if(!filled[r]&&D.r[r-1][0]===sel){const R=D.r[r-1];const sx=tx+R[1]*D.s*sc-vw/2,sy=ty+R[2]*D.s*sc-vh/2;const d=sx*sx+sy*sy-R[4]*.01;if(d<bs){bs=d;best=r}}
   if(!best)return;hints--;lb.querySelector('b').textContent=hints;if(hints<=0)lb.classList.add('leer');sfx('licht_an',.5);
   const z=Math.max(1.4,Math.min(3.2,45/(D.r[best-1][3]*D.s*fit)));await zoomTo(best,z);pulse={r:best,t:performance.now()};draw()};
