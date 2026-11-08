@@ -150,7 +150,7 @@ const PRE=[];function preImg(src){const i=new Image();i.decoding='async';i.src=s
 function preloadSprites(){B.party.forEach(u=>{for(let p=0;p<4;p++)preImg(spriteSrc(u,p))});
  B.foes.forEach(f=>{for(let p=0;p<4;p++)preImg(A+'img/'+f.img+'_'+p+'.png')});
  Object.values(PROJ).flat().forEach(n=>preImg(A+'ui/'+n+'.png'));['hit','magic','smoke'].forEach(k=>{for(let i=0;i<4;i++)preImg(A+'ui/fx_'+k+'_'+i+'.png')});
- preSfx([...new Set(Object.values(PSFX))].concat(['falsch','treffer','sieg','niederlage','patzer','kritisch','wuerfel','trank','au','ui_klick']));markPick()}
+ preSfx([...new Set(Object.values(PSFX))].concat(['falsch','daneben','wurf_fail','treffer','sieg','niederlage','patzer','kritisch','wuerfel','trank','au','ui_klick']));markPick()}
 function pick(sel,filter){return new Promise(r=>{B.picking={sel,filter,r};markPick()})}
 // Auswahl übersteht jedes Neuzeichnen: Markierung wird nach render erneut gesetzt, Klick über den Container
 function markPick(){const P=B&&B.picking;if(!P)return;$$(P.sel).forEach(e=>{const ok=P.filter(e);e.classList.toggle('pickable',ok);e.onclick=ok?()=>{const Q=B.picking;if(!Q)return;B.picking=null;$$(Q.sel).forEach(x=>{x.classList.remove('pickable');x.onclick=null});Q.r(e)}:null})}
@@ -181,7 +181,7 @@ async function attack(u,f,o){let bonus=u.atk+(B.buff.all||0)+(u.next||0)+(o.add|
  let v;if(u.hero){if(B.tut){await tutOnce('t08');await tutOnce('t09')}const r=await rollD20({title:u.hit+' gegen '+f.n,sub:'W20 plus '+bonus+', Ziel '+f.def,bonus,ziel:f.def,force:o.crit?20:null});v=r}else{const x=rnd(20);v={v:x,total:x+bonus,crit:x===20,fumble:x===1}}
  poseFor(u,1,700);const pk=projKind(u,o);if(pk&&!(v.fumble&&u.hero))await shoot(u,f,pk,v.total<f.def&&!v.crit);else if(!u.hero)await sleep(250);
  if(v.fumble&&u.hero){popFx(foeEl(f),'fumble','Patzer!','Eine 1 gewürfelt');await fumble();return}
- if(v.total<f.def&&!v.crit){popFx(foeEl(f),'miss','Daneben!',u.hero?v.total+' reicht nicht, Ziel '+f.def:'');blog(u.n+' verfehlt.');sfx('falsch',.5);await sleep(500);return}
+ if(v.total<f.def&&!v.crit){popFx(foeEl(f),'miss','Daneben!',u.hero?v.total+' reicht nicht, Ziel '+f.def:'');blog(u.n+' verfehlt.');sfx('daneben',.7);await sleep(500);return}
  let dmg=o.fixed||(Math.ceil(d10()/2)+u.dmg+(o.dmgAdd||0));const el_=o.el||u.el;let m=o.ignore?Math.max(1,elemMul(el_,f.el)):elemMul(el_,f.el);
  if(v.crit)dmg*=2;if(u.hero&&B.first&&st.hero.cls==='schurke'){dmg*=2;B.first=false}if(u.ballad){dmg*=2;u.ballad=0}if(o.double)dmg*=2;
  dmg=Math.max(1,Math.round(dmg*m));u.face=m>1||v.crit?3:6;setTimeout(()=>{u.face=0;if(B)render()},800);hurtFoe(f,dmg,u,null,m);if(v.crit)setTimeout(()=>popFx(foeEl(f),'crit','Kritischer Treffer!','Doppelter Schaden'),200);if(m>1&&el_&&f.el)setTimeout(()=>popFx(foeEl(f),'super','Super effektiv!','Doppelter Schaden',[el_,f.el],v.crit?110:0),v.crit?700:200);else if(m<1&&el_&&f.el)setTimeout(()=>popFx(foeEl(f),'weak','Nicht sehr wirksam','Halber Schaden',[el_,f.el]),200);if(m>1)superEff(u,f);if(v.crit&&u.hero)critLine();await sleep(650)}

@@ -23,7 +23,7 @@ async function rollD20(o){const ov=diceOvl();ov.innerHTML='<div class="dice-card
  const total=v+(o.bonus||0);const res=ov.querySelector('.dc-res');
  const crit=v===20,fumble=v===1;let ok=o.ziel!=null?total>=o.ziel:null;
  res.innerHTML='<span class="n">'+v+'</span>'+(o.bonus?'<span class="p">plus '+o.bonus+'</span><span class="eq">= '+total+'</span>':'')+(o.ziel!=null?'<span class="v '+(ok?'ok':'no')+'">'+(crit?'Natürliche Zwanzig!':fumble?'Patzer!':ok?'Geschafft':'Daneben')+'</span>':'');
- if(crit){sfx('kritisch');d.classList.add('crit')}else if(ok===true)sfx('richtig',.8);else if(ok===false)sfx('falsch',.7);
+ if(crit){sfx('kritisch');d.classList.add('crit')}else if(ok===true)sfx('richtig',.8);else if(ok===false)sfx('wurf_fail',.8);
  await sleep(1500);await new Promise(r=>{ov.onclick=r;setTimeout(r,2600)});ov.onclick=null;ov.classList.remove('on');
  return{v,total,crit,fumble}}
 
