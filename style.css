@@ -1966,3 +1966,8 @@ img{display:block;max-width:100%}
 /* Vharkon stürzt genau dort ab, wo ihn das letzte Netz erwischt hat, und das Netz fällt mit */
 .pn-dr.fall{transition:top 1.3s cubic-bezier(.5,0,.9,.6),transform 1.3s ease-in;top:115%!important}
 .pn-net.pn-fang{z-index:6;opacity:1!important;transition:top 1.3s cubic-bezier(.5,0,.9,.6)!important;top:115%!important}
+/* Irrlichter: Leuchten ohne Verschieben per transform mittig setzen (Safari auf dem iPhone hat das ignoriert) */
+.rk-wk b,.rk-wk i{display:block;position:absolute;transform:none}
+.rk-wk i{animation-name:rkWisp2}
+@keyframes rkWisp2{to{transform:scale(1.15);opacity:.85}}
+.rk.feuer .rk-wk b{margin:-148.4% 0 0 -148.4%!important}
