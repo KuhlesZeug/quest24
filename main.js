@@ -24,8 +24,8 @@ async function playSession0(){stopSfx(.4);show('#s-scene');numberSteps('s0',SITZ
 document.addEventListener('pointerdown',()=>{ac();if(curScreen==='#s-start'&&!st._m){st._m=1;music(A+'mus/titel.mp3',.45);atmo(A+'atmo/dorf_winter.mp3',.3)}},{once:false});
 goStart();
 // Testzugang direkt zu einem Minispiel: ?probe=…&spiel=takt
-if(PROBE&&params.get('spiel')){const nm=params.get('spiel');const b=el('button','pbtn','Spiel starten: '+nm);b.style.cssText='position:fixed;left:50%;top:50%;transform:translate(-50%,-50%);z-index:99;font-size:1.2rem;padding:16px 26px';document.body.appendChild(b);
- b.onclick=async()=>{b.remove();ac();show('#s-scene');renderHud&&renderHud();if(GAMES[nm])await GAMES[nm]({});goStart()}}
+if(PROBE&&params.get('spiel')){const nm=params.get('spiel');const b=el('div','spiel-start','<button class="pbtn">Spiel starten</button>');b.style.cssText='position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;background:rgba(10,6,2,.82)';document.body.appendChild(b);
+ b.onclick=async()=>{b.remove();ac();show('#s-scene');try{renderHud()}catch(e){}if(GAMES[nm])await GAMES[nm]({});goStart()}}
 
 // Drache schnauft: nach dem Einatmen kommt beim Ausatmen ein Rauchwölkchen aus den Nüstern
 function puffSmoke(){if(curScreen!=='#s-start'||document.hidden)return;const sm=$('.lg-smoke');if(!sm)return;
