@@ -1913,3 +1913,6 @@ img{display:block;max-width:100%}
 .bz .bz-t,.bz .bz-t.has-sp{pointer-events:none;min-width:0;width:auto}
 .bz .bz-t .bz-hit{position:absolute;left:24%;right:24%;top:10%;bottom:6%;pointer-events:auto;cursor:pointer;text-decoration:none}
 .bz .bz-t:not(.has-sp) .bz-hit{left:0;right:0;top:0;bottom:0}
+
+/* Fähigkeitenwahl: erst antippbar, wenn die Karte zu sehen ist, damit ein schneller Tipp nicht aus Versehen wählt */
+.lvup-c:disabled{pointer-events:none;color:var(--ink)}

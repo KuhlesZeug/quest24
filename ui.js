@@ -77,7 +77,7 @@ const skIcon=s=>'<img class="sk-ic" src="'+A+'ui/sk/'+s+'.png" alt="" onerror="t
 const skChips=a=>'<div class="sk-chips">'+a.map(s=>'<span class="sk-chip">'+skIcon(s)+'<b>'+SK[s].n+'</b></span>').join('')+'</div>';
 const skArt=s=>SK[s].passive?'Immer aktiv':SK[s].once?'Einmal pro Kampf':'Beliebig oft';
 // Stufenaufstieg: eigener Bildschirm mit Lichtstrahlen, Emblem, Lebenspunkten und zwei Fähigkeiten zur Wahl
-async function levelUp(lv){const old=heroMaxHp();st.lvl=lv;save();const neu=heroMaxHp();const [a,b]=LVL_SK[st.hero.cls][lv-2];
+async function levelUp(lv){{const pr=LVL_SK[st.hero.cls][lv-2]||[];if(pr.some(k=>st.hero.skills.includes(k))){st.lvl=Math.max(st.lvl,lv);save();return}}const old=heroMaxHp();st.lvl=lv;save();const neu=heroMaxHp();const [a,b]=LVL_SK[st.hero.cls][lv-2];
  const o=el('div','lvup','<div class="lvup-st"><div class="lvup-rays"></div><div class="lvup-glanz"></div><div class="lvup-in">'
   +'<div class="lvup-em"><img src="'+A+'ui/lvl_emblem.png" alt=""><b>'+lv+'</b></div>'
   +'<div class="lvup-k">Stufenaufstieg</div><h2 class="lvup-h">Stufe '+lv+'</h2>'
@@ -88,7 +88,7 @@ async function levelUp(lv){const old=heroMaxHp();st.lvl=lv;save();const neu=hero
  // Fanfare passend zum Erzähler: Stufe 2 volle Fanfare, Stufe 3 kürzer, Stufe 4 ganz ohne, Stufe 5 wieder die volle
  if(lv!==4)sfx('stufenaufstieg');setTimeout(()=>{fx('magic',o.querySelector('.lvup-em'),260);if(lv===2||lv===5)sfx('fanfare',.5)},650);
  const ch=o.querySelector('.lvup-ch');
- const s=await new Promise(r=>[a,b].forEach((k,i)=>{const bt=el('button','lvup-c',skIcon(k)+'<div><b>'+SK[k].n+'</b><span>'+SK[k].d+'</span><em>'+skArt(k)+'</em></div>');bt.style.animationDelay=(1.1+i*.18)+'s';bt.onclick=()=>{sfx('ui_klick',.6);r(k)};ch.appendChild(bt)}));
+ const s=await new Promise(r=>[a,b].forEach((k,i)=>{const bt=el('button','lvup-c',skIcon(k)+'<div><b>'+SK[k].n+'</b><span>'+SK[k].d+'</span><em>'+skArt(k)+'</em></div>');bt.style.animationDelay=(1.1+i*.18)+'s';bt.disabled=true;setTimeout(()=>bt.disabled=false,1900);bt.onclick=()=>{if(bt.disabled)return;sfx('ui_klick',.6);r(k)};ch.appendChild(bt)}));
  st.hero.skills.push(s);save();
  ch.querySelectorAll('.lvup-c').forEach(c=>{c.onclick=null;c.classList.add(c.querySelector('b').textContent===SK[s].n?'gewaehlt':'weg')});
  const g=ch.querySelector('.gewaehlt');sfx('richtig',.7);fx('magic',g.querySelector('.sk-ic'),180);
