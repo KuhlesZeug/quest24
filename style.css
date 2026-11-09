@@ -1603,3 +1603,15 @@ img{display:block;max-width:100%}
 .pl4 .pl-streak{position:absolute;left:0;right:0;top:calc(83% - 110px);text-align:center;z-index:8;font-family:var(--head);color:#ffe27a;text-shadow:0 0 10px rgba(255,160,60,.8),0 2px 0 #3a1d08;font-size:1.3rem;pointer-events:none}
 .pl4 .rk-load{position:absolute;left:0;right:0;top:50%;text-align:center;color:#fff3d6;z-index:9}
 .pl4 .bg-help{transition:opacity .8s}.pl4 .bg-help.weg{opacity:0}
+/* Lautenspiel: Pads liegen flach auf dem Griffbrett, kleiner Zielring über dem Edelstein */
+.pl4-ring{border:0!important;background:none!important;box-shadow:none!important;border-radius:50%;overflow:visible}
+.pl4-ring img{position:absolute;inset:0;width:100%;height:100%;object-fit:fill;filter:drop-shadow(0 6px 6px rgba(0,0,0,.45));pointer-events:none;transition:filter .12s}
+.pl4-ring i{position:absolute;left:50%;top:50%;width:46%;height:46%;inset:auto;transform:translate(-50%,-50%);border-radius:50%;background:none;opacity:1;border:2px solid color-mix(in srgb,var(--c) 70%,#fff);box-shadow:0 0 10px var(--c),inset 0 0 8px var(--c);pointer-events:none}
+.pl4-ring b{position:absolute;left:50%;top:50%;width:40%;height:40%;transform:translate(-50%,-50%);border-radius:50%;background:radial-gradient(circle,#fff 0 15%,var(--c) 45%,transparent 72%);opacity:0;pointer-events:none}
+.pl4-ring.on{animation:pl4On2 .18s ease-out}
+.pl4-ring.on b{animation:pl4Gem .3s ease-out}
+.pl4-ring.on img{filter:drop-shadow(0 2px 3px rgba(0,0,0,.45)) brightness(1.25)}
+@keyframes pl4On2{0%{transform:translate(-50%,-50%) scale(.9)}100%{transform:translate(-50%,-50%) scale(1)}}
+@keyframes pl4Gem{0%{opacity:1;transform:translate(-50%,-50%) scale(1.6)}100%{opacity:0;transform:translate(-50%,-50%) scale(1)}}
+.pl4-ring i{width:76%;height:76%;border:3px solid color-mix(in srgb,var(--c) 75%,#fff);box-shadow:0 0 12px var(--c),0 0 4px #fff,inset 0 0 10px var(--c);animation:pl4Puls 1.2s ease-in-out infinite}
+@keyframes pl4Puls{50%{box-shadow:0 0 20px var(--c),0 0 6px #fff,inset 0 0 14px var(--c)}}
