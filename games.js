@@ -394,34 +394,15 @@ GAMES.schatz=()=>new Promise(async done=>{hideBox();const g=GIFT||{};
  cancelAnimationFrame(raf);removeEventListener('resize',size);o.classList.remove('on');await sleep(500);o.remove();done()});
 
 // Tag 2: Hütchenspiel des Wirts. Kompass unter einem Becher, drei Runden, immer schneller.
-GAMES.becher=()=>new Promise(done=>{
- const area=gameShell('Das Becherspiel','Merk dir, unter welchem Becher der Kompass liegt. Der Wirt mischt. Dann tippe auf den richtigen Becher. Dreimal hintereinander.');
- area.innerHTML='<div class="bc-wrap"><div class="bc-st">Runde 1 von 3</div><div class="bc-table"><img class="bc-k" src="'+A+'ui/kompass_klein.png" alt=""></div><div class="bc-msg"></div></div>';
- const tb=area.querySelector('.bc-table'),kp=area.querySelector('.bc-k'),msg=area.querySelector('.bc-msg'),st_=area.querySelector('.bc-st');
- const X=[20,50,82];const cups=[0,1,2].map(i=>{const c=el('button','bc-c','<img src="'+A+'ui/becher.png" alt="">');c.dataset.i=i;c.style.left=X[i]+'%';tb.appendChild(c);return {el:c,slot:i}});
- const R=[{n:5,ms:560},{n:8,ms:400},{n:12,ms:280}];let round=0,miss=0,slow=1,prize=null,busy=true;
- const place=c=>{c.el.style.left=X[c.slot]+'%'};
- const lift=(c,on)=>c.el.classList.toggle('up',on);
- async function swap(a,b,ms){a.el.style.transitionDuration=b.el.style.transitionDuration=ms+'ms';a.el.classList.add('arcA');b.el.classList.add('arcB');const t=a.slot;a.slot=b.slot;b.slot=t;place(a);place(b);sfx('krug',.25);await sleep(ms+30);a.el.classList.remove('arcA');b.el.classList.remove('arcB')}
- async function play(){busy=true;st_.textContent='Runde '+(round+1)+' von 3';msg.textContent='';const r=R[round];
-  prize=cups[Math.floor(Math.random()*3)];kp.style.left=X[prize.slot]+'%';kp.style.opacity=1;
-  cups.forEach(c=>{c.el.style.transitionDuration='300ms'});lift(prize,true);await sleep(1300);lift(prize,false);await sleep(450);kp.style.opacity=0;
-  for(let k=0;k<r.n;k++){let a=Math.floor(Math.random()*3),b=(a+1+Math.floor(Math.random()*2))%3;await swap(cups[a],cups[b],Math.round(r.ms*slow))}
-  msg.textContent='Wo ist der Kompass?';busy=false}
- cups.forEach(c=>c.el.onclick=async()=>{if(busy)return;busy=true;kp.style.left=X[prize.slot]+'%';kp.style.opacity=1;cups.forEach(x=>x.el.style.transitionDuration='300ms');lift(c,true);
-  if(c===prize){sfx('richtig',.7);msg.textContent=['Richtig!','Wieder richtig!','Dreimal richtig!'][round];await sleep(1200);lift(c,false);await sleep(400);round++;miss=0;slow=1;if(round>=3){gameEnd();return done()}play()}
-  else{sfx('falsch',.6);st.flags.becher_leer=1;save();msg.textContent='Leer.';await sleep(700);lift(prize,true);await sleep(1300);lift(c,false);lift(prize,false);miss++;if(miss>=2&&slow===1){slow=1.5;toast('Der Wirt mischt jetzt etwas langsamer.')}await sleep(500);play()}});
- setTimeout(play,500)});
-
-GAMES.becher2=()=>new Promise(done=>{hideBox();const sc=$('#s-scene');const IW=1080,IH=1920;
+GAMES.becher=()=>new Promise(done=>{hideBox();const sc=$('#s-scene');const IW=1080,IH=1920;
  // Bildkoordinaten auf dem Tavernentisch (bc_tisch.jpg): Becherplätze, Kerzenlicht
- const CFG={X:[.27,.5,.73],Y:.665,H:.15,candle:[.1,.62],slow:1};
+ const CFG={X:[.26,.5,.74],Y:.775,H:.15,candle:[.06,.685],slow:1};
  const o=el('div','pg bc2','<div class="pg-img" style="background-image:url('+A+'img/bc_tisch.jpg),url('+A+'img/f_wirt2.jpg)"></div><div class="bc2-glow"></div><div class="pg-top">Das Becherspiel</div><div class="bc2-coins"><i></i><i></i><i></i></div><div class="bc2-say"><b>Wirt</b><span></span></div><div class="bc2-msg"></div><div class="bc2-help">Merk dir, unter welchem Becher der Kompass liegt. Dreimal hintereinander richtig, dann gehört er dir.</div>');sc.appendChild(o);
  const say=o.querySelector('.bc2-say'),sayT=say.querySelector('span'),msg=o.querySelector('.bc2-msg'),coins=[...o.querySelectorAll('.bc2-coins i')],glow=o.querySelector('.bc2-glow');
  const M=()=>{const W=o.clientWidth,H=o.clientHeight,k=Math.max(W/IW,H/IH),iw=IW*k,ih=IH*k;return{W,H,iw,ih,ox:(W-iw)/2,oy:(H-ih)/2}};
  // Becher: Schatten, darunter liegender Gegenstand (Kompass oder Korken) und der Becher selbst. Der Gegenstand wandert mit dem Becher.
  const cups=[0,1,2].map(i=>{const c=el('button','bc2-c','<i class="bc2-sh"></i><img class="bc2-u" alt=""><img class="bc2-cup" src="'+A+'ui/becher.png" alt="">');o.appendChild(c);return {el:c,slot:i,u:c.querySelector('.bc2-u')}});
- const slotXY=(m,s)=>{const w=Math.min(m.W/3.6,CFG.H*m.ih*.92);const x=Math.min(m.W-w/2-6,Math.max(w/2+6,m.ox+CFG.X[s]*m.iw));return[x,m.oy+CFG.Y*m.ih,w]};
+ const slotXY=(m,s)=>{const w=Math.min(m.W/3.6,CFG.H*m.ih*.92,.2*m.iw);const x=Math.min(m.W-w/2-6,Math.max(w/2+6,m.ox+CFG.X[s]*m.iw));return[x,m.oy+CFG.Y*m.ih,w]};
  const lay=()=>{const m=M();cups.forEach(c=>{const [x,y,w]=slotXY(m,c.slot);c.el.style.width=w+'px';c.el.style.left=x+'px';c.el.style.top=y+'px'});glow.style.left=(m.ox+CFG.candle[0]*m.iw)+'px';glow.style.top=(m.oy+CFG.candle[1]*m.ih)+'px'};
  lay();addEventListener('resize',lay);
  const wirt=async(t,id,wait)=>{sayT.textContent=t;say.classList.remove('on');void say.offsetWidth;say.classList.add('on');const a=playVo(A+'vo/'+id+'.mp3');if(wait&&a)await Promise.race([voDone(a),sleep(4500)])};
