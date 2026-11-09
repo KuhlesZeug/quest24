@@ -1542,3 +1542,38 @@ img{display:block;max-width:100%}
 .rk-load{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;z-index:9;font-family:var(--sc);color:#fff4dc;background:rgba(20,10,4,.6)}
 .rk.ende .rk-notes,.rk.ende .rk-help,.rk.ende .rk-combo{opacity:0}
 .rk-st::before{content:'';position:absolute;left:0;right:0;bottom:0;height:22%;background:linear-gradient(rgba(20,10,4,0),rgba(20,10,4,.85));z-index:1;pointer-events:none}
+/* Ego Ansicht Schlagzeug */
+.rk-pad{transform:none;aspect-ratio:auto;width:auto}
+.rk-pad img{width:100%;height:100%;object-fit:fill;filter:drop-shadow(0 8px 8px rgba(0,0,0,.55))}
+.rk-pad.p0{z-index:3}.rk-pad.p3{z-index:2}
+.rk-ring{position:absolute;transform:translate(-50%,-50%) scaleY(.55);border-radius:50%;z-index:3;pointer-events:none;border:3px solid rgba(255,244,200,.75);box-shadow:0 0 12px rgba(255,220,120,.6)}
+.rk-ring.r3{transform:translate(-50%,-50%) scaleY(.4)}
+.rk-ring.hit{animation:rkRing .25s ease-out}
+@keyframes rkRing{0%{box-shadow:0 0 30px 10px rgba(255,230,140,.95);border-color:#fff}100%{box-shadow:0 0 12px rgba(255,220,120,.6)}}
+.rk-stand{position:absolute;width:12px;transform:translateX(-50%);z-index:1;background:linear-gradient(90deg,#4a2a12,#8a5528 45%,#4a2a12);border:2px solid #1c0f06;border-radius:4px}
+.rk-arm{position:absolute;width:auto;z-index:5;transform-origin:50% 100%;pointer-events:none;transition:transform .07s ease-out,height .07s ease-out}
+.rk-arm img{height:100%;width:auto;display:block;filter:drop-shadow(0 6px 6px rgba(0,0,0,.45))}
+.rk-arm.r img{transform:scaleX(-1)}
+.rk-st::before{height:14%}
+.rk-n{z-index:4}
+/* Leuchtende Noten und Trefferfeedback */
+.rk-n{width:56px;height:56px;border-radius:50%;box-shadow:none!important;background:radial-gradient(circle,#fff 0 18%,var(--c) 38%,color-mix(in srgb,var(--c) 55%,transparent) 55%,transparent 72%)!important;filter:drop-shadow(0 0 10px var(--c)) drop-shadow(0 0 4px #fff)}
+.rk-n::after{content:'';position:absolute;left:50%;bottom:50%;width:14px;height:70px;transform:translateX(-50%);border-radius:7px;background:linear-gradient(transparent,color-mix(in srgb,var(--c) 70%,transparent));opacity:.7;z-index:-1}
+.rk-n.l0{--c:#ff7a4a}.rk-n.l1{--c:#ffd23f}.rk-n.l2{--c:#5fe06a}.rk-n.l3{--c:#5ab8ff}
+.rk.feuer .rk-n{filter:drop-shadow(0 0 16px #ffd76a) drop-shadow(0 0 6px #fff)}
+.rk.feuer .rk-hw polygon{fill-opacity:.3}
+.rk-fx{position:absolute;inset:0;z-index:7;pointer-events:none}
+.rk-burst{position:absolute;width:150px;height:150px;margin:-75px 0 0 -75px;border-radius:50%;background:radial-gradient(circle,#fff 0 15%,var(--c) 35%,transparent 70%);animation:rkBurst .45s ease-out forwards;mix-blend-mode:screen}
+.rk-burst.p{width:220px;height:220px;margin:-110px 0 0 -110px}
+@keyframes rkBurst{0%{transform:scale(.3);opacity:1}100%{transform:scale(1.2);opacity:0}}
+.rk-wave{position:absolute;width:60px;height:60px;margin:-30px 0 0 -30px;border-radius:50%;border:5px solid var(--c);box-shadow:0 0 14px var(--c);animation:rkWave .45s ease-out forwards}
+@keyframes rkWave{0%{transform:scale(.4,.25);opacity:1}100%{transform:scale(3.2,1.8);opacity:0}}
+.rk-sp{position:absolute;width:8px;height:8px;margin:-4px;border-radius:50%;background:var(--c);box-shadow:0 0 8px var(--c),0 0 3px #fff;animation:rkSp .6s ease-out forwards}
+@keyframes rkSp{0%{transform:rotate(var(--a)) translateX(0)}100%{transform:rotate(var(--a)) translateX(var(--d)) scale(.2);opacity:0}}
+.rk-txt{position:absolute;transform:translate(-50%,-50%);font-family:var(--head);font-size:1.5rem;white-space:nowrap;text-shadow:0 2px 0 #3a1d08,0 0 10px rgba(0,0,0,.8);animation:rkTxt .7s ease-out forwards}
+.rk-txt.p{color:#ffe27a}.rk-txt.g{color:#c8f5b0;font-size:1.2rem}
+@keyframes rkTxt{0%{transform:translate(-50%,-30%) scale(.6);opacity:0}20%{transform:translate(-50%,-50%) scale(1.15);opacity:1}100%{transform:translate(-50%,-160%) scale(1);opacity:0}}
+.rk-miss{position:absolute;width:70px;height:70px;margin:-35px 0 0 -35px;border-radius:50%;background:radial-gradient(circle,rgba(255,60,40,.55),transparent 70%);animation:rkBurst .4s ease-out forwards}
+.rk-st.shake{animation:rkShake .18s}
+@keyframes rkShake{25%{transform:translateX(calc(-50% + 3px))}75%{transform:translateX(calc(-50% - 3px))}}
+.rk-pop{display:none}
