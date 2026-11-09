@@ -3,10 +3,16 @@
 function diceOvl(){let o=$('#dice');if(!o){o=el('div','ovl dice-ovl');o.id='dice';document.body.appendChild(o)}return o}
 // Drehbilder je Würfel (gemalt): w20 acht Stück, w10 und w100 je vier
 const DFR={w20:8,w10:4,w100:4};
-function dieEl(kind,cls){const d=el('div','die '+kind+(cls?' '+cls:''),'<img src="'+A+'ui/'+kind+'.png" alt=""><b></b>');d.dataset.k=kind;
- if(DFR[kind])for(let i=0;i<DFR[kind];i++){const im=new Image();im.src=A+'ui/'+kind+'_r'+i+'.png'}return d}
-async function tumble(d,final,fmt){const k=d.dataset.k,n=DFR[k]||0,img=d.querySelector('img'),b=d.querySelector('b');d.classList.add('roll');const t0=performance.now();let i=0;
- while(performance.now()-t0<1150){if(n){img.src=A+'ui/'+k+'_r'+(i%n)+'.png';b.style.opacity=0}else b.textContent=fmt(null);i++;await sleep(55+i*5)}
+// Alle Würfelbilder gleich beim Start vorladen, damit beim ersten Wurf nichts leer bleibt
+const DIMG={};
+function dPre(){if(dPre.ok)return;dPre.ok=1;for(const k of ['w20','w10','w100','w20s']){const b=new Image();b.fetchPriority='high';b.src=A+'ui/'+k+'.png';DIMG[k]=b;for(let i=0;i<(DFR[k]||0);i++){const im=new Image();im.src=A+'ui/'+k+'_r'+i+'.png';DIMG[k+'_r'+i]=im}}}
+setTimeout(dPre,300);
+const dReady=n=>{const im=DIMG[n];return im&&im.complete&&im.naturalWidth>0};
+function dieEl(kind,cls){dPre();const d=el('div','die '+kind+(cls?' '+cls:''),'<img src="'+A+'ui/'+kind+'.png" alt=""><b></b>');d.dataset.k=kind;return d}
+// Wartet kurz, bis das Grundbild des Würfels geladen ist (langsames Netz), höchstens 2,5 s
+async function dWait(k){dPre();const im=DIMG[k];if(!im||dReady(k))return;await Promise.race([new Promise(r=>{im.addEventListener('load',r,{once:true});im.addEventListener('error',r,{once:true})}),sleep(2500)])}
+async function tumble(d,final,fmt){await dWait(d.dataset.k);const k=d.dataset.k,n=DFR[k]||0,img=d.querySelector('img'),b=d.querySelector('b');d.classList.add('roll');const t0=performance.now();let i=0;
+ while(performance.now()-t0<1150){const fr=k+'_r'+(i%n);if(n&&dReady(fr)){img.src=DIMG[fr].src;b.style.opacity=0}else{if(n&&!img.src.endsWith('/'+k+'.png'))img.src=A+'ui/'+k+'.png';b.style.opacity=1;b.textContent=fmt(null)}i++;await sleep(55+i*5)}
  img.src=A+'ui/'+k+'.png';b.style.opacity=1;d.classList.remove('roll');d.classList.add('land');b.textContent=fmt(final);setTimeout(()=>d.classList.remove('land'),500)}
 
 // Eigene Würfel: Ergebnis selbst eintippen
