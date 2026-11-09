@@ -1615,3 +1615,13 @@ img{display:block;max-width:100%}
 @keyframes pl4Gem{0%{opacity:1;transform:translate(-50%,-50%) scale(1.6)}100%{opacity:0;transform:translate(-50%,-50%) scale(1)}}
 .pl4-ring i{width:76%;height:76%;border:3px solid color-mix(in srgb,var(--c) 75%,#fff);box-shadow:0 0 12px var(--c),0 0 4px #fff,inset 0 0 10px var(--c);animation:pl4Puls 1.2s ease-in-out infinite}
 @keyframes pl4Puls{50%{box-shadow:0 0 20px var(--c),0 0 6px #fff,inset 0 0 14px var(--c)}}
+/* Lautenspiel im Schlagzeug Aufbau */
+.pl5 .rk-st{background:var(--lbg) center/cover}
+.pl5 .rk-st::before{display:none}
+.pl5 .rk-notes{z-index:5}
+.pl5 .pl4-str{z-index:3}
+.pl5 .pl4-rings{z-index:4}
+.pl5 .rk-n.pl-n{width:40px;height:40px}
+.pl5 .rk-help{top:auto;bottom:calc(4% + env(safe-area-inset-bottom))}
+.pl5 .rk-combo{top:calc(83% - 150px)}
+.pl5 .tk2-count{top:36%}
