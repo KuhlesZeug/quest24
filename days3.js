@@ -38,7 +38,7 @@ DAYS[14]={end:'Heute zum Ausdrucken: Oma Huldas Gefährtenbogen, Teil 3 der Land
  {bg:'hu4',look:1000},
  {s:'HU',t:'Ich lass euch nur gehen, wenn ihr mir eine Revanche anbietet. Ich bin ja kein Unmensch.'},
  {s:'SL',t:'Die Rettung ist also eine Verhandlung. Mit den Banditen. Für die Banditen.'},
- {s:'SL',t:'Knorz will wenigstens einmal gewinnen. Du spielst für die Banditen. Tipp in fünf Runden, ob die nächste Karte höher oder tiefer ist. Aber nicht zu oft richtig.'},
+ {s:'SL',t:'Knorz will wenigstens einmal gewinnen. Du tippst für Hulda, fünf Runden lang: Ist die nächste Karte höher oder tiefer? Aber sei nicht zu oft richtig, sonst gewinnt Knorz nie.'},
  {game:'karten'},
  {if:()=>st.flags.karten===5,then:[{s:'KNO',t:'Wieder verloren. Ich will nach Hause.',e:'sad'},{s:'HU',t:'Kindchen, ein bisschen Taktgefühl.',e:'sly'}]},
  {if:()=>st.flags.karten<=3,then:[{s:'HU',t:'Du hast das Talent deiner Großmutter. Also meins nicht.',e:'sly'}]},
@@ -95,7 +95,7 @@ DAYS[16]={end:'Hulda hat ein altes Zeitungsblatt eingesteckt. Ganz schnell.',ste
  {s:'HU',t:'Unter der dritten Diele vom Fenster liegt mein altes Werkzeug. Und ich hab hier Fallen gespannt. Gegen Diebe. Also gegen Leute wie mich.'},
  {s:'SL',t:'Bevor jemand irgendwohin tritt: Suchst du nach Fallen?'},
  {choice:[{t:'Ja, nach Fallen suchen',go:[{probe:{stat:'wis',ziel:11,name:'Fallen suchen',bonus:()=>st.hero.skills.includes('finger')?4:0},
-   ok:[{s:'HU',t:'Gutes Auge. Den hab ich vor sechzig Jahren gespannt.'}],
+   ok:[{s:'HU',t:'Gutes Auge. Die hab ich vor sechzig Jahren gespannt.'}],
    fail:[{sfx:'tuer_knarzt'},{s:'SL',t:'Eine Klappe öffnet sich, und du stehst knietief in Wollknäueln. Ich habe gefragt. Ich frage immer. Das ist mein Job.'}]}]},
   {t:'Nein, einfach losgehen',go:[{sfx:'tuer_knarzt'},{s:'SL',t:'Eine Klappe öffnet sich, und du stehst knietief in Wollknäueln. Ich habe gefragt. Ich frage immer. Das ist mein Job.'}]}]},
  {bg:'hd1',alt:'ort16',look:1200},
@@ -116,7 +116,7 @@ FILMS.z4={shots:[
  {img:'f_z4d',s:'SL',t:'Sie nimmt nur eine Münze! Und hinterlässt ein Plätzchen! Warum? Wir werden es nie erfahren!'},
  {img:'ort16',mus:null,atmo:null,sfx:'glut_knistern',s:'HU',t:'Weil man immer etwas zurücklässt, Kindchen. Das gehört sich so.'},
  {s:'HU',t:'Fast immer.',gap:1200},
- {img:'f_tisch',sfx:'plattenkratzer',s:'SL',t:'Das fast immer hab ich mir notiert. Das ist wichtig. Ich weiß nur noch nicht, warum.'}
+ {img:'f_tisch',sfx:'plattenkratzer',s:'SL',t:'Dieses fast immer hab ich mir notiert. Das ist wichtig. Ich weiß nur noch nicht, warum.'}
 ]};
 
 DAYS[17]={end:'Heute zum Ausdrucken: das Rätselblatt Eisbrücke mit den Figuren zum Ausschneiden. Du brauchst es morgen.',steps:[
@@ -146,7 +146,7 @@ DAYS[17]={end:'Heute zum Ausdrucken: das Rätselblatt Eisbrücke mit den Figuren
  {s:'HU',t:'Natürlich hat Herbert auch einen. Ich bin doch kein Unmensch.'},
  {item:'schal'},
  {sfx:'rohrpost'},
- {s:'SL',t:'Sie hat mir einen Keks geschickt. Was bedeutet das? Ist das gut? Das ist gut, oder?'},{hide:1}
+ {s:'SL',t:'Meisterin Wendelgard hat mir gerade einen Keks hingeschoben. Was bedeutet das? Ist das gut? Das ist gut, oder?'},{hide:1}
 ]};
 
 DAYS[18]={end:'Die Brücke hat gehalten. Grumbold hat sich trotzdem bei ihr entschuldigt.',steps:[
@@ -161,6 +161,7 @@ DAYS[18]={end:'Die Brücke hat gehalten. Grumbold hat sich trotzdem bei ihr ents
  {s:'SL',t:'Tippe die Figuren an, die zusammen mit der Laterne hinübergehen. Dann auf Losgehen.'},
  {game:'bruecke',wrong:[{sfx:'eis_knackt'},{s:'ZI',t:'Das war eine Note. Ein tiefes C. Und jetzt ein noch tieferes.'},{s:'SL',t:'Zurück! Alle zurück! Wir zählen nochmal.'}]},
  {sfx:'schritte'},
+ {s:'SL',vo:'d18_br1',t:'Drüben steckt ein alter Eishaken im Fels. Mitten über dem Abgrund.'},
  {s:'GR',t:'Zu weit weg.'},
  {s:'HU',t:'Viel zu weit.'},
  {s:'SL',t:'Und jetzt … holst du die drei Meter Stange heraus.'},

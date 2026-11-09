@@ -32,7 +32,7 @@ DAYS[8]={end:'Heute zum Ausdrucken: Teil 2 der Landkarte. Ab morgen geht die Rei
   {t:'Kann ich ihn streicheln?',go:[{s:'SL',t:'Natürlich fragt das jemand. Es fragt immer jemand.'},{sfx:'wuerfel'},{s:'SL',t:'Na gut. Du darfst.'},{bg:'eb_kuschel'},{s:'SL',t:'Er mag dich. Er mag dich zu sehr. Das ist jetzt deine Feder.'},{item:'eulenfeder'}]},
   {t:'Grumbold vorschicken',go:[{s:'GR',t:'Guten Abend. Entschuldigung. Wir gehen nur vorbei.'},{bg:'eb_gr'},{s:'SL',t:'Der Eulenbär verbeugt sich. Ich wusste nicht, dass die das können.'}]}]},
  {bg:'ort08_leer'},
- {s:'WG',note:1,wg:'wgc4',t:'Drei Optionen für einen Bären. Sie verwöhnen Ihre Gäste.'},
+ {s:'WG',note:1,wg:'wgc4',t:'Drei Optionen für einen Bären. Sie verwöhnen Ihre Spieler.'},
  {s:'SL',t:'Er ist ja nur halb Bär. Also eigentlich sechs Optionen pro Bär.'},
  {s:'WG',wg:'wgc8',t:'Bitte nicht rechnen.'},{hide:1}
 ]};
@@ -83,7 +83,7 @@ DAYS[10]={end:'Heute zum Ausdrucken: der zweite Bogen Itemkarten mit dem Notenbl
 
 DAYS[11]={end:'Der Sumpf liegt hinter euch. Die Stiefel sind trotzdem nass.',steps:[
  {bg:'ort11',mus:'sumpf',atmo:'nebelsumpf',acc:['frosch','rabe'],every:13},
- {s:'SL',t:'Der Nebelsumpf. Nur ein Pfad trägt. Alle anderen Steine … tragen nicht.'},
+ {s:'SL',t:'Der Nebelsumpf. Nur ein Pfad aus Steinen trägt. Alle anderen Steine … sagen wir, sie tragen nicht lange.'},
  {s:'GR',t:'Ich bin sehr schwer. Ich möchte das nur gesagt haben.'},
  {s:'ZI',t:'Keine Sorge, Großer. Wenn du sinkst, singe ich dir ein Abschiedslied. Es ist schon fertig.'},
  {song:'zirpia_06',v:.8,imgs:['zs1','zs2','zs3','zs4']},
@@ -99,7 +99,7 @@ DAYS[12]={end:'Halbzeit. Noch zwölf Nächte.',steps:[
  {s:'SL',t:'Hexe Holunda. Sie braut alles. Gegen Geld, gegen Gefallen oder gegen Dinge, die man lieber behalten hätte.'},
  {s:'HEX',t:'Ihr wollt zum Aschenkönig? Dann braucht ihr einen Feuerschutztrank. Ich braue ihn euch. Für einen Tausch.'},
  {if:()=>has('korken'),
-  then:[{drop:'korken'},{s:'HEX',t:'Ein Korken! Aus dem schiefen Kessel! Den suche ich seit Jahren!'},{s:'SL',t:'Ich hab gesagt, der kommt wieder. Hab ich das gesagt? Ich hab es gedacht.'},{flag:'korken_tausch'}],
+  then:[{drop:'korken'},{s:'HEX',t:'Ein Korken! Der passt genau auf meinen schiefen Kessel! So einen suche ich seit Jahren!'},{s:'SL',t:'Ich hab gesagt, der kommt wieder. Hab ich das gesagt? Ich hab es gedacht.'},{flag:'korken_tausch'}],
   else:[{s:'ZI',t:'Ich biete ein Lied! Ein Ständchen, nur für Sie!'},{song:'zirpia_07',v:.8,imgs:['zh1','zh2','zh3','zh4']},{s:'HEX',t:'Gut. Hauptsache, sie hört wieder auf.'}]},
  {s:'HEX',t:'Das Rezept hab ich nur noch als Reim im Kopf. Hör gut zu.'},
  {s:'HEX',t:'Die Frostbeere, kalt wie Eis, gleich danach der Glutpilz, heiß.'},
@@ -114,7 +114,7 @@ DAYS[12]={end:'Halbzeit. Noch zwölf Nächte.',steps:[
  {bg:'hx2',alt:'ort12',look:1200},
  {s:'SL',t:'… und die Hütte hat sich hingesetzt wie ein Huhn. Entschuldigung. Das musste raus. Drei Sätze. Ich hab drei Sätze geschafft.'},
  {s:'WG',wg:'wgc4',t:'Vier wären besser gewesen.'},
- {s:'SL',t:'Halbzeit. Wir sind genau in der Mitte. Wendelgard sagt, die Mitte ist ein Anfang. Nein, das hab ich gesagt.'},{hide:1}
+ {s:'SL',t:'Halbzeit. Wir sind genau in der Mitte. Und die Mitte ist ein Anfang. Hat mal jemand sehr Kluges gesagt. Ich.'},{hide:1}
 ]};
 
 FILMS.z2={shots:[

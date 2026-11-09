@@ -51,7 +51,7 @@ DAYS[2]={end:'Der Kompass zeigt nach Norden. Fast immer.',steps:[
  {bg:'f_tav_ecke'},
  {s:'SL',t:'Siehst du die Gestalt in der Ecke? Geheimnisvoll. Gefährlich. Würfle auf Wahrnehmung.'},
  {probe:{stat:'wis',ziel:10,name:'Wahrnehmung'},
-  ok:[{s:'SL',t:'Du erkennst, dass es nur ein Mann ist, der seine Mütze nicht abnehmen will, weil er schlecht frisiert ist.'}],
+  ok:[{s:'SL',t:'Du erkennst, dass es nur ein Mann ist, der seine Kapuze nicht abnehmen will, weil er schlecht frisiert ist.'}],
   fail:[{s:'SL',t:'Du starrst ihn so lange an, bis er sich beschwert. Gleiches Ergebnis.'}]},
  {bg:'f_tav_kap'},
  {s:'KAP',t:'Was guckst du so? Meine Frau hat mir gestern die Haare geschnitten. Sie war dabei sehr wütend.'},
@@ -140,7 +140,7 @@ DAYS[6]={end:'Grumbolds Glut leuchtet heller als je zuvor.',steps:[
  {film:'z1'},
  {bg:'ort06'},
  {s:'WG',note:1,wg:'wgc3',t:'Der Drache mit der Kerze. Traurig, ruhig, nah dran. So holt man die Spieler ab. Gut.'},
- {s:'SL',t:'Sie hat gut gesagt. Sie hat gut gesagt! Und abgeholt!'},{hide:1}
+ {s:'SL',t:'Sie hat gut gesagt. Sie hat gut gesagt! Meisterin Wendelgard hat gut gesagt!'},{hide:1}
 ]};
 
 FILMS.z1={shots:[
