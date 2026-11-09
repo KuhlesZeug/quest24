@@ -15,7 +15,7 @@ GAMES.takt=()=>new Promise(async done=>{hideBox();
   '<svg class="rk-hw" viewBox="0 0 100 100" preserveAspectRatio="none"></svg><div class="rk-notes"></div>'+
   '<div class="rk-stand"></div>'+LANES.map((l,i)=>'<div class="rk-pad p'+i+'" data-i="'+i+'"><img src="'+A+'ui/'+l.n+'.png" alt=""></div><div class="rk-ring r'+i+'"></div>').join('')+
   '<div class="rk-arm l"><img src="'+A+'ui/zi_arm2.png" alt=""></div><div class="rk-arm r"><img src="'+A+'ui/zi_arm2.png" alt=""></div>'+
-  '<div class="rk-fx"></div><div class="rk-combo"></div><div class="rk-pop"></div><div class="rk-help">Tippe auf die Spur, wenn eine Note unten am Instrument ankommt.</div><div class="tk2-count"></div><div class="rk-load">Die Bühne wird aufgebaut …</div></div>';
+  '<div class="rk-fx"></div><div class="rk-combo"></div><div class="rk-pop"></div><div class="rk-help">Tippe die Trommel, sobald ein Licht in ihrem Kreis ist.</div><div class="tk2-count"></div><div class="rk-load">Die Bühne wird aufgebaut …</div></div>';
  document.body.appendChild(o);requestAnimationFrame(()=>o.classList.add('on'));
  const $o=s=>o.querySelector(s),stg=$o('.rk-st'),notesEl=$o('.rk-notes'),pads=[...o.querySelectorAll('.rk-pad')],arms=[...o.querySelectorAll('.rk-arm')],pop=$o('.rk-pop'),comboEl=$o('.rk-combo'),meter=$o('.tk2-meter i');
  // Ego Ansicht: Instrumente im Bogen vor Zirpia, Spuren laufen von oben auf die Trommelfelle zu

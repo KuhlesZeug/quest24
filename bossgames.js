@@ -71,7 +71,7 @@ GAMES.p_glut=()=>new Promise(async done=>{const W1=phWho(1);const T=W1.right?9:6
 // Phase 3: Der Aschesturm. Zirpia spielt das Wiegenlied auf den vier Saiten ihrer Walnusslaute.
 function pluck(f,vol){const c=ac(),t=c.currentTime;const o=c.createOscillator(),g=c.createGain(),fl=c.createBiquadFilter();o.type='triangle';o.frequency.setValueAtTime(f,t);fl.type='lowpass';fl.frequency.setValueAtTime(3200,t);fl.frequency.exponentialRampToValueAtTime(700,t+.6);g.gain.setValueAtTime(vol||.35,t);g.gain.exponentialRampToValueAtTime(.001,t+1.1);o.connect(fl);fl.connect(g);g.connect(sfxBus);o.start(t);o.stop(t+1.2)}
 GAMES.p_lied=()=>new Promise(async done=>{const W2=phWho(2);const LEAD=W2.right?1.9:1.5;
- const o=await phShell('pl pl2','mg_laute','ort24',W2.name+' spielt das Wiegenlied','Lichter gleiten über die Saiten der Walnusslaute auf dich zu. Drück unten den Knopf in der gleichen Farbe, sobald ein Licht im Ring liegt.');
+ const o=await phShell('pl pl2','mg_laute','ort24',W2.name+' spielt das Wiegenlied','Die Töne gleiten über die Saiten der Walnusslaute auf dich zu. Drück unten den Knopf in der gleichen Farbe, sobald ein Ton im Ring liegt.');
  const C=['g','r','y','b'],COL=['#3fd14b','#ea4434','#f6c945','#3b8ff0'];
  // Saiten im Bild (Anteile der Bildbreite und Bildhöhe, gemessen an mg_laute 1536x2720): x = a + k*y
  const IW=1536,IH=2720,Y0=.31,Y1=.80;const S=[[.464,.4,.396,.8],[.487,.4,.463,.8],[.511,.4,.536,.8],[.536,.4,.607,.8]].map(([x0,y0,x1,y1])=>{const k=(x1-x0)/(y1-y0);return y=>x0+k*(y-y0)});
