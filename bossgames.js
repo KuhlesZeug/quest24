@@ -19,8 +19,8 @@ function phRetry(o,txt){return new Promise(r=>{const c=el('div','ph-intro','<div
 GAMES.p_netz=()=>new Promise(async done=>{const W0=phWho(0);const hard=W0.right?1:1.4;const NETS=7;
  const o=await phShell('pn','mg_himmel','ort24',W0.name+' wirft das Netz','Tippe dorthin, wo Vharkon gleich sein wird. Drei Treffer holen ihn herunter.',1);
  const dr=el('img','pn-dr');dr.src=A+'img/vh_fly.png';dr.onerror=()=>{dr.src=A+'img/g_drache_0.png'};o.appendChild(dr);
- let hits=0,throws=0,t0=performance.now(),run=false,x=.5,y=.3;bar(o,'Treffer 0 von 3 · Netze übrig '+NETS,0);
- const tick=t=>{if(!o.isConnected)return;const s=(t-t0)/1000*hard*(run?1:.5);x=.5+.34*Math.sin(s*.9)+.05*Math.sin(s*2.3);y=.3+.11*Math.sin(s*1.4+1);const W=o.clientWidth,H=o.clientHeight;dr.style.left=(x*W)+'px';dr.style.top=(y*H)+'px';dr.style.transform='translate(-50%,-50%) scaleX('+(Math.cos(s*.9)>0?1:-1)+')';requestAnimationFrame(tick)};requestAnimationFrame(tick);
+ let frozen=false,hits=0,throws=0,t0=performance.now(),run=false,x=.5,y=.3;bar(o,'Treffer 0 von 3 · Netze übrig '+NETS,0);
+ const tick=t=>{if(!o.isConnected)return;if(frozen){requestAnimationFrame(tick);return}const s=(t-t0)/1000*hard*(run?1:.5);x=.5+.34*Math.sin(s*.9)+.05*Math.sin(s*2.3);y=.3+.11*Math.sin(s*1.4+1);const W=o.clientWidth,H=o.clientHeight;dr.style.left=(x*W)+'px';dr.style.top=(y*H)+'px';dr.style.transform='translate(-50%,-50%) scaleX('+(Math.cos(s*.9)>0?1:-1)+')';requestAnimationFrame(tick)};requestAnimationFrame(tick);
  await phIntro(o,'Vharkon kreist hoch über dem Gipfel. Tippe in den Himmel, dann fliegt dein Netz genau an diese Stelle. Das Netz braucht einen Moment, also ziel ein kleines Stück vor den Drachen, dorthin, wo er gleich sein wird. Drei Treffer, und er stürzt herunter. Du hast sieben Netze.','b24_netz');
  t0=performance.now();run=true;
  const start=()=>{hits=0;throws=0;dr.classList.remove('away');bar(o,'Treffer 0 von 3 · Netze übrig '+NETS,0);run=true};
@@ -31,8 +31,8 @@ GAMES.p_netz=()=>new Promise(async done=>{const W0=phWho(0);const hard=W0.right?
   const D=dr.getBoundingClientRect();const cx=D.left+D.width/2,cy=D.top+D.height/2;const px=R.left+tx*R.width,py=R.top+ty*R.height;
   const rx=D.width*(W0.right?.42:.34),ry=D.height*(W0.right?.42:.34);const inside=((px-cx)/rx)**2+((py-cy)/ry)**2<=1;
   if(inside){hits++;n.classList.add('hit');sfx('treffer',.8);dr.classList.add('hurt');setTimeout(()=>dr.classList.remove('hurt'),500);toast(['','Getroffen! Noch zweimal!','Noch einmal! Er wird langsamer!','Er hängt im Netz!'][hits],1500)}else{n.classList.add('miss');sfx('wind_boe',.5)}
-  setTimeout(()=>n.remove(),700);bar(o,'Treffer '+hits+' von 3 · Netze übrig '+(NETS-throws),hits/3);
-  if(hits>=3){run=false;dr.classList.add('fall');sfx('drache',.7);await phEnd(o,'Vharkon stürzt ins Netz und landet auf dem Gipfel.');return done(1)}
+  if(hits<3)setTimeout(()=>n.remove(),700);bar(o,'Treffer '+hits+' von 3 · Netze übrig '+(NETS-throws),hits/3);
+  if(hits>=3){run=false;frozen=true;{const R2=o.getBoundingClientRect(),D2=dr.getBoundingClientRect();dr.style.left=(D2.left-R2.left+D2.width/2)+'px';n.style.transition='none';n.style.left=(D2.left-R2.left+D2.width/2)+'px';n.style.top=(D2.top-R2.top+D2.height/2)+'px';requestAnimationFrame(()=>requestAnimationFrame(()=>n.classList.add('pn-fang')))}dr.classList.add('fall');sfx('drache',.7);await phEnd(o,'Vharkon stürzt ins Netz und landet auf dem Gipfel.');return done(1)}
   if(throws>=NETS){run=false;sfx('falsch',.6);const again=await phRetry(o,'Alle Netze sind verbraucht. '+(hits?hits+' von 3 Treffern, das ist schon was!':'Er war zu schnell.')+' Oma Hulda hat noch einen Korb voll Netze. Willst du es nochmal versuchen?');
    if(again){start();return}dr.classList.add('away');await phEnd(o,'Er entwischt. Aber er ist müde geworden und landet trotzdem.');done(Math.min(1,hits/3))}});
 });

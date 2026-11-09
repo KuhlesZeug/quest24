@@ -413,6 +413,41 @@ GAMES.becher=()=>new Promise(done=>{
   else{sfx('falsch',.6);st.flags.becher_leer=1;save();msg.textContent='Leer.';await sleep(700);lift(prize,true);await sleep(1300);lift(c,false);lift(prize,false);miss++;if(miss>=2&&slow===1){slow=1.5;toast('Der Wirt mischt jetzt etwas langsamer.')}await sleep(500);play()}});
  setTimeout(play,500)});
 
+GAMES.becher2=()=>new Promise(done=>{hideBox();const sc=$('#s-scene');const IW=1080,IH=1920;
+ // Bildkoordinaten auf dem Tavernentisch (bc_tisch.jpg): Becherplätze, Kerzenlicht
+ const CFG={X:[.27,.5,.73],Y:.665,H:.15,candle:[.1,.62],slow:1};
+ const o=el('div','pg bc2','<div class="pg-img" style="background-image:url('+A+'img/bc_tisch.jpg),url('+A+'img/f_wirt2.jpg)"></div><div class="bc2-glow"></div><div class="pg-top">Das Becherspiel</div><div class="bc2-coins"><i></i><i></i><i></i></div><div class="bc2-say"><b>Wirt</b><span></span></div><div class="bc2-msg"></div><div class="bc2-help">Merk dir, unter welchem Becher der Kompass liegt. Dreimal hintereinander richtig, dann gehört er dir.</div>');sc.appendChild(o);
+ const say=o.querySelector('.bc2-say'),sayT=say.querySelector('span'),msg=o.querySelector('.bc2-msg'),coins=[...o.querySelectorAll('.bc2-coins i')],glow=o.querySelector('.bc2-glow');
+ const M=()=>{const W=o.clientWidth,H=o.clientHeight,k=Math.max(W/IW,H/IH),iw=IW*k,ih=IH*k;return{W,H,iw,ih,ox:(W-iw)/2,oy:(H-ih)/2}};
+ // Becher: Schatten, darunter liegender Gegenstand (Kompass oder Korken) und der Becher selbst. Der Gegenstand wandert mit dem Becher.
+ const cups=[0,1,2].map(i=>{const c=el('button','bc2-c','<i class="bc2-sh"></i><img class="bc2-u" alt=""><img class="bc2-cup" src="'+A+'ui/becher.png" alt="">');o.appendChild(c);return {el:c,slot:i,u:c.querySelector('.bc2-u')}});
+ const slotXY=(m,s)=>{const w=Math.min(m.W/3.6,CFG.H*m.ih*.92);const x=Math.min(m.W-w/2-6,Math.max(w/2+6,m.ox+CFG.X[s]*m.iw));return[x,m.oy+CFG.Y*m.ih,w]};
+ const lay=()=>{const m=M();cups.forEach(c=>{const [x,y,w]=slotXY(m,c.slot);c.el.style.width=w+'px';c.el.style.left=x+'px';c.el.style.top=y+'px'});glow.style.left=(m.ox+CFG.candle[0]*m.iw)+'px';glow.style.top=(m.oy+CFG.candle[1]*m.ih)+'px'};
+ lay();addEventListener('resize',lay);
+ const wirt=async(t,id,wait)=>{sayT.textContent=t;say.classList.remove('on');void say.offsetWidth;say.classList.add('on');const a=playVo(A+'vo/'+id+'.mp3');if(wait&&a)await Promise.race([voDone(a),sleep(4500)])};
+ const lift=(c,on)=>c.el.classList.toggle('up',on);
+ const puff=c=>{const r=c.el.getBoundingClientRect(),R=o.getBoundingClientRect();for(let k=0;k<2;k++){const p=el('i','bc2-dust');p.style.left=(r.left-R.left+r.width*(k?.85:.15))+'px';p.style.top=(r.bottom-R.top-6)+'px';p.style.setProperty('--d',(k?1:-1)*18+'px');o.appendChild(p);setTimeout(()=>p.remove(),600)}};
+ // Tauschen: ein Becher läuft hinten herum (kleiner), der andere vorne (größer), beide leicht gekippt
+ async function swap(a,b,ms){const m=M();const [ax,ay]=slotXY(m,a.slot),[bx,by]=slotXY(m,b.slot);const lift_=m.ih*.035;
+  const ka=a.el.animate([{left:ax+'px',top:ay+'px',transform:'translate(-50%,-100%) scale(1) rotate(0)'},{left:(ax+bx)/2+'px',top:(ay-lift_)+'px',transform:'translate(-50%,-100%) scale(.9) rotate('+(bx>ax?6:-6)+'deg)',offset:.5},{left:bx+'px',top:by+'px',transform:'translate(-50%,-100%) scale(1) rotate(0)'}],{duration:ms,easing:'ease-in-out'});
+  const kb=b.el.animate([{left:bx+'px',top:by+'px',transform:'translate(-50%,-100%) scale(1) rotate(0)'},{left:(ax+bx)/2+'px',top:(by+lift_*.6)+'px',transform:'translate(-50%,-100%) scale(1.08) rotate('+(ax>bx?6:-6)+'deg)',offset:.5},{left:ax+'px',top:ay+'px',transform:'translate(-50%,-100%) scale(1) rotate(0)'}],{duration:ms,easing:'ease-in-out'});
+  a.el.style.zIndex=6;b.el.style.zIndex=8;sfx('krug',.22);
+  const t=a.slot;a.slot=b.slot;b.slot=t;lay();await Promise.all([ka.finished,kb.finished]);a.el.style.zIndex=b.el.style.zIndex=7;if(ms>330)puff(Math.random()<.5?a:b)}
+ const R=[{n:5,ms:560},{n:8,ms:420},{n:12,ms:300}];let round=0,miss=0,slow=1,prize=null,busy=true;
+ async function play(){busy=true;msg.classList.remove('on');o.querySelector('.pg-top').textContent='Das Becherspiel · Runde '+(round+1)+' von 3';const r=R[round];
+  prize=cups[Math.floor(Math.random()*3)];cups.forEach(c=>{c.u.src=A+'items/'+(c===prize?'kompass':'korken')+'.png';c.u.classList.toggle('k',c===prize)});
+  await sleep(300);lift(prize,true);sfx('gegenstand',.35);await wirt(round===0?'Schau gut hin. Hier liegt er noch.':'Und jetzt wird gemischt!',round===0?'bc_w1':'bc_w2',true);await sleep(round===0?200:500);lift(prize,false);await sleep(500);
+  if(round===0){await wirt('Und jetzt wird gemischt!','bc_w2',false);await sleep(500)}
+  o.classList.add('mischt');for(let k=0;k<r.n;k++){let a=Math.floor(Math.random()*3),b=(a+1+Math.floor(Math.random()*2))%3;await swap(cups[a],cups[b],Math.round(r.ms*slow))}o.classList.remove('mischt');
+  msg.textContent='Wo ist der Kompass?';msg.classList.add('on');wirt('Na? Wo ist er?','bc_w3',false);busy=false}
+ cups.forEach(c=>c.el.onclick=async()=>{if(busy)return;busy=true;msg.classList.remove('on');lift(c,true);
+  if(c===prize){sfx('richtig',.7);fx('magic',c.u,c.el.offsetWidth*1.3);c.el.classList.add('win');coins[round].classList.add('an');sfx('muenzen',.5);
+   if(round<2)await wirt(round===0?'Hm. Glück gehabt.':'Schon wieder? Jetzt mische ich richtig.',round===0?'bc_ok1':'bc_ok2',true);else{sfx('jubel_kurz',.6);await sleep(1600)}
+   lift(c,false);c.el.classList.remove('win');await sleep(450);round++;miss=0;slow=1;if(round>=3){o.classList.add('out');removeEventListener('resize',lay);setTimeout(()=>{o.remove();done()},500);return}play()}
+  else{sfx('falsch',.5);st.flags.becher_leer=1;save();c.el.classList.add('leer');await wirt(miss?'Daneben. Noch mal, ich hab ja Zeit.':'Leer! Aber der Korken ist auch was wert. Ein bisschen.',miss?'bc_no2':'bc_no1',false);await sleep(900);lift(prize,true);await sleep(1600);lift(c,false);lift(prize,false);c.el.classList.remove('leer');miss++;
+   if(miss>=2&&slow===1){slow=1.5;await sleep(400);await wirt('Na gut, ich mische etwas langsamer. Aber nur, weil Dezember ist.','bc_lang',true)}await sleep(500);play()}});
+ setTimeout(play,700)});
+
 // Tag 7: Die sprechenden Wegweiser. Schilder antippen, zuhören, dann einem Weg folgen.
 // Logik: Nur ein Schild sagt die Wahrheit, und das ehrliche Schild steht vor dem Weg nach Norden. Lösung: Mitte.
 GAMES.schilder=(s)=>new Promise(done=>{const sc=$('#s-scene');const IW=1080,IH=1920;
