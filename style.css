@@ -1580,3 +1580,15 @@ img{display:block;max-width:100%}
 .rk-notes{z-index:6}
 .rk-ring{transform:translate(-50%,-50%)!important;border-width:3px}
 .rk-txt{z-index:8}
+.rk-say{position:absolute;left:4%;right:4%;top:calc(env(safe-area-inset-top) + 92px);z-index:9;display:flex;gap:10px;align-items:center;padding:10px 12px;background:url(a/ui/pergament.jpg) center/cover;border-radius:14px;box-shadow:0 0 0 3px #5a3519,0 0 0 5px #c9963f,0 10px 26px rgba(0,0,0,.55);opacity:0;transform:translateY(-10px);transition:.25s}
+.rk-say.on{opacity:1;transform:none}
+.rk-face{flex:none;width:64px;height:64px;border-radius:50%;background:center/cover;box-shadow:0 0 0 3px #5a3519}
+.rk-say p{margin:0;color:#3a2210;font-size:.95rem;line-height:1.3}
+.rk-jubel{position:absolute;left:0;right:0;top:36%;text-align:center;z-index:9;font-family:var(--head);font-size:2.2rem;color:#ffe27a;text-shadow:0 0 18px rgba(255,190,80,.9),0 3px 0 #3a1d08;animation:rkJ 2.2s ease-out forwards;pointer-events:none}
+@keyframes rkJ{0%{transform:scale(.4);opacity:0}15%{transform:scale(1.15);opacity:1}70%{opacity:1}100%{transform:scale(1) translateY(-30px);opacity:0}}
+.rk.voll .tk2-meter i{animation:rkVoll .5s ease-in-out infinite alternate}
+@keyframes rkVoll{to{filter:brightness(1.4);box-shadow:0 0 18px #ffe27a}}
+.pl-orb{position:absolute;left:0;top:0;width:24px;height:24px;border-radius:50%;opacity:0;z-index:5;pointer-events:none;background:radial-gradient(circle,#fff 0 18%,var(--c) 40%,color-mix(in srgb,var(--c) 50%,transparent) 58%,transparent 72%);filter:drop-shadow(0 0 8px var(--c)) drop-shadow(0 0 3px #fff)}
+.pl-count{position:absolute;left:0;right:0;top:40%;text-align:center;z-index:9;font-family:var(--head);font-size:3.4rem;color:#ffe27a;text-shadow:0 3px 0 #3a1d08,0 0 16px rgba(255,180,80,.8);opacity:0;transform:scale(.6);transition:.18s;pointer-events:none}
+.pl-count.on{opacity:1;transform:scale(1)}
+.pl2 .rk-fx{z-index:8}

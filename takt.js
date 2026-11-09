@@ -31,7 +31,8 @@ GAMES.takt=()=>new Promise(async done=>{hideBox();
  // Trefferzone: mindestens so hoch wie breit, damit schmale Felle (von oben gesehen) nicht schwerer sind
  const zd=(L,P,f)=>{const g=TG[L];const ry=Math.max(g.ry,g.rx*.8);const dx=(P.x-g.x)/(g.rx*f),dy=(P.y-g.y)/(ry*f);return dx*dx+dy*dy};
  const inside=(L,P,f)=>zd(L,P,f)<=1;
- const lanePos=(i,u)=>{const o2=OR[i],g=TG[i];return {x:o2.x+(g.x-o2.x)*u,y:o2.y+(g.y-o2.y)*u,s:.4+.6*u}};
+ const ease=u=>u<=1?(u=Math.max(0,u),.45*u+.55*(2*u-u*u)):1+(u-1)*.45;
+ const lanePos=(i,u)=>{u=ease(u);const o2=OR[i],g=TG[i];return {x:o2.x+(g.x-o2.x)*u,y:o2.y+(g.y-o2.y)*u,s:.4+.6*u}};
  // Arme: Schultern unten links und rechts außerhalb des Bildes
  const SH=[{x:.1,y:1.1},{x:.9,y:1.1}];
  const armAim=(a,tx,ty)=>{const W=stg.clientWidth,H=stg.clientHeight,sx=SH[a].x*W,sy=SH[a].y*H;const dx=tx-sx,dy=ty-sy,len=Math.hypot(dx,dy),ang=Math.atan2(dx,-dy)*180/Math.PI;const e=arms[a];
@@ -46,7 +47,7 @@ GAMES.takt=()=>new Promise(async done=>{hideBox();
  const samp=(n,t,v)=>{const b=SMP[n];if(!b)return;const s=c.createBufferSource(),g=c.createGain();s.buffer=b;g.gain.value=v;s.connect(g);g.connect(drumOut());s.start(Math.max(t,c.currentTime))};
  $o('.rk-load').remove();
  const N=CH.length;let res={hits:0,perfect:0},combo=0,mood=25,fin=0,raf=0,srcs=[],dg=null;
- const setMood=v=>{mood=Math.max(0,Math.min(100,v));meter.style.width=mood+'%';o.classList.toggle('m2',mood>75)};
+ let jubelT=0;const setMood=v=>{const was=mood;mood=Math.max(0,Math.min(100,v));meter.style.width=mood+'%';o.classList.toggle('m2',mood>75);o.classList.toggle('voll',mood>=100);if(mood>=100&&was<100&&performance.now()>jubelT){jubelT=performance.now()+9000;sfx('jubel_voll',.7);const j=el('div','rk-jubel','Die Menge tobt!');stg.appendChild(j);setTimeout(()=>j.remove(),2200)}};
  const say=(t,k)=>{pop.textContent=t;pop.className='rk-pop on '+(k||'');clearTimeout(pop._t);pop._t=setTimeout(()=>pop.className='rk-pop',380)};
  const spark=(i,gold)=>{const p=pads[i];for(let k=0;k<(gold?12:6);k++){const s=el('i','tk2-sp'+(gold?' g':''));s.style.setProperty('--a',(Math.random()*360)+'deg');s.style.setProperty('--d',(35+Math.random()*55)+'px');p.appendChild(s);setTimeout(()=>s.remove(),600)}};
  // Trefferfeedback: Lichtblitz, Schockwelle, Funken in Spurfarbe, schwebender Text über dem Instrument
@@ -78,7 +79,7 @@ GAMES.takt=()=>new Promise(async done=>{hideBox();
    const n=notes[k];n.st=1;res.hits++;combo++;dg.gain.setTargetAtTime(1,c.currentTime,.02);if(res.hits===5)$o('.rk-help').classList.add('weg');
    if(bd<=.09){res.perfect++;burst(L,true);setMood(mood+2.2)}else{burst(L,false);setMood(mood+1.3)}
    comboEl.textContent=combo>=4?combo+' in Folge':'';comboEl.classList.remove('bump');void comboEl.offsetWidth;comboEl.classList.add('bump');
-   if(combo%25===0){sfx('lachen',.35);say(combo+' in Folge!','p')}};
+   if(combo%20===0){sfx('jubel_kurz',.55)}};
   const tap=e=>{if(e.target.closest('button'))return;e.preventDefault();const r=stg.getBoundingClientRect();const fx=(e.clientX-r.left)/r.width;{const x=e.clientX-r.left,y=e.clientY-r.top;let b=-1,bz=1;TG.forEach((g,i)=>{const z=zd(i,{x,y},1.25);if(z<=bz){bz=z;b=i}});if(b<0){let bd=1e9;TG.forEach((g,i)=>{const d=Math.abs(g.x-x);if(d<bd){bd=d;b=i}})}hitLane(b,e)}};
   const kb=e=>{const L='dfjk'.indexOf(e.key.toLowerCase());if(L>=0&&!e.repeat)hitLane(L)};
   o.addEventListener('pointerdown',tap);addEventListener('keydown',kb);
@@ -93,7 +94,7 @@ GAMES.takt=()=>new Promise(async done=>{hideBox();
  async function finish(){if(fin)return;fin=1;cancelAnimationFrame(raf);if(o._cleanup)o._cleanup();
   srcs.forEach(s=>{try{s.stop(c.currentTime+1.2)}catch(e){}});if(dg)dg.gain.setTargetAtTime(0,c.currentTime,.4);hush(false);o.classList.add('ende');
   const q=res.hits/N,stars=q>=.8?3:q>=.55?2:q>=.3?1:0;
-  sfx(stars>=2?'fanfare':'sieg',.6);if(stars>=2)setTimeout(()=>sfx('lachen',.4),500);
+  sfx(stars>=2?'fanfare':'sieg',.6);setTimeout(()=>sfx('applaus',stars>=2?.7:.35),400);
   const msg=stars===3?'Tosender Applaus! Die Schnecken jubeln, bis ihnen die Fühler wackeln.':stars===2?'Die Schnecken wippen begeistert mit.':stars===1?'Höflicher Applaus. Sehr langsamer Applaus.':'Die Schnecken sind eingeschlafen. Aber freundlich.';
   const card=el('div','tk2-end','<div class="tk2-stars">'+[0,1,2].map(i=>'<img src="'+A+'ui/stern.png" class="'+(i<stars?'on':'')+'" style="animation-delay:'+(i*.25)+'s" alt="">').join('')+'</div><h3>'+res.hits+' von '+N+' Schlägen</h3><p>'+msg+'</p><div class="hero-nav">'+(stars<3?'<button class="pbtn tk2-again">Nochmal</button>':'')+'<button class="pbtn tk2-go">Weiter</button></div>');
   stg.appendChild(card);requestAnimationFrame(()=>card.classList.add('on'));
@@ -101,4 +102,10 @@ GAMES.takt=()=>new Promise(async done=>{hideBox();
   sfx('ui_klick',.6);card.remove();o.classList.remove('ende');stopAll();
   if(r){await sleep(300);run();return}
   removeEventListener('resize',layout);removeEventListener('resize',idle);o.classList.remove('on');await sleep(450);o.remove();done()}
- await sleep(600);run()});
+ // Zirpia erklärt das Spiel (nur beim ersten Öffnen)
+ const speak=(id,t)=>new Promise(res=>{const b=el('div','rk-say','<div class="rk-face"></div><p>'+t+'</p>');b.querySelector('.rk-face').style.backgroundImage='url('+A+'img/p_zi_2.jpg)';stg.appendChild(b);requestAnimationFrame(()=>b.classList.add('on'));
+  const a=playVo(A+'vo/'+id+'.mp3');let fin2=0;const go=()=>{if(fin2)return;fin2=1;if(a&&!a.ended)stopVo();b.classList.remove('on');setTimeout(()=>b.remove(),250);res()};
+  b.onpointerdown=e=>{e.stopPropagation();go()};const iv=setInterval(()=>{if(!a||a.ended){clearInterval(iv);setTimeout(go,a?300:t.length*55)}},120)});
+ await sleep(500);
+ if(!st.flags.takt_erkl){await speak('d10_t1','Du sitzt an meinem Schlagzeug! Ich singe, du trommelst. Das wird legendär.');await speak('d10_t2','Siehst du die Lichter? Sie fliegen auf die Trommeln zu. Sobald ein Licht im Kreis auf seiner Trommel ist, tippst du genau diese Trommel an.');await speak('d10_t3','Links die große Trommel, dann die kleine, die Tom und ganz rechts das Becken. Und wenn du mal danebenhaust: Das nennt man dann Jazz.');st.flags.takt_erkl=1;save()}
+ run()});

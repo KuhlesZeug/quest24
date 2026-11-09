@@ -70,41 +70,64 @@ GAMES.p_glut=()=>new Promise(async done=>{const W1=phWho(1);const T=W1.right?9:6
 
 // Phase 3: Der Aschesturm. Zirpia spielt das Wiegenlied auf den vier Saiten ihrer Walnusslaute.
 function pluck(f,vol){const c=ac(),t=c.currentTime;const o=c.createOscillator(),g=c.createGain(),fl=c.createBiquadFilter();o.type='triangle';o.frequency.setValueAtTime(f,t);fl.type='lowpass';fl.frequency.setValueAtTime(3200,t);fl.frequency.exponentialRampToValueAtTime(700,t+.6);g.gain.setValueAtTime(vol||.35,t);g.gain.exponentialRampToValueAtTime(.001,t+1.1);o.connect(fl);fl.connect(g);g.connect(sfxBus);o.start(t);o.stop(t+1.2)}
-GAMES.p_lied=()=>new Promise(async done=>{const W2=phWho(2);const dur=W2.right?1.9:1.45;
- const o=await phShell('pl pl2','mg_laute','ort24',W2.name+' spielt das Wiegenlied','Die Töne gleiten über die Saiten der Walnusslaute auf dich zu. Drück unten den Knopf in der gleichen Farbe, sobald ein Ton im Ring liegt.');
- const C=['g','r','y','b'];const F=[262,330,392,523];
+GAMES.p_lied=()=>new Promise(async done=>{const W2=phWho(2);const LEAD=W2.right?1.9:1.5;
+ const o=await phShell('pl pl2','mg_laute','ort24',W2.name+' spielt das Wiegenlied','Lichter gleiten über die Saiten der Walnusslaute auf dich zu. Drück unten den Knopf in der gleichen Farbe, sobald ein Licht im Ring liegt.');
+ const C=['g','r','y','b'],COL=['#3fd14b','#ea4434','#f6c945','#3b8ff0'];
  // Saiten im Bild (Anteile der Bildbreite und Bildhöhe, gemessen an mg_laute 1536x2720): x = a + k*y
  const IW=1536,IH=2720,Y0=.31,Y1=.80;const S=[[.464,.4,.396,.8],[.487,.4,.463,.8],[.511,.4,.536,.8],[.536,.4,.607,.8]].map(([x0,y0,x1,y1])=>{const k=(x1-x0)/(y1-y0);return y=>x0+k*(y-y0)});
  const map=()=>{const W=o.clientWidth,H=o.clientHeight,s=Math.max(W/IW,H/IH),iw=IW*s,ih=IH*s;return {ox:(W-iw)/2,oy:(H-ih)/2,iw,ih}};
  const pt=(si,y)=>{const m=map();return {x:m.ox+S[si](y)*m.iw,y:m.oy+y*m.ih}};
  const rings=C.map((c,i)=>{const r=el('div','pl2-ring '+c,'<b></b>');o.appendChild(r);return r});
  const placeRings=()=>rings.forEach((r,i)=>{const p=pt(i,Y1);r.style.left=p.x+'px';r.style.top=p.y+'px'});placeRings();addEventListener('resize',placeRings);
- o.insertAdjacentHTML('beforeend','<div class="pl-btns pl3">'+C.map((c,i)=>'<button class="'+c+'" data-s="'+i+'"><i></i></button>').join('')+'</div><div class="pl-streak"></div>');
- // Leitlinie von jedem Ring zu seinem Knopf, damit klar ist, welcher Knopf zu welcher Saite gehört
+ o.insertAdjacentHTML('beforeend','<div class="pl-btns pl3">'+C.map((c,i)=>'<button class="'+c+'" data-s="'+i+'"><i></i></button>').join('')+'</div><div class="pl-streak"></div><div class="rk-fx"></div><div class="pl-count"></div>');
+ const fx=o.querySelector('.rk-fx'),streakEl=o.querySelector('.pl-streak'),cnt=o.querySelector('.pl-count');
  const guides=C.map(c=>{const g=el('div','pl3-guide '+c);o.appendChild(g);return g});
  const placeGuides=()=>{const R=o.getBoundingClientRect();const bs=[...o.querySelectorAll('.pl-btns button')];guides.forEach((g,i)=>{const p=pt(i,Y1);const b=bs[i].getBoundingClientRect();const bx=b.left+b.width/2-R.left,by=b.top+b.height*.2-R.top;const dx=bx-p.x,dy=by-p.y;g.style.left=p.x+'px';g.style.top=p.y+'px';g.style.height=Math.hypot(dx,dy)+'px';g.style.transform='rotate('+(Math.atan2(-dx,dy)*180/Math.PI)+'deg)'})};
  requestAnimationFrame(placeGuides);addEventListener('resize',placeGuides);
- // Wiegenlied: Saite und Zeitpunkt in Schlägen
- const SONG=[[2,0],[1,1],[0,2],[1,3],[2,4],[2,5],[2,6],[1,8],[1,9],[1,10],[2,12],[3,13],[3,14],[2,16],[1,17],[0,18],[1,19],[2,20],[2,21],[2,22],[1,23],[1,24],[2,25],[1,26],[0,28]];
- const beat=.55,lead=2.2;let t0=null,hits=0,streak=0,run=true;const notes=SONG.map(([s,b])=>({s,t:b*beat+lead,el:null,done:false}));
- notes.forEach(n=>{n.el=el('div','pl-gem '+C[n.s]);n.el.style.opacity=0;o.appendChild(n.el)});
- const flame=si=>{const r=rings[si];r.classList.remove('fire');void r.offsetWidth;r.classList.add('fire')};
- const press=si=>{if(!run||t0===null)return;const now=(performance.now()-t0)/1000;const r=rings[si];r.classList.add('on');setTimeout(()=>r.classList.remove('on'),130);const bb=o.querySelectorAll('.pl-btns button')[si];bb.classList.add('on');setTimeout(()=>bb.classList.remove('on'),130);
-  let best=null;notes.forEach(n=>{if(!n.done&&n.s===si&&Math.abs(n.t-now)<.25&&(!best||Math.abs(n.t-now)<Math.abs(best.t-now)))best=n});
-  if(best){best.done=true;hits++;streak++;pluck(F[si]);best.el.classList.add('hit');flame(si);const fb=el('div','pl-fb',Math.abs(best.t-now)<.09?'Perfekt':'Gut');o.appendChild(fb);setTimeout(()=>fb.remove(),600)}else{streak=0;pluck(F[si]*.94,.12)}
-  o.querySelector('.pl-streak').textContent=streak>2?streak+' in Folge':''};
+ // Echte Laute aus dem Wiegenlied, Noten aus ihren Anschlägen erkannt
+ const c=ac(),LAT=(c.outputLatency||c.baseLatency||0);
+ const [buf,CH]=await Promise.all([loadVo(A+'rock/wiegen_laute.mp3').catch(()=>null),fetch(A+'rock/wiegen.json').then(r=>r.json())]);
+ const N=CH.length;
+ // Gleiche Bewegung wie beim Schlagzeug: zum Ring hin abbremsen, danach langsam weiter
+ const ease=u=>u<=1?(u=Math.max(0,u),.45*u+.55*(2*u-u*u)):1+(u-1)*.45;
+ const posY=u=>Y0+(Y1-Y0)*ease(u);
+ const zone=(y,f)=>{const m=map();return Math.abs((y-Y1)*m.ih)<=Math.max(22,.035*m.ih)*f};
+ let hits=0,perfect=0,streak=0,run=false,raf=0,lg=null,src=null;
+ const notes=CH.map(([t,L])=>{const e=el('div','pl-orb '+C[L]);e.style.setProperty('--c',COL[L]);o.appendChild(e);return {t,L,e,st:0}});
+ const burst=(L,perf)=>{const g=pt(L,Y1),col=COL[L];
+  const b=el('div','rk-burst'+(perf?' p':''));b.style.left=g.x+'px';b.style.top=g.y+'px';b.style.setProperty('--c',col);fx.appendChild(b);setTimeout(()=>b.remove(),500);
+  const w=el('div','rk-wave');w.style.left=g.x+'px';w.style.top=g.y+'px';w.style.setProperty('--c',col);fx.appendChild(w);setTimeout(()=>w.remove(),500);
+  for(let k=0;k<(perf?14:7);k++){const sp=el('i','rk-sp');sp.style.left=g.x+'px';sp.style.top=g.y+'px';sp.style.setProperty('--c',k%3?col:'#fff6c8');sp.style.setProperty('--a',(Math.random()*360)+'deg');sp.style.setProperty('--d',(30+Math.random()*(perf?70:40))+'px');fx.appendChild(sp);setTimeout(()=>sp.remove(),650)}
+  const t=el('div','rk-txt '+(perf?'p':'g'),perf?'Perfekt!':'Gut!');t.style.left=g.x+'px';t.style.top=(g.y-60)+'px';fx.appendChild(t);setTimeout(()=>t.remove(),700);
+  const r=rings[L];r.classList.remove('fire');void r.offsetWidth;r.classList.add('fire')};
+ const missFx=L=>{const g=pt(L,Y1);const m=el('div','rk-miss');m.style.left=g.x+'px';m.style.top=g.y+'px';fx.appendChild(m);setTimeout(()=>m.remove(),450)};
+ let T0=0;
+ const press=si=>{if(!run)return;const now=c.currentTime-LAT-T0;const r=rings[si];r.classList.add('on');setTimeout(()=>r.classList.remove('on'),130);const bb=o.querySelectorAll('.pl-btns button')[si];bb.classList.add('on');setTimeout(()=>bb.classList.remove('on'),130);
+  let k=-1,bd=9;notes.forEach((n,j)=>{if(n.st||n.L!==si)return;if(!zone(posY(1-(n.t-now)/LEAD),1.12))return;const d=Math.abs(now-n.t);if(d<bd){bd=d;k=j}});
+  if(k<0){pluck(262*[1,1.25,1.5,2][si]*.94,.08);return}
+  const n=notes[k];n.st=1;hits++;streak++;if(lg)lg.gain.setTargetAtTime(1,c.currentTime,.02);
+  if(bd<=.09){perfect++;burst(si,true)}else burst(si,false);
+  streakEl.textContent=streak>=4?streak+' in Folge':''};
  o.querySelectorAll('.pl-btns button').forEach(b=>b.onpointerdown=e=>{e.preventDefault();press(+b.dataset.s)});
- const kb=e=>{const i='asdf'.indexOf(e.key);if(i>=0)press(i)};addEventListener('keydown',kb);
- const tick=()=>{if(!run)return;const now=(performance.now()-t0)/1000;const m=map();
-  notes.forEach(n=>{if(!n.el)return;const u=1-(n.t-now)/dur;if(u<0){n.el.style.opacity=0;return}
-   // Perspektive: am Kopf langsam und klein, zum Körper hin schneller und größer
-   const e=Math.pow(Math.min(u,1.25),1.8),y=Y0+(Y1-Y0)*e;const x=m.ox+S[n.s](y)*m.iw,yy=m.oy+y*m.ih;const sz=8+30*Math.min(1.2,e);
-   n.el.style.left=x+'px';n.el.style.top=yy+'px';n.el.style.width=sz+'px';n.el.style.opacity=u>1.2?0:1;
-   if(!n.done&&now-n.t>.26){n.done=true;streak=0;n.el.classList.add('miss')}if(n.done&&now-n.t>.45&&n.el){n.el.remove();n.el=null}});
-  bar(o,'Wiegenlied',hits/notes.length);
-  if(now>notes[notes.length-1].t+1){run=false;removeEventListener('keydown',kb);removeEventListener('resize',placeRings);const q=hits/notes.length;phEnd(o,q>.75?'Vharkon gähnt. Der Aschesturm legt sich.':q>.4?'Ein paar Töne sind daneben, aber der Sturm wird schwächer.':'Schief, aber mit Herz. Der Sturm flaut trotzdem ab.').then(()=>done(q));return}
-  requestAnimationFrame(tick)};
- setTimeout(()=>{t0=performance.now();tick()},700)});
+ const kb=e=>{const i='asdf'.indexOf(e.key.toLowerCase());if(i>=0&&!e.repeat)press(i)};addEventListener('keydown',kb);
+ const end=()=>(buf?buf.duration:CH[N-1][0]+2)+.3;
+ const tick=()=>{const now=c.currentTime-LAT-T0;const m=map();
+  notes.forEach(n=>{const dt=n.t-now;if(dt>LEAD+.1){n.e.style.opacity=0;return}
+   const u=1-dt/LEAD,y=posY(Math.min(1.6,u));
+   if(!n.st&&dt<0&&(!zone(y,1.12)||dt<-.5)){n.st=2;streak=0;streakEl.textContent='';missFx(n.L);if(lg){lg.gain.setTargetAtTime(.25,c.currentTime,.02);setTimeout(()=>{if(lg)lg.gain.setTargetAtTime(1,c.currentTime,.1)},420)}}
+   const e=ease(Math.max(0,Math.min(1.6,u))),sz=12+30*Math.min(1.15,e);
+   n.e.style.transform='translate('+(m.ox+S[n.L](y)*m.iw)+'px,'+(m.oy+y*m.ih)+'px) translate(-50%,-50%)';n.e.style.width=n.e.style.height=sz+'px';
+   n.e.style.opacity=n.st?0:(u<0?0:Math.min(1,u*3))});
+  bar(o,'Wiegenlied',hits/N);
+  if(now>end()){run=false;removeEventListener('keydown',kb);removeEventListener('resize',placeRings);removeEventListener('resize',placeGuides);
+   if(lg)lg.gain.setTargetAtTime(0,c.currentTime,.4);hush(false);const q=hits/N;if(q>.55)sfx('applaus',.45);
+   phEnd(o,q>.75?'Vharkon gähnt. Der Aschesturm legt sich.':q>.4?'Ein paar Töne sind daneben, aber der Sturm wird schwächer.':'Schief, aber mit Herz. Der Sturm flaut trotzdem ab.').then(()=>done(q));return}
+  raf=requestAnimationFrame(tick)};
+ // Einzählen mit drei leisen Lautentönen, dann startet das echte Lied
+ hush(true);const beat=.6,start=c.currentTime+3*beat+.4;T0=start;
+ ['3','2','1'].forEach((t,i)=>setTimeout(()=>{cnt.textContent=t;cnt.className='pl-count on';pluck(392,.18);setTimeout(()=>cnt.className='pl-count',380)},(.4+i*beat)*1000));
+ lg=c.createGain();lg.gain.value=1;lg.connect(drumOut());if(buf){src=c.createBufferSource();src.buffer=buf;src.connect(lg);src.start(start)}
+ run=true;tick()});
 
 // Phase 4: Der Schatten. Nachtigall schleicht über Vharkons Rücken. Halten zum Schleichen, loslassen, wenn das Auge aufgeht.
 GAMES.p_schatten=()=>new Promise(async done=>{const W3=phWho(3);const fast=W3.right?1:1.35;
