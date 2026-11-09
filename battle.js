@@ -155,21 +155,23 @@ function pick(sel,filter){return new Promise(r=>{B.picking={sel,filter,r};markPi
 // Auswahl übersteht jedes Neuzeichnen: Markierung wird nach render erneut gesetzt, Klick über den Container
 function markPick(){const P=B&&B.picking;if(!P)return;$$(P.sel).forEach(e=>{const ok=P.filter(e);e.classList.toggle('pickable',ok);e.onclick=ok?()=>{const Q=B.picking;if(!Q)return;B.picking=null;$$(Q.sel).forEach(x=>{x.classList.remove('pickable');x.onclick=null});Q.r(e)}:null})}
 async function partyTurn(u){B.cur=u;render();const act=$('#bt-act');
- const sks=[];[...new Set(u.skills)].forEach(s=>{const S=SK[s];if(!S||S.passive)return;if(S.once&&B.used[u.id+s])return;sks.push({k:'sk',s,t:S.n,d:S.d,ic:Object.values(LVL_SK).flat(2).includes(s)?A+'ui/sk/'+s+'.png':A+'ui/ac_faehigkeit.png'})});
+ const sks=[];[...new Set(u.skills)].forEach(s=>{const S=SK[s];if(!S||S.passive)return;if(S.once&&B.used[u.id+s])return;sks.push({k:'sk',s,t:S.n,d:S.d,ic:A+'ui/sk/'+s+'.png'})});
  const pots=st.inv.filter(x=>ITEMS[x.id]&&ITEMS[x.id].use);
  const choose=(title,opts,cls,back)=>new Promise(r=>{act.className='bt-act'+(cls?' '+cls:'');act.innerHTML='<div class="bt-who"><span class="bt-wf" style="background-image:url('+unitFace(u)+')"></span>'+esc(title)+'</div>';const row=el('div','bt-btns'+(cls?' list':''));act.appendChild(row);
   opts.forEach(o=>{const b=el('button','bt-b'+(o.k==='sk'?' sk':'')+(o.it?' it':'')+(o.ic?' ic':''),(o.it?'<img src="'+A+'items/'+o.it.id+'.png" alt="">':'')+(o.ic?'<img class="bt-ic" src="'+o.ic+'" alt="">':'')+'<b>'+esc(o.t)+'</b>'+(o.d?'<span>'+esc(o.d)+'</span>':''));b.onclick=()=>{sfx('ui_klick',.6);r(o)};row.appendChild(b)});
   if(back){const b=el('button','bt-back','Zurück');b.onclick=()=>{sfx('ui_klick',.5);r(null)};act.appendChild(b)}});
  let ch=null;
+ for(;;){ch=null;
  while(!ch){const main=[{k:'atk',t:u.hit,ic:weapIc(u)}];if(sks.length)main.push({k:'skm',t:'Fähigkeiten',d:sks.length+' zur Auswahl',ic:A+'ui/ac_faehigkeit.png'});if(pots.length)main.push({k:'itm',t:'Gegenstand',d:pots.length+' im Gepäck',ic:A+'ui/ac_gegenstand.png'});
   const mp=choose(u.n+' ist dran',main);if(u.hero&&B.tut)await tutOnce('t07');const m=await mp;
   if(m.k==='atk'){const f=await pickFoeBack(act);if(f){ch=m;ch.f=f}continue}
   if(m.k==='skm'){const s=await choose('Fähigkeit wählen',sks,'sheet',1);if(s)ch=s;continue}
   if(m.k==='itm'){const it=await choose('Gegenstand wählen',pots.map(x=>({k:'item',it:x,t:ITEMS[x.id].n,d:ITEMS[x.id].d})),'sheet',1);if(it)ch=it;continue}}
  act.className='bt-act';act.innerHTML='<div class="bt-who">'+esc(ch.k==='atk'?u.hit:ch.t)+'</div>';
- if(ch.k==='atk'){await attack(u,ch.f,{});}
+ if(ch.k==='atk'){if(await attack(u,ch.f,{back:1})==='back')continue;}
  else if(ch.k==='item'){await useItemBattle(u,ch.it)}
  else await useSkill(u,ch.s);
+ break}
  act.innerHTML='';if(B&&B._elT){B._elT=0;await coach('t11');const k=$('#bt-ekb');if(k){k.classList.add('on','new');setTimeout(()=>k.classList.remove('new'),4000)}}B.cur=null}
 async function pickFoeBack(act){const alive=B.foes.filter(f=>f.hp>0);if(alive.length===1)return alive[0];
  act.className='bt-act';act.innerHTML='<div class="bt-who">Wähle ein Ziel</div><p class="bt-hint">Tippe auf einen Gegner.</p>';const b=el('button','bt-back','Zurück');act.appendChild(b);
@@ -178,7 +180,7 @@ async function pickFoeBack(act){const alive=B.foes.filter(f=>f.hp>0);if(alive.le
 async function pickFoe(){const alive=B.foes.filter(f=>f.hp>0);if(alive.length===1)return alive[0];const e=await pick('#bt-foes .bt-f',e=>B.foes[+e.dataset.i].hp>0);return B.foes[+e.dataset.i]}
 async function pickAlly(down){const e=await pick('#bt-party .bt-u',e=>down?B.party[+e.dataset.k].hp<=0:B.party[+e.dataset.k].hp>0);return B.party[+e.dataset.k]}
 async function attack(u,f,o){let bonus=u.atk+(B.buff.all||0)+(u.next||0)+(o.add||0)-(u.blind?2:0);u.next=0;
- let v;if(u.hero){if(B.tut){await tutOnce('t08');await tutOnce('t09')}const r=await rollD20({title:u.hit+' gegen '+f.n,sub:'W20 plus '+bonus+', Ziel '+f.def,bonus,ziel:f.def,force:o.crit?20:null});v=r}else{const x=rnd(20);v={v:x,total:x+bonus,crit:x===20,fumble:x===1}}
+ let v;if(u.hero){if(B.tut){await tutOnce('t08');await tutOnce('t09')}const r=await rollD20({title:u.hit+' gegen '+f.n,sub:'W20 plus '+bonus+', Ziel '+f.def,bonus,ziel:f.def,force:o.crit?20:null,back:o.back});if(!r){u.next=bonus-u.atk-(B.buff.all||0)-(o.add||0)+(u.blind?2:0);return 'back'}v=r}else{const x=rnd(20);v={v:x,total:x+bonus,crit:x===20,fumble:x===1}}
  poseFor(u,1,700);const pk=projKind(u,o);if(pk&&!(v.fumble&&u.hero))await shoot(u,f,pk,v.total<f.def&&!v.crit);else if(!u.hero)await sleep(250);
  if(v.fumble&&u.hero){popFx(foeEl(f),'fumble','Patzer!','Eine 1 gewürfelt');await fumble();return}
  if(v.total<f.def&&!v.crit){popFx(foeEl(f),'miss','Daneben!',u.hero?v.total+' reicht nicht, Ziel '+f.def:'');blog(u.n+' verfehlt.');sfx('daneben',.7);await sleep(500);return}

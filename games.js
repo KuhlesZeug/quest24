@@ -174,13 +174,50 @@ function ktFace(v,k){const idx='<div class="kt-ix"><b>'+(KT_NAME[v]||v)+'</b>'+k
  const pips=v===1?'<div class="kt-ace">'+ktSym(k,'kt-big')+'</div>':KT_PIPS[v].map(([x,y])=>'<i style="left:'+x+'%;top:'+y+'%"'+(y>50?' class="dn"':'')+'>'+ktSym(k,'kt-p')+'</i>').join('');
  return '<div class="kt-face"><svg class="kt-orn" viewBox="0 0 100 140" preserveAspectRatio="none"><path d="M50 46l9 24-9 24-9-24z" fill="none" stroke="#b8862f" stroke-width=".6" opacity=".35"/><circle cx="50" cy="70" r="'+(v===1?30:20)+'" fill="none" stroke="#b8862f" stroke-width="'+(v===1?1.2:.5)+'" opacity="'+(v===1?.8:.3)+'"'+(v===1?' stroke-dasharray="2 2"':'')+'/><rect x="5" y="5" width="90" height="130" rx="6" fill="none" stroke="#b8862f" stroke-width="1.6"/><rect x="8" y="8" width="84" height="124" rx="4" fill="none" stroke="#b8862f" stroke-width=".7"/>'+[[8,8,1,1],[92,8,-1,1],[8,132,1,-1],[92,132,-1,-1]].map(([x,y,a,b])=>'<path d="M'+x+' '+(y+b*14)+'q0 '+(-b*14)+' '+(a*14)+' '+(-b*14)+'" fill="none" stroke="#b8862f" stroke-width="1.2"/><circle cx="'+(x+a*4)+'" cy="'+(y+b*4)+'" r="1.6" fill="#b8862f"/>').join('')+'</svg>'+idx+idx.replace('kt-ix','kt-ix r')+'<div class="kt-pips">'+pips+'</div></div>'}
 const KT_BACK='<div class="kt-backf"><svg viewBox="0 0 100 140" preserveAspectRatio="none"><defs><pattern id="ktl" width="10" height="10" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><path d="M0 5h10M5 0v10" stroke="#d9a845" stroke-width=".6" opacity=".55"/></pattern><radialGradient id="ktr" cx="50%" cy="45%"><stop offset="0" stop-color="#8e2a20"/><stop offset="1" stop-color="#4a0f0b"/></radialGradient></defs><rect width="100" height="140" fill="url(#ktr)"/><rect width="100" height="140" fill="url(#ktl)"/><rect x="5" y="5" width="90" height="130" rx="6" fill="none" stroke="#e2b552" stroke-width="2"/><rect x="9" y="9" width="82" height="122" rx="4" fill="none" stroke="#e2b552" stroke-width=".8"/><ellipse cx="50" cy="70" rx="27" ry="34" fill="#3a0b08" stroke="#e2b552" stroke-width="1.8"/><ellipse cx="50" cy="70" rx="22" ry="29" fill="none" stroke="#e2b552" stroke-width=".7"/><path d="M50 44l4.5 17 16 9-16 9L50 96l-4.5-17-16-9 16-9z" fill="#f2cf6a" stroke="#7a4f16" stroke-width="1"/><path d="M50 56l2.5 9.5 9 4.5-9 4.5L50 84l-2.5-9.5-9-4.5 9-4.5z" fill="#fff3c4"/>'+[[14,16],[86,16],[14,124],[86,124]].map(([x,y])=>'<path d="M'+x+' '+(y-5)+'l3 5-3 5-3-5z" fill="#e2b552"/>').join('')+'</svg></div>';
-GAMES.karten=()=>new Promise(done=>{
- const area=gameShell('Höher oder tiefer','Ist die nächste Karte höher oder tiefer? Oma Hulda gibt mit der Stricknadel Zeichen. Aber Knorz soll wenigstens einmal gewinnen.');
+GAMES.karten=()=>new Promise(async done=>{hideBox();
+ // Fünf Runden mit Abwechslung: normal, normal, Knorz mischt (Karte selbst ziehen), Hulda niest (kein Zeichen), doppelter Einsatz
  const SK=Object.keys(KT_SUITS);const suit=()=>SK[rnd(4)-1];
- let cur=rnd(10),cs=suit(),round=0,right=0;const next=()=>{let n;do{n=rnd(10)}while(n===cur);return n};let nx=next(),ns=suit();
- const draw=()=>{area.innerHTML='<div class="kt-row"><div class="kt-card up"><div class="kt-in">'+ktFace(cur,cs)+KT_BACK+'</div></div><div class="kt-card"><div class="kt-in">'+ktFace(nx,ns)+KT_BACK+'</div></div><img class="kt-nadel'+(nx>cur?' up':'')+'" src="'+A+'items/stricknadel.png" alt=""></div><div class="kt-st">Runde '+(round+1)+' von 5</div><div class="hero-nav"><button class="pbtn" data-h="1">Höher</button><button class="pbtn" data-h="0">Tiefer</button></div>';
-  area.querySelectorAll('[data-h]').forEach(b=>b.onclick=async()=>{area.querySelectorAll('[data-h]').forEach(x=>x.disabled=true);const h=+b.dataset.h;const ok=h===(nx>cur?1:0);if(ok)right++;sfx('pergament',.6);area.querySelectorAll('.kt-card')[1].classList.add('up');await sleep(1300);cur=nx;cs=ns;nx=next();ns=suit();round++;if(round<5)draw();else finish()})};
- const finish=async()=>{gameEnd();st.flags.karten=right;save();done()};draw()});
+ const o=el('div','kt2','<div class="kt2-st"><div class="tk2-top"><div class="tk2-t">Höher oder tiefer</div><div class="kt2-pips">'+'<i></i>'.repeat(5)+'</div></div>'
+  +'<div class="kt2-ppl"><div class="kt2-p hu"><div class="kt2-face"></div><b>Oma Hulda</b></div>'
+  +'<div class="kt2-mid"><div class="kt2-r"></div><div class="kt2-cap"></div></div>'
+  +'<div class="kt2-p kn"><div class="kt2-face"></div><b>Knorz</b></div></div>'
+  +'<div class="kt2-nadel"><img src="'+A+'items/stricknadel.png" alt=""></div><div class="kt2-say"></div><div class="kt2-tab"></div><div class="kt2-btns"><button class="kt2-b up" data-h="1"><i></i>Höher</button><button class="kt2-b dn" data-h="0"><i></i>Tiefer</button></div><div class="kt2-stamp"></div></div>');
+ document.body.appendChild(o);requestAnimationFrame(()=>o.classList.add('on'));
+ const $o=q=>o.querySelector(q),tab=$o('.kt2-tab'),cap=$o('.kt2-cap'),rd=$o('.kt2-r'),pips=[...o.querySelectorAll('.kt2-pips i')],nad=$o('.kt2-nadel'),stamp=$o('.kt2-stamp'),sayB=$o('.kt2-say');
+ const face=(who,i)=>$o('.kt2-p.'+who+' .kt2-face').style.backgroundImage='url('+A+'img/p_'+(who==='hu'?'hu':'kno')+'_'+i+'.jpg)';face('hu',7);face('kn',5);
+ const say=(who,t,vo)=>{sayB.className='kt2-say on '+who;sayB.textContent=t;if(vo)playVo(A+'vo/'+vo+'.mp3');clearTimeout(sayB._t);sayB._t=setTimeout(()=>sayB.classList.remove('on'),3200)};
+ const card=(v,k,up)=>'<div class="kt-card'+(up?' up':'')+'"><div class="kt-in">'+ktFace(v,k)+KT_BACK+'</div></div>';
+ let cur=rnd(10),cs=suit(),right=0;
+ const nxt=c=>{let n;do{n=rnd(10)}while(n===c);return n};
+ const btns=[...o.querySelectorAll('.kt2-b')];const ask=()=>new Promise(r=>{btns.forEach(b=>{b.disabled=false;b.onclick=()=>{sfx('ui_klick',.6);btns.forEach(x=>x.disabled=true);r(+b.dataset.h)}})});btns.forEach(b=>b.disabled=true);
+ const zeig=el('div','kt2-zeig','<i></i><span></span>');o.querySelector('.kt2-st').appendChild(zeig);
+ const hint=(up,show)=>{nad.className='kt2-nadel'+(show?' on '+(up?'up':'dn'):'');zeig.className='kt2-zeig'+(show?' on '+(up?'up':'dn'):'');zeig.querySelector('span').textContent=up?'höher':'tiefer';if(show){sfx('pergament',.35);cap.innerHTML='Hulda tippt mit der Nadel nach <b>'+(up?'oben':'unten')+'</b>.'}};
+ for(let r=0;r<5;r++){
+  pips.forEach((p,i)=>p.classList.toggle('jetzt',i===r));
+  const mode=r===2?'misch':r===3?'nies':r===4?'doppelt':'';
+  rd.textContent=['Runde 1','Runde 2','Runde 3: Knorz mischt','Runde 4: Hulda muss niesen','Letzte Runde: doppelter Einsatz'][r];
+  hint(0,false);cap.textContent='';
+  let nx,ns=suit();
+  nx=nxt(cur);
+  tab.innerHTML='<div class="kt2-cards">'+card(cur,cs,1)+'<div class="kt2-slot">'+card(nx,ns,0)+'</div></div>';
+  tab.classList.remove('neu');void tab.offsetWidth;tab.classList.add('neu');sfx('pergament',.5);
+  if(mode==='misch'){face('kn',7);say('kn','Diesmal mische ich. Such dir eine Karte aus.','kt_misch');tab.querySelector('.kt2-cards').classList.add('misch');const slot=tab.querySelector('.kt2-slot');
+   const vals=[nx,nxt(cur),nxt(cur)];slot.innerHTML='<div class="kt2-fan">'+vals.map((v,i)=>'<button class="kt2-fc" data-i="'+i+'">'+card(v,suit(),0)+'</button>').join('')+'</div>';cap.textContent='Tippe auf eine der drei Karten.';
+   const pick=await new Promise(res=>slot.querySelectorAll('.kt2-fc').forEach(b=>b.onclick=()=>{sfx('ui_klick',.6);res(+b.dataset.i)}));
+   nx=vals[pick];slot.querySelectorAll('.kt2-fc').forEach((b,i)=>b.classList.add(i===pick?'gew':'weg'));await sleep(600);slot.innerHTML=card(nx,ns,0);tab.querySelector('.kt2-cards').classList.remove('misch');await sleep(250);face('kn',5)}
+  if(mode==='nies'){face('hu',4);say('hu','Hatschi! Oh, meine Nadel ist runtergefallen.','kt_nies');nad.className='kt2-nadel fall';cap.textContent='Diesmal kein Zeichen. Schau auf die Karte und rate selbst.';await sleep(1400);face('hu',5)}
+  else{if(mode==='doppelt'){sfx('trommel',.7);face('kn',4);say('kn','Doppelter Einsatz. Jetzt gilt es.','kt_doppelt');await sleep(900);if(right===4){face('hu',7);await sleep(1600);say('hu','Kindchen, lass ihn doch auch mal gewinnen.','kt_hu_lass');await sleep(600)}}
+   face('hu',7);await sleep(400);hint(nx>cur,true)}
+  const h=await ask();const ok=h===(nx>cur?1:0);
+  const slot=tab.querySelector('.kt2-slot .kt-card');slot.classList.add('up');sfx('pergament',.6);await sleep(650);
+  if(ok){right++;stamp.className='kt2-stamp on gut';stamp.innerHTML='<b>Richtig!</b><span>'+nx+' ist '+(nx>cur?'höher':'tiefer')+' als '+cur+'</span>';sfx('muenzen',.7);face('kn',8);face('hu',2);pips[r].className='gut';
+   if(right<5)say('kn',['Schon wieder.','Das kann doch nicht wahr sein.','Ich hasse Karten.','Nein. Nein, nein, nein.'][Math.min(3,right-1)],['kt_l1','kt_l2','kt_l3','kt_l4'][Math.min(3,right-1)])}
+  else{stamp.className='kt2-stamp on falsch';stamp.innerHTML='<b>Daneben!</b><span>'+nx+' ist '+(nx>cur?'höher':'tiefer')+' als '+cur+'</span>';sfx('daneben',.7);face('kn',3);face('hu',2);pips[r].className='falsch';say('kn','Ja! Endlich! Ich hab gewonnen!','kt_w1');tab.querySelector('.kt2-slot').classList.add('wackel')}
+  await sleep(1900);stamp.className='kt2-stamp';cur=nx;cs=ns}
+ pips.forEach(p=>p.classList.remove('jetzt'));
+ const end=el('div','kt2-end','<div class="kt2-endc"><div class="cc-k">Ergebnis</div><h3>'+right+' von 5 richtig</h3><p>'+(right===4?'Perfekt! Knorz durfte genau einmal gewinnen.':right===5?'Alles richtig. Knorz hat kein einziges Mal gewonnen.':'Knorz hat '+(5-right)+' Mal gewonnen. Er strahlt.')+'</p><button class="pbtn">Weiter</button></div>');o.querySelector('.kt2-st').appendChild(end);requestAnimationFrame(()=>end.classList.add('on'));sfx(right===4?'jubel_kurz':'richtig',.7);
+ await new Promise(r=>end.querySelector('button').onclick=r);sfx('ui_klick',.5);
+ st.flags.karten=right;save();o.classList.remove('on');await sleep(450);o.remove();done()});
 
 // Tag 16: Schlösser knacken wie ein Profi. Dietrich ansetzen, Zylinder drehen, nicht zu viel Druck.
 // Drei Schlösser: Messing, Banditeneisen, Drachensilber. Mechanik bleibt gleich, nur das Aussehen wechselt.
@@ -325,12 +362,36 @@ async function keyProbe(i){const P=PHASEN[i];const plan=st.flags.plan||{};
   sfx('drache');await say('VH',tries%2?'Klauenhieb!':'Kalter Ascheatem!',null,3);await say('SL','Noch einmal. Der Kampf ist immer gewinnbar. Versprochen.',A+'vo/d24_nochmal.mp3');}
  return true}
 
-// Tag 24: Der Schatz mit der Nachricht des Schenkenden
-GAMES.schatz=()=>new Promise(async done=>{sfx('truhe');const g=GIFT||{};
+// Tag 24: Der Schatz mit der Nachricht des Schenkenden. Erst der Hort mit funkelndem Gold, dann der Brief, dann das Abzeichen mit Frohe Weihnachten.
+GAMES.schatz=()=>new Promise(async done=>{hideBox();const g=GIFT||{};
  const msg=g.msg?esc(g.msg).replace(/\n/g,'<br>'):'Frohe Lichternacht! Du hast Eldmark gerettet.';
- await showCard('<img class="cc-img" src="'+A+'ui/truhe.png" alt=""><div class="cc-k">Der Schatz des Hüters</div><h3>Für '+heroName()+'</h3><div class="brief">'+msg+(g.von?'<p class="sig">'+esc(g.von)+'</p>':'')+'</div>'+(g.ort?'<div class="cc-k" style="margin-top:12px">Im zweiten Fach liegt ein Zettel</div><p>'+esc(g.ort)+'</p>':''),'fanfare');
- await showCard('<img class="cc-img" src="'+A+'ui/medaille.png" alt=""><div class="cc-k">Abzeichen</div><h3>Retter der Lichternacht</h3><p>'+heroName()+', '+(st.hero.f?CLS[st.hero.cls].nf:CLS[st.hero.cls].n)+' der Stufe '+st.lvl+', mit Grumbold, Zirpia, Oma Hulda und Nachtigall.</p>','stufenaufstieg');
- st.flags.badge=1;save();done()});
+ const o=el('div','sz','<div class="sz-st"><div class="sz-img"></div><div class="sz-licht"></div><canvas class="sz-cv"></canvas><div class="sz-t"><b>Der Schatz des Hüters</b><span>Tippe auf die Truhe</span></div></div>');
+ document.body.appendChild(o);requestAnimationFrame(()=>o.classList.add('on'));sfx('truhe',.8);
+ const stg=o.querySelector('.sz-st'),cv=o.querySelector('.sz-cv'),cx=cv.getContext('2d');
+ // Goldstaub und Funken, beim Antippen ein Münzregen aus der Truhe
+ const P=[];let raf=0,t0=performance.now();const CH={x:.56,y:.6};
+ const size=()=>{cv.width=stg.clientWidth*2;cv.height=stg.clientHeight*2};size();addEventListener('resize',size);
+ for(let i=0;i<70;i++)P.push({k:'d',x:Math.random(),y:Math.random(),v:.01+Math.random()*.03,a:Math.random()*6,r:1+Math.random()*2.4});
+ const coin=n=>{for(let i=0;i<n;i++){const a=-Math.PI/2+(Math.random()-.5)*1.6,v=.35+Math.random()*.5;P.push({k:'c',x:CH.x,y:CH.y,vx:Math.cos(a)*v*.5,vy:Math.sin(a)*v,rot:Math.random()*6,vr:(Math.random()-.5)*14,life:1.6+Math.random()*.8,r:6+Math.random()*7})}};
+ let last=t0;const tick=t=>{raf=requestAnimationFrame(tick);const dt=Math.min(.05,(t-last)/1000);last=t;const W=cv.width,H=cv.height;cx.clearRect(0,0,W,H);
+  for(let i=P.length-1;i>=0;i--){const q=P[i];
+   if(q.k==='d'){q.y-=q.v*dt;q.x+=Math.sin(t/900+q.a)*.0006;if(q.y<-.02){q.y=1.02;q.x=Math.random()}const tw=.5+.5*Math.sin(t/300+q.a*3);cx.globalCompositeOperation='lighter';const gr=cx.createRadialGradient(q.x*W,q.y*H,0,q.x*W,q.y*H,q.r*5);gr.addColorStop(0,'rgba(255,236,170,'+(.55*tw)+')');gr.addColorStop(1,'rgba(255,200,90,0)');cx.fillStyle=gr;cx.beginPath();cx.arc(q.x*W,q.y*H,q.r*5,0,7);cx.fill();cx.globalCompositeOperation='source-over'}
+   else{q.life-=dt;if(q.life<=0){P.splice(i,1);continue}q.vy+=1.1*dt;q.x+=q.vx*dt;q.y+=q.vy*dt;q.rot+=q.vr*dt;const sx=Math.abs(Math.cos(q.rot));cx.save();cx.translate(q.x*W,q.y*H);cx.scale(Math.max(.15,sx),1);cx.fillStyle='#f6c64a';cx.strokeStyle='#8a5a12';cx.lineWidth=2.5;cx.beginPath();cx.arc(0,0,q.r*2,0,7);cx.fill();cx.stroke();cx.fillStyle='rgba(255,250,220,.8)';cx.beginPath();cx.arc(-q.r*.6,-q.r*.6,q.r*.6,0,7);cx.fill();cx.restore()}}};
+ raf=requestAnimationFrame(tick);
+ await new Promise(r=>{stg.onclick=()=>{stg.onclick=null;r()}});
+ o.querySelector('.sz-t').classList.add('weg');sfx('muenzen',.9);coin(40);setTimeout(()=>{coin(30);sfx('muenzen',.7)},350);setTimeout(()=>sfx('fanfare',.6),500);stg.classList.add('glanz');
+ await sleep(1400);
+ // Der Brief entrollt sich
+ const br=el('div','sz-brief','<div class="sz-rolle"><div class="cc-k">Für '+heroName()+'</div><div class="brief">'+msg+(g.von?'<p class="sig">'+esc(g.von)+'</p>':'')+'</div>'+(g.ort?'<div class="cc-k" style="margin-top:12px">Im zweiten Fach liegt ein Zettel</div><p>'+esc(g.ort)+'</p>':'')+'<button class="pbtn">Weiter</button></div>');stg.appendChild(br);requestAnimationFrame(()=>br.classList.add('on'));sfx('pergament',.7);
+ await new Promise(r=>br.querySelector('button').onclick=r);sfx('ui_klick',.5);br.classList.remove('on');await sleep(400);br.remove();
+ // Abzeichen: Retter der Lichternacht, Schnee, Lichtstrahlen, Frohe Weihnachten
+ const kl=st.hero.f?CLS[st.hero.cls].nf:CLS[st.hero.cls].n;
+ const md=el('div','sz-md','<div class="sz-rays"></div><div class="sz-schnee"></div><div class="sz-in"><img class="sz-med" src="'+A+'ui/medaille_neu.png" alt="" onerror="this.onerror=null;this.src=\''+A+'ui/medaille.png\'"><div class="cc-k">Abzeichen</div><h2>Retter der Lichternacht</h2><p>'+heroName()+', '+kl+' der Stufe '+st.lvl+'</p><div class="sz-ppl">'+['held','gr','zi','hu','na'].map(k=>'<i style="background-image:url('+(k==='held'?heroImg():A+'img/k_'+k+'.jpg')+')"></i>').join('')+'</div><div class="sz-fw">Frohe Weihnachten!</div><button class="pbtn">Weiter</button></div>');
+ stg.appendChild(md);const sn=md.querySelector('.sz-schnee');for(let i=0;i<40;i++){const f=el('i');f.style.left=Math.random()*100+'%';f.style.animationDelay=(-Math.random()*8)+'s';f.style.animationDuration=(5+Math.random()*5)+'s';f.style.width=f.style.height=(3+Math.random()*5)+'px';sn.appendChild(f)}
+ requestAnimationFrame(()=>md.classList.add('on'));sfx('stufenaufstieg',.8);setTimeout(()=>{fx('magic',md.querySelector('.sz-med'),300);sfx('jubel_kurz',.5)},900);
+ st.flags.badge=1;save();
+ await new Promise(r=>md.querySelector('button').onclick=r);sfx('ui_klick',.5);
+ cancelAnimationFrame(raf);removeEventListener('resize',size);o.classList.remove('on');await sleep(500);o.remove();done()});
 
 // Tag 2: Hütchenspiel des Wirts. Kompass unter einem Becher, drei Runden, immer schneller.
 GAMES.becher=()=>new Promise(done=>{
@@ -399,11 +460,11 @@ GAMES.bruecke=(s)=>new Promise(done=>{const sc=$('#s-scene');
  const side={held:0,gr:0,hu:0,zi:0};let lamp=0,sel=new Set(),moves=0,busy=false;const BY=.50,FEET=.488;
  const o=el('div','pg bz','<div class="pg-img" style="background-image:url('+A+'img/ort18.jpg)"></div><div class="bz-crack"></div><div class="pg-top">Wer geht mit der Laterne hinüber?</div><div class="bz-info"><b class="bz-w">0 von 100 Stein</b><span class="bz-m">Überquerungen: 0</span></div><button class="pbtn bz-go">Losgehen</button><button class="pg-tip"><img src="'+A+'ui/tipp.png" alt="Tipp"></button><div class="bz-rule">Die Brücke trägt höchstens 100 Stein. Wer geht, nimmt die Laterne mit. Grumbold trägt die Laterne nie allein und bleibt nie allein im Dunkeln.</div>');sc.appendChild(o);
  const lampEl=el('img','bz-lamp');lampEl.src=A+'items/laterne.png';o.appendChild(lampEl);
- const bar=el('div','bz-bar');o.appendChild(bar);const T=P.map(p=>{const t=el('button','bz-t','<i style="background-image:url('+p.img+')"></i><img class="bz-sp" src="'+p.run+'0.png" alt=""><b>'+esc(p.n)+'</b><span>'+p.w+' Stein</span>');const sp=t.querySelector('.bz-sp');sp.onload=()=>t.classList.add('has-sp');sp.onerror=()=>sp.remove();t._sp=sp;t._run=p.run;o.appendChild(t);t.onclick=()=>{if(busy||side[p.k]!==lamp)return;sel.has(p.k)?sel.delete(p.k):sel.size<3&&sel.add(p.k);sfx('ui_klick',.5);lay()};const c=el('button','bz-chip','<i style="background-image:url('+p.img+')"></i><b>'+esc(p.n)+'</b><span>'+p.w+' Stein</span>');c.onclick=t.onclick;bar.appendChild(c);t._chip=c;return {p,t}});
+ const bar=el('div','bz-bar');o.appendChild(bar);const T=P.map(p=>{const t=el('button','bz-t','<i style="background-image:url('+p.img+')"></i><img class="bz-sp" src="'+p.run+'0.png" alt=""><b>'+esc(p.n)+'</b><span>'+p.w+' Stein</span>');const sp=t.querySelector('.bz-sp');sp.style.height=({held:92,gr:150,hu:82,zi:58}[p.k])+'px';sp.onload=()=>{t.classList.add('has-sp');setTimeout(()=>{try{lay()}catch(e){}},0)};sp.onerror=()=>sp.remove();t._sp=sp;t._run=p.run;o.appendChild(t);t.onclick=()=>{if(busy||side[p.k]!==lamp)return;sel.has(p.k)?sel.delete(p.k):sel.size<3&&sel.add(p.k);sfx('ui_klick',.5);lay()};const c=el('button','bz-chip','<i style="background-image:url('+p.img+')"></i><b>'+esc(p.n)+'</b><span>'+p.w+' Stein</span>');c.onclick=t.onclick;bar.appendChild(c);t._chip=c;return {p,t}});
  const HINTS=['Grumbold ist so schwer, dass er nur mit einer einzigen Figur zusammen gehen kann. Mit wem?','Grumbold und Zirpia gehen in der Mitte hinüber, nicht am Anfang und nicht am Ende.','Du und Hulda hin, Hulda zurück, Grumbold mit Zirpia hin, Zirpia zurück, dann Zirpia und Hulda hin.'];let hint=0;
  o.querySelector('.pg-tip').onclick=()=>{const h=HINTS[Math.min(hint,2)];toast(h,8000);readAloud(h);hint++};
  const lay=()=>{const W=o.clientWidth,H=o.clientHeight,y=H*BY;const cnt=[0,0];
-  T.forEach(({p,t})=>{const sd=side[p.k];const i=cnt[sd]++;const back=false,col=i;const x=sd?W*(.94-col*.112):W*(.06+col*.112);t.style.left=x+'px';const sh=t.classList.contains('has-sp')?((t._sp&&t._sp.offsetHeight)||76):62;t.style.top=(H*(FEET-(back?.032:0))-sh)+'px';t.style.zIndex=back?5:9;t.classList.toggle('back',back);t.classList.toggle('sel',sel.has(p.k));t.classList.toggle('off',sd!==lamp);if(t._chip){t._chip.classList.toggle('sel',sel.has(p.k));t._chip.classList.toggle('off',sd!==lamp);t._chip.classList.toggle('drueben',!!sd)}});
+  T.forEach(({p,t})=>{const sd=side[p.k];const i=cnt[sd]++;const back=false,col=i;const x=sd?W*(.93-col*.125):W*(.07+col*.125);t.style.left=x+'px';const sh=t.classList.contains('has-sp')?((t._sp&&t._sp.offsetHeight)||76):62;t.style.top=(H*(FEET-(back?.032:0))-sh)+'px';t.style.zIndex=p.k==='gr'?7:9;t.classList.toggle('back',back);t.classList.toggle('sel',sel.has(p.k));t.classList.toggle('off',sd!==lamp);if(t._chip){t._chip.classList.toggle('sel',sel.has(p.k));t._chip.classList.toggle('off',sd!==lamp);t._chip.classList.toggle('drueben',!!sd)}});
   lampEl.style.left=(lamp?W*.95:W*.03)+'px';lampEl.style.top=(y-44)+'px';
   const w=[...sel].reduce((a,k)=>a+P.find(p=>p.k===k).w,0);const wb=o.querySelector('.bz-w');wb.textContent=w+' von 100 Stein';wb.classList.toggle('bad',w>100);
   o.querySelector('.bz-m').textContent='Überquerungen: '+moves;o.querySelector('.bz-go').disabled=!sel.size};

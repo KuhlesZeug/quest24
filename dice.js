@@ -21,10 +21,11 @@ function ownDice(max,label){return new Promise(r=>{const o=diceOvl();const f=el(
  f.querySelector('.own-app').onclick=()=>{st.flags.own=0;save();f.remove();r(rnd(max))}})}
 
 // W20 Probe: zeigt Ziel, Bonus, Ergebnis
-async function rollD20(o){const ov=diceOvl();ov.innerHTML='<div class="dice-card"><div class="dc-t">'+esc(o.title)+'</div><div class="dc-s">'+esc(o.sub||'')+'</div><div class="dc-row"></div><div class="dc-res"></div><button class="pbtn dc-go">Würfeln</button>'+'</div>';
+async function rollD20(o){const ov=diceOvl();ov.innerHTML='<div class="dice-card"><div class="dc-t">'+esc(o.title)+'</div><div class="dc-s">'+esc(o.sub||'')+'</div><div class="dc-row"></div><div class="dc-res"></div><button class="pbtn dc-go">Würfeln</button>'+(o.back?'<button class="lnk dc-back">Zurück</button>':'')+'</div>';
  ov.classList.add('on');const row=ov.querySelector('.dc-row');const d=dieEl('w20');row.appendChild(d);d.querySelector('b').textContent='20';
- await new Promise(r=>{ov.querySelector('.dc-go').onclick=r;d.onclick=r;const ob=ov.querySelector('.dc-own');if(ob)ob.onclick=async()=>{ov._own=1;r()}});
- ov.querySelector('.dc-go').remove();const ob=ov.querySelector('.dc-own');if(ob)ob.remove();
+ let zur=false;await new Promise(r=>{ov.querySelector('.dc-go').onclick=r;d.onclick=r;const bk=ov.querySelector('.dc-back');if(bk)bk.onclick=()=>{zur=true;sfx('ui_klick',.5);r()};const ob=ov.querySelector('.dc-own');if(ob)ob.onclick=async()=>{ov._own=1;r()}});
+ if(zur){ov.classList.remove('on');return null}
+ ov.querySelector('.dc-go').remove();const ob=ov.querySelector('.dc-own');if(ob)ob.remove();const bk2=ov.querySelector('.dc-back');if(bk2)bk2.remove();
  let v;if(ov._own||st.flags.own){v=await ownDice(20,'Was zeigt dein W20?');sfx('wuerfel');d.querySelector('b').textContent=v}else{sfx('wuerfel');v=o.force||rnd(20);await tumble(d,v,x=>x==null?rnd(20):x)}
  const total=v+(o.bonus||0);const res=ov.querySelector('.dc-res');
  const crit=v===20,fumble=v===1;let ok=o.ziel!=null?total>=o.ziel:null;

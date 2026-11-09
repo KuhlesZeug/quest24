@@ -74,6 +74,7 @@ async function learnSkill(x){const [id,s]=x.split(':');const arr=st.flags['sk_'+
  await showCard('<div class="cc-port" style="background-image:url('+A+'img/k_'+id+'.jpg)"></div><div class="cc-k">'+COMP[id].n+' lernt</div><h3 class="sk-h">'+skIcon(s)+SK[s].n+'</h3><p>'+SK[s].d+'</p>','stufenaufstieg')}
 // Fähigkeiten Icon (a/ui/sk/<id>.png), falls keins da ist: allgemeines Buch
 const skIcon=s=>'<img class="sk-ic" src="'+A+'ui/sk/'+s+'.png" alt="" onerror="this.onerror=null;this.src=\''+A+'ui/ac_faehigkeit.png\'">';
+const skChips=a=>'<div class="sk-chips">'+a.map(s=>'<span class="sk-chip">'+skIcon(s)+'<b>'+SK[s].n+'</b></span>').join('')+'</div>';
 const skArt=s=>SK[s].passive?'Immer aktiv':SK[s].once?'Einmal pro Kampf':'Beliebig oft';
 // Stufenaufstieg: eigener Bildschirm mit Lichtstrahlen, Emblem, Lebenspunkten und zwei Fähigkeiten zur Wahl
 async function levelUp(lv){const old=heroMaxHp();st.lvl=lv;save();const neu=heroMaxHp();const [a,b]=LVL_SK[st.hero.cls][lv-2];
@@ -83,7 +84,9 @@ async function levelUp(lv){const old=heroMaxHp();st.lvl=lv;save();const neu=hero
   +'<div class="lvup-hp"><img src="'+A+'ui/herz.png" alt=""><span>Lebenspunkte</span><s>'+old+'</s><i>▸</i><em>'+neu+'</em><small>plus '+(neu-old)+'</small></div>'
   +'<div class="lvup-w">Wähle eine neue Fähigkeit</div><div class="lvup-ch"></div></div></div>');
  document.body.appendChild(o);const sp=o.querySelector('.lvup-st');for(let i=0;i<28;i++){const f=el('i','lvup-f');f.style.left=Math.random()*100+'%';f.style.animationDelay=(Math.random()*4)+'s';f.style.animationDuration=(3+Math.random()*3)+'s';sp.appendChild(f)}
- requestAnimationFrame(()=>o.classList.add('on'));sfx('stufenaufstieg');setTimeout(()=>{fx('magic',o.querySelector('.lvup-em'),260);sfx('fanfare',.5)},650);
+ requestAnimationFrame(()=>o.classList.add('on'));
+ // Fanfare passend zum Erzähler: Stufe 2 volle Fanfare, Stufe 3 kürzer, Stufe 4 ganz ohne, Stufe 5 wieder die volle
+ if(lv!==4)sfx('stufenaufstieg');setTimeout(()=>{fx('magic',o.querySelector('.lvup-em'),260);if(lv===2||lv===5)sfx('fanfare',.5)},650);
  const ch=o.querySelector('.lvup-ch');
  const s=await new Promise(r=>[a,b].forEach((k,i)=>{const bt=el('button','lvup-c',skIcon(k)+'<div><b>'+SK[k].n+'</b><span>'+SK[k].d+'</span><em>'+skArt(k)+'</em></div>');bt.style.animationDelay=(1.1+i*.18)+'s';bt.onclick=()=>{sfx('ui_klick',.6);r(k)};ch.appendChild(bt)}));
  st.hero.skills.push(s);save();
@@ -102,8 +105,8 @@ function openInv(){const keys=st.inv.filter(x=>ITEMS[x.id].key),rest=st.inv.filt
  const row=x=>{const I=ITEMS[x.id];return '<div class="inv-it"><img src="'+A+'items/'+x.id+'.png" alt=""><div><b>'+esc(I.n)+(x.n>1?' ×'+x.n:'')+'</b><span>'+esc(I.d)+'</span></div></div>'};
  sheet('<h2>Rucksack</h2><div class="inv-gold">'+UI('gold')+' '+st.gold+' Gold</div>'+(keys.length?'<h4>Schlüsselgegenstände</h4>'+keys.map(row).join(''):'')+'<h4>Gegenstände</h4>'+(rest.length?rest.map(row).join(''):'<p class="mute">Noch leer. Das ändert sich schnell.</p>'))}
 function openParty(){if(!st.hero)return;const h=st.hero,c=CLS[h.cls];
- const hero='<div class="pt-c"><div class="pt-p" style="background-image:url('+heroImg()+')"></div><div><b>'+heroName()+'</b><span>'+(h.f?c.nf:c.n)+', Stufe '+st.lvl+'</span><div class="pt-st">'+UI('st_str')+h.str+' '+UI('st_dex')+h.dex+' '+UI('st_wis')+h.wis+' '+UI('herz')+heroMaxHp()+'</div><span class="sk">'+[c.start,...h.skills].map(s=>SK[s].n).join(', ')+'</span></div></div>';
- sheet('<h2>Die Gruppe</h2>'+hero+st.party.map(id=>{const C=COMP[id];return '<div class="pt-c"><div class="pt-p" style="background-image:url('+A+'img/k_'+id+'.jpg)"></div><div><b>'+C.n+'</b><span>Element '+ELEM[C.el]+'</span><div class="pt-st">'+UI('herz')+C.hp+'</div><span class="sk">'+[...Object.keys(C.skills),...(st.flags['sk_'+id]||[])].map(s=>SK[s].n).join(', ')+'</span></div></div>'}).join('')+(st.party.length<4?'<p class="mute">Unterwegs wartet noch jemand auf dich.</p>':''))}
+ const hero='<div class="pt-c"><div class="pt-p" style="background-image:url('+heroImg()+')"></div><div><b>'+heroName()+'</b><span>'+(h.f?c.nf:c.n)+', Stufe '+st.lvl+'</span><div class="pt-st">'+UI('st_str')+h.str+' '+UI('st_dex')+h.dex+' '+UI('st_wis')+h.wis+' '+UI('herz')+heroMaxHp()+'</div>'+skChips([c.start,...h.skills])+'</div></div>';
+ sheet('<h2>Die Gruppe</h2>'+hero+st.party.map(id=>{const C=COMP[id];return '<div class="pt-c"><div class="pt-p" style="background-image:url('+A+'img/k_'+id+'.jpg)"></div><div><b>'+C.n+'</b><span>Element '+ELEM[C.el]+'</span><div class="pt-st">'+UI('herz')+C.hp+'</div>'+skChips([...Object.keys(C.skills),...(st.flags['sk_'+id]||[])])+'</div></div>'}).join('')+(st.party.length<4?'<p class="mute">Unterwegs wartet noch jemand auf dich.</p>':''))}
 function openLog(){const days=Object.keys(st.done).map(Number).sort((a,b)=>a-b);
  sheet('<h2>Tagebuch</h2>'+(days.length?days.map(d=>'<button class="log-d" data-d="'+d+'"><b>Tag '+d+'</b><span>'+DAYN[d]+'</span></button>').join(''):'<p class="mute">Hier sammeln sich deine Abenteuer.</p>')+'<h4>Einstellungen</h4><label class="set"><input type="checkbox" id="set-auto"'+(st.auto?' checked':'')+'> Text läuft nach der Stimme automatisch weiter</label><label class="set"><input type="checkbox" id="set-own"'+(st.flags.own?' checked':'')+'> Ich würfle mit echten Würfeln am Tisch und tippe das Ergebnis selbst ein</label>');
  $$('.log-d').forEach(b=>b.onclick=()=>{$('#sheet').classList.remove('on');playDay(+b.dataset.d,true)});

@@ -10,7 +10,9 @@ function pluck(t,f,vol){const c=ac(),out=c.createGain(),d=c.createDelay(.05),fb=
 
 // Irrlicht als Note: Bild plus starker Leuchthof
 const WISP={'#ff7a4a':4,'#ffd23f':3,'#5fd16a':2,'#5ab8ff':1,'#4fe36a':2,'#ff5a6a':4,'#ffd23f ':3};
-function wispEl(col,wi){const e=el('div','rk-w','<b></b><i></i><img src="'+A+'ui/wisp_'+wi+'.png" alt="">');e.style.setProperty('--c',col);return e}
+// Leuchtkern je Irrlichtbild (gemessen), damit Lichthof und Kern genau auf dem Irrlicht sitzen
+const WISPK={1:[.534,.693],2:[.489,.703],3:[.538,.672],4:[.485,.659],5:[.528,.625]};
+function wispEl(col,wi){const k=WISPK[wi]||[.5,.66];const e=el('div','rk-w','<b></b><i></i><img src="'+A+'ui/wisp_'+wi+'.png" alt="" style="left:'+(50-k[0]*128).toFixed(1)+'%;top:'+(50-k[1]*128).toFixed(1)+'%">');e.style.setProperty('--c',col);return e}
 
 // Flamme wie bei Guitar Hero. Stufe 0: nur draufgehauen (kleines Flämmchen), 1: Treffer, 2: perfekt
 function fireFx(fx,x,y,col,sc,lv){const S=[.45,1,1.35][lv];const f=el('div','rk-fire');f.style.left=x+'px';f.style.top=y+'px';f.style.setProperty('--c',col);f.style.setProperty('--s',sc*S);fx.appendChild(f);setTimeout(()=>f.remove(),700);
@@ -84,7 +86,7 @@ GAMES.takt=()=>new Promise(async done=>{hideBox();
   // Band und Schlagzeug getrennt starten, Schlagzeug wird bei Fehlern leiser
   dg=c.createGain();dg.gain.value=1;dg.connect(drumOut());const bg=c.createGain();bg.gain.value=.9;bg.connect(drumOut());
   [[band,bg],[drums,dg]].forEach(([b,g])=>{if(!b)return;const s=c.createBufferSource();s.buffer=b;s.connect(g);s.start(t0);srcs.push(s)});
-  const notes=CH.map(([t,L],i)=>{const e=wispEl(LANES[L].c,[4,3,2,1][L]);notesEl.appendChild(e);return {t:t0+t,L,e,st:0}});
+  const notes=CH.map(([t,L],i)=>({t:t0+t,L,e:null,st:0}));// Lichter erst kurz vor dem Auftritt erzeugen, danach entfernen
   let next=0;const end=t0+(band?band.duration:CH[N-1][0]+3);
   const hitLane=(L,ev)=>{if(fin)return;const now=c.currentTime-LAT;
    const p=pads[L];p.classList.remove('hit');void p.offsetWidth;p.classList.add('hit');
@@ -100,9 +102,10 @@ GAMES.takt=()=>new Promise(async done=>{hideBox();
   o.addEventListener('pointerdown',tap);addEventListener('keydown',kb);
   const loop=()=>{const now=c.currentTime-LAT,W=stg.clientWidth,H=stg.clientHeight;
    for(let j=next;j<N;j++){const n=notes[j];const dt=n.t-now;if(dt>LEAD+.1)break;
+    if(!n.e){n.e=wispEl(LANES[n.L].c,[4,3,2,1][n.L]);notesEl.appendChild(n.e)}
     const Pq=lanePos(n.L,Math.min(1.8,1-dt/LEAD));if(!n.st&&dt<0&&(!inside(n.L,Pq,1.12)||dt<-.6)){n.st=2;n.mt=now;n.e.classList.add('miss');missFx(n.L);combo=0;comboEl.textContent='';setMood(mood-2.5);dg.gain.setTargetAtTime(.2,c.currentTime,.02);setTimeout(()=>{if(dg)dg.gain.setTargetAtTime(1,c.currentTime,.08)},380)}
     const u=1-dt/LEAD,P=lanePos(n.L,Math.min(1.8,u));n.e.style.transform='translate('+P.x+'px,'+P.y+'px) translate(-50%,-50%) scale('+P.s+')';n.e.style.opacity=n.st===1?0:n.st===2?Math.max(0,1-(now-n.mt)/.5):(u<0?0:Math.min(1,u*3))}
-   while(next<N&&notes[next].st&&(notes[next].st===1?notes[next].t<now-.4:now-notes[next].mt>.55)){notes[next].e.style.opacity=0;next++}
+   while(next<N&&notes[next].st&&(notes[next].st===1?notes[next].t<now-.4:now-notes[next].mt>.55)){if(notes[next].e){notes[next].e.remove();notes[next].e=null}next++}
    if(now>end+.3||(next>=N&&now>CH[N-1][0]+t0+2.5)){o.removeEventListener('pointerdown',tap);removeEventListener('keydown',kb);finish();return}
    raf=requestAnimationFrame(loop)};raf=requestAnimationFrame(loop);
   o._cleanup=()=>{o.removeEventListener('pointerdown',tap);removeEventListener('keydown',kb)}};

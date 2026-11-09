@@ -44,7 +44,7 @@ async function grumbold8(o,pts){const W=['Eins!','Zwei!','Drei!','Vier!','Fünf!
  const gr=c.querySelector('.g8-gr'),nb=c.querySelector('.g8-n'),bg=c.querySelector('.g8-bg');await sleep(500);
  for(let i=0;i<8;i++){const p=pts[i]||{x:.5,y:.4};const sp=i<3?520:i<6?380:i<7?300:700;
   gr.src=A+'img/b_gr_1.png';gr.style.setProperty('--tx',((p.x-.5)*60)+'%');gr.classList.remove('hit');void gr.offsetWidth;gr.classList.add('hit');
-  await sleep(110);const b=el('div','g8-boom');b.style.left=(p.x*100)+'%';b.style.top=(p.y*100)+'%';c.appendChild(b);setTimeout(()=>b.remove(),700);
+  await sleep(110);const b=el('div','g8-boom');b.style.left=(p.x*100)+'%';b.style.top=(p.y*100)+'%';c.appendChild(b);setTimeout(()=>b.remove(),700);chips(c,p,i===7?26:10,i===7);
   for(let k=0;k<6;k++){const s=el('i','g8-sp');s.style.left=(p.x*100)+'%';s.style.top=(p.y*100)+'%';const a=Math.random()*Math.PI*2,r=40+Math.random()*60;s.style.setProperty('--dx',Math.cos(a)*r+'px');s.style.setProperty('--dy',Math.sin(a)*r+'px');c.appendChild(s);setTimeout(()=>s.remove(),700)}
   sfx(i===7?'kritisch':'stein',.9);sfx('treffer',.6);playVo(A+'vo/gr8_'+(i+1)+'.mp3');
   nb.textContent=W[i];nb.className='g8-n'+(i===7?' last':'');void nb.offsetWidth;nb.classList.add('on');
@@ -52,10 +52,15 @@ async function grumbold8(o,pts){const W=['Eins!','Zwei!','Drei!','Vier!','Fünf!
   await sleep(sp*.55);gr.src=A+'img/b_gr_0.png';await sleep(sp*.45)}
  await sleep(900);c.classList.add('out');await sleep(500);c.remove()}
 
+// Schuppen platzen ab: dunkle Schuppensplitter mit glühender Kante fliegen weg, ein Glutriss bleibt zurück
+function chips(host,p,n,big){const r0=host.getBoundingClientRect();
+ for(let k=0;k<n;k++){const c=el('i','g8-chip'+(Math.random()<.35?' gl':''));const sz=(big?22:14)+Math.random()*(big?26:16);c.style.width=sz+'px';c.style.height=(sz*1.15)+'px';c.style.left=(p.x*100)+'%';c.style.top=(p.y*100)+'%';
+  const a=-Math.PI/2+(Math.random()-.5)*Math.PI*1.5,v=(big?120:80)+Math.random()*(big?160:110);c.style.setProperty('--dx',Math.cos(a)*v+'px');c.style.setProperty('--dy',Math.sin(a)*v+'px');c.style.setProperty('--fall',(120+Math.random()*160)+'px');c.style.setProperty('--rt',((Math.random()-.5)*900)+'deg');c.style.animationDuration=(.8+Math.random()*.5)+'s';host.appendChild(c);setTimeout(()=>c.remove(),1400)}
+ const cr=el('div','g8-crack'+(big?' big':''),'<svg viewBox="-50 -50 100 100"><path d="'+Array.from({length:big?7:4},()=>{let x=0,y=0,d='M0 0';const a=Math.random()*Math.PI*2;for(let j=0;j<4;j++){x+=Math.cos(a+(Math.random()-.5)*.9)*(9+Math.random()*7);y+=Math.sin(a+(Math.random()-.5)*.9)*(9+Math.random()*7);d+=' L'+x.toFixed(1)+' '+y.toFixed(1)}return d}).join(' ')+'"/></svg>');cr.style.left=(p.x*100)+'%';cr.style.top=(p.y*100)+'%';host.appendChild(cr)}
 // Grumbold springt zur angetippten Schuppe, schlägt zu und ruft die Zahl
 function grJump(o,p,i){let g=o.querySelector('.g8-gr2');if(!g){g=el('img','g8-gr2');g.src=A+'img/b_gr_0.png';o.appendChild(g)}
  g.style.left=(p.x*100)+'%';g.style.top=(p.y*100)+'%';g.src=A+'img/b_gr_1.png';g.classList.remove('punch');void g.offsetWidth;g.classList.add('punch');
- setTimeout(()=>{const b=el('div','g8-boom');b.style.left=(p.x*100)+'%';b.style.top=(p.y*100)+'%';o.appendChild(b);setTimeout(()=>b.remove(),700);
+ setTimeout(()=>{const b=el('div','g8-boom');b.style.left=(p.x*100)+'%';b.style.top=(p.y*100)+'%';o.appendChild(b);setTimeout(()=>b.remove(),700);chips(o,p,i===7?26:10,i===7);
   for(let k=0;k<6;k++){const s=el('i','g8-sp');s.style.left=(p.x*100)+'%';s.style.top=(p.y*100)+'%';const a=Math.random()*Math.PI*2,r=40+Math.random()*50;s.style.setProperty('--dx',Math.cos(a)*r+'px');s.style.setProperty('--dy',Math.sin(a)*r+'px');o.appendChild(s);setTimeout(()=>s.remove(),700)}
   sfx(i===7?'kritisch':'stein',.8);o.classList.remove('hit');void o.offsetWidth;o.classList.add('hit');setTimeout(()=>{g.src=A+'img/b_gr_0.png'},260)},180);
  try{const a=new Audio(A+'vo/gr8_'+(i+1)+'.mp3');a.volume=st.sound===false?0:1;a.play().catch(()=>{})}catch(e){}}
@@ -85,7 +90,7 @@ GAMES.p_lied=()=>new Promise(async done=>{hideBox();const W2=phWho(2);const LEAD
  const layout=()=>{const W=stg.clientWidth,H=stg.clientHeight,sc=Math.max(W/IW,H/IH),iw=IW*sc,ih=IH*sc,ox=(W-iw)/2,oy=(H-ih)/2;
   const tx=ox+LAUTE_GEO.tx*iw,ty=oy+LAUTE_GEO.ty*ih,tw=LAUTE_GEO.tw*iw,hy=H*HY,bw=Math.min(W*.86,iw*LAUTE_GEO.bw);
   const L=[0,1,2,3].map(i=>{const f=(i+.5)/4-.5;return {x0:tx+f*tw,y0:ty,x1:W/2+f*bw,y1:hy}});const pw=Math.min(132,bw/4*.98);G={W,H,L,hy,pw,ph:pw*.56};
-  svg.setAttribute('viewBox','0 0 '+W+' '+H);svg.innerHTML=L.map((l,i)=>{const ex=l.x0+(l.x1-l.x0)*1.25,ey=l.y0+(l.y1-l.y0)*1.25;return '<line x1="'+l.x0+'" y1="'+l.y0+'" x2="'+ex+'" y2="'+ey+'" stroke="'+COL[i]+'" stroke-opacity=".35" stroke-width="7" stroke-linecap="round"/><line x1="'+l.x0+'" y1="'+l.y0+'" x2="'+ex+'" y2="'+ey+'" stroke="#fff4d8" stroke-width="2.2" stroke-linecap="round"/>'}).join('');
+  svg.setAttribute('viewBox','0 0 '+W+' '+H);svg.innerHTML=L.map((l,i)=>{const ex=l.x1,ey=l.y1;return '<line x1="'+l.x0+'" y1="'+l.y0+'" x2="'+ex+'" y2="'+ey+'" stroke="'+COL[i]+'" stroke-opacity=".35" stroke-width="7" stroke-linecap="round"/><line x1="'+l.x0+'" y1="'+l.y0+'" x2="'+ex+'" y2="'+ey+'" stroke="#fff4d8" stroke-width="2.2" stroke-linecap="round"/>'}).join('');
   stg.style.setProperty('--lbg','url('+A+'img/mg_laute2.jpg)');rings.forEach((r,i)=>{r.style.left=L[i].x1+'px';r.style.top=hy+'px';r.style.width=G.pw+'px';r.style.height=G.ph+'px'})};
  layout();addEventListener('resize',layout);
  // Bewegung: hinten klein, vorne groß, und kurz vor dem Pad deutlich langsamer (wie beim Schlagzeug)
@@ -110,7 +115,7 @@ GAMES.p_lied=()=>new Promise(async done=>{hideBox();const W2=phWho(2);const LEAD
   ['4','3','2','1'].forEach((n,i)=>setTimeout(()=>{cnt.textContent=n;cnt.className='tk2-count on';pluck(392,.16);setTimeout(()=>cnt.className='tk2-count',380)},Math.max(0,(t0-(4-i)*beat-c.currentTime)*1000)));
   lg=c.createGain();lg.gain.value=1.15;lg.connect(drumOut());const bg=c.createGain();bg.gain.value=1;bg.connect(drumOut());
   [[band,bg],[lute,lg]].forEach(([b,g])=>{if(!b)return;const s=c.createBufferSource();s.buffer=b;s.connect(g);s.start(t0);srcs.push(s)});
-  const notes=CH.map(([t,L])=>{const e=wispEl(COL[L],[2,4,3,1][L]);notesEl.appendChild(e);return {t:t0+t,L,e,st:0}});
+  const notes=CH.map(([t,L])=>({t:t0+t,L,e:null,st:0}));// Lichter werden erst kurz vor ihrem Auftritt erzeugt und danach wieder entfernt (weniger Last auf dem Handy)
   let next=0;const end=t0+(band?band.duration:CH[N-1][0]+3);
   const hit=L=>{if(fin)return;const r=rings[L];r.classList.remove('on');void r.offsetWidth;r.classList.add('on');const now=c.currentTime-LAT;
    let k=-1,bd=9;for(let j=next;j<N&&notes[j].t<now+LEAD;j++){const n=notes[j];if(n.st||n.L!==L)continue;if(!inZone(pos(L,1-(n.t-now)/LEAD),1.12))continue;const d=Math.abs(now-n.t);if(d<bd){bd=d;k=j}}
@@ -126,11 +131,12 @@ GAMES.p_lied=()=>new Promise(async done=>{hideBox();const W2=phWho(2);const LEAD
   o.addEventListener('pointerdown',tap);addEventListener('keydown',kb);
   const loop=()=>{const now=c.currentTime-LAT;
    for(let j=next;j<N;j++){const n=notes[j];const dt=n.t-now;if(dt>LEAD+.1)break;
+    if(!n.e){n.e=wispEl(COL[n.L],[2,4,3,1][n.L]);notesEl.appendChild(n.e)}
     const u=1-dt/LEAD,P=pos(n.L,Math.min(1.6,u));
     if(!n.st&&dt<0&&(!inZone(P,1.12)||dt<-.5)){n.st=2;n.mt=now;n.e.classList.add('miss');missFx(n.L);combo=0;comboEl.textContent='';setMood(mood-2.5);lg.gain.setTargetAtTime(.2,c.currentTime,.02);setTimeout(()=>{if(lg)lg.gain.setTargetAtTime(1.15,c.currentTime,.08)},380)}
     const sz=G.pw*.72*P.k;n.e.style.width=n.e.style.height=sz+'px';
     n.e.style.transform='translate('+P.x+'px,'+P.y+'px) translate(-50%,-50%)';n.e.style.opacity=n.st===1?0:n.st===2?Math.max(0,1-(now-n.mt)/.5):(u<0?0:Math.min(1,u*3))}
-   while(next<N&&notes[next].st&&(notes[next].st===1?notes[next].t<now-.4:now-notes[next].mt>.55)){notes[next].e.style.opacity=0;next++}
+   while(next<N&&notes[next].st&&(notes[next].st===1?notes[next].t<now-.4:now-notes[next].mt>.55)){if(notes[next].e){notes[next].e.remove();notes[next].e=null}next++}
    if(now>end+.3||(next>=N&&now>CH[N-1][0]+t0+2.5)){finish();return}
    raf=requestAnimationFrame(loop)};raf=requestAnimationFrame(loop);
   o._cleanup=()=>{o.removeEventListener('pointerdown',tap);removeEventListener('keydown',kb)};
@@ -147,7 +153,13 @@ GAMES.p_lied=()=>new Promise(async done=>{hideBox();const W2=phWho(2);const LEAD
   if(r){await sleep(300);run();return}
   removeEventListener('resize',layout);o.classList.remove('on');await sleep(450);o.remove();done(q)}
  if(TEST){const tb=el('button','pbn-test','Test: fertig');tb.style.cssText='position:absolute;right:8px;top:70px;z-index:12';tb.onclick=e=>{e.stopPropagation();res.hits=N;finish()};stg.appendChild(tb)}
- await sleep(500);run()});
+ // Zirpia erklärt das Lautenspiel (beim ersten Mal), antippen überspringt
+ const speak=(id,t)=>new Promise(res=>{const b=el('div','rk-say','<div class="rk-face"></div><p>'+t+'</p>');b.querySelector('.rk-face').style.backgroundImage='url('+A+'img/p_zi_2.jpg)';stg.appendChild(b);requestAnimationFrame(()=>b.classList.add('on'));
+  const a=playVo(A+'vo/'+id+'.mp3');let f2=0;const go=()=>{if(f2)return;f2=1;if(a&&!a.ended)stopVo();b.classList.remove('on');setTimeout(()=>b.remove(),250);res()};
+  b.onpointerdown=e=>{e.stopPropagation();go()};const iv=setInterval(()=>{if(!a||a.ended){clearInterval(iv);setTimeout(go,a?300:t.length*55)}},120)});
+ await sleep(500);
+ if(!st.flags.lied_erkl){await speak('pl_e1','Jetzt spielst du meine Laute! Die Irrlichter fliegen auf den vier Saiten nach unten zu den Pads.');await speak('pl_e2','Sobald ein Licht im Ring auf seinem Pad ist, tippst du genau dieses Pad an. Je mehr du triffst, desto lauter tobt die Menge.');st.flags.lied_erkl=1;save()}
+ run()});
 
 // Phase 4: Der Schatten. Nachtigall schleicht über Vharkons Rücken. Halten zum Schleichen, loslassen, wenn das Auge aufgeht.
 GAMES.p_schatten=()=>new Promise(async done=>{const W3=phWho(3);const fast=W3.right?1:1.35;
@@ -163,6 +175,8 @@ GAMES.p_schatten=()=>new Promise(async done=>{const W3=phWho(3);const fast=W3.ri
  const eg=o.querySelector('.ps2-eyeglow');
  const place=()=>{const [x,y]=map(PS_EYE[0],PS_EYE[1]);eg.style.left=x+'px';eg.style.top=y+'px';const g=map(P[P.length-1][0],P[P.length-1][1]);goal.style.left=g[0]+'px';goal.style.top=g[1]+'px'};place();addEventListener('resize',place);
  const btn=el('div','ps2-hold','Gedrückt halten zum Schleichen');o.appendChild(btn);
+ // Erst erklären, dann geht es los. Danach verschwindet der Hinweistext, damit die Katze unten frei bleibt.
+ await phIntro(o,'Nachtigall schleicht über Vharkons Rücken bis zu seinem Herzen. Halte den Bildschirm gedrückt, dann schleicht sie. Wenn Vharkon sich regt, sofort loslassen, denn wenn sein Auge aufgeht, darf sie sich nicht bewegen.','ps_erkl');o.querySelector('.bg-help').classList.add('weg');
  let hold=false,pos=0,state='zu',tState=performance.now(),dur=2.2+Math.random()*1.6,caught=0,run=true,last=performance.now(),fr=0;
  const down=e=>{e.preventDefault();hold=true;btn.classList.add('on')},up=()=>{hold=false;btn.classList.remove('on')};o.addEventListener('pointerdown',down);addEventListener('pointercancel',up);addEventListener('pointerup',up);
  const tick=t=>{if(!run)return;const dt=Math.min(.05,(t-last)/1000);last=t;const el0=(t-tState)/1000;
@@ -174,7 +188,10 @@ GAMES.p_schatten=()=>new Promise(async done=>{const W3=phWho(3);const fast=W3.ri
   pos=Math.min(1,pos);const [u,v,ang]=at(pos);const [x,y,sc]=map(u,v);const sz=Math.max(72,Math.min(110,IW*sc*.1));
   cat.style.width=sz+'px';cat.style.transform='translate('+x+'px,'+y+'px) translate(-50%,-50%) rotate('+(top?ang+90:0)+'deg)';cat.classList.toggle('walk',hold);
   cat.classList.toggle('hide',!hold&&state!=='zu');bar(o,'Weg zum Herzen',pos);
-  if(pos>=1){run=false;removeEventListener('pointerup',up);removeEventListener('pointercancel',up);removeEventListener('resize',place);phEnd(o,'Geschafft. Der Schattenschlüssel öffnet die Kruste über dem Herzen.').then(()=>done(Math.max(.3,1-caught*.2)));return}
+  if(pos>=1){run=false;removeEventListener('pointerup',up);removeEventListener('pointercancel',up);removeEventListener('resize',place);
+   // Ziel erreicht: goldene Lichtringe, Funken und ein großes Am Herzen!
+   o.classList.remove('auf','warn');alarm.textContent='';btn.remove();const w=el('div','ps2-win','<i></i><i></i><i></i><b>Am Herzen!</b>');w.style.left=goal.style.left;w.style.top=goal.style.top;o.appendChild(w);cat.classList.add('jubel');fx('magic',goal,280);sfx('zauber',.8);setTimeout(()=>sfx('richtig',.8),250);try{navigator.vibrate&&navigator.vibrate([40,30,80])}catch(e){}
+   setTimeout(()=>phEnd(o,'Geschafft. Der Schattenschlüssel öffnet die Kruste über dem Herzen.').then(()=>done(Math.max(.3,1-caught*.2))),1700);return}
   requestAnimationFrame(tick)};requestAnimationFrame(tick)});
 // Bildmaße und Weg über den Drachenkörper (relativ zum Bild, unten Schwanz, oben Brust)
 const PS_IMG=[1536,2720];const PS_EYE=[.34,.225];const PS_PATH=[[.72,.86],[.5,.9],[.3,.88],[.17,.8],[.2,.72],[.38,.66],[.52,.58],[.55,.48],[.5,.4],[.57,.31]];
@@ -182,6 +199,9 @@ const PS_IMG=[1536,2720];const PS_EYE=[.34,.225];const PS_PATH=[[.72,.86],[.5,.9
 // Phase 5: Das Herz. Halte die Sonnenkerze ruhig in der warmen Zone, bis die Asche schmilzt.
 GAMES.p_herz=()=>new Promise(async done=>{const W4=phWho(4);const zone=W4.right?.26:.18;
  const o=await phShell('ph','mg_herz','ort24',W4.name+' mit der Sonnenkerze','Halte gedrückt, damit die Flamme steigt, lass los, damit sie sinkt. Bleib im goldenen Bereich, bis die Asche geschmolzen ist.');
+ // Die Asche schmilzt sichtbar: drei weitere Bilder blenden nacheinander über das Herz
+ let prevL=o.querySelector('.pg-img');const STG=['mg_herz_2','mg_herz_1','mg_herz_3'].map(n=>{const d=el('div','pg-img ph-stg');d.style.backgroundImage='url('+A+'img/'+n+'.jpg)';d.style.opacity=0;prevL.after(d);prevL=d;return d});
+ let stgSeen=0;const stgUp=p=>{STG.forEach((d,i)=>{const a=Math.max(0,Math.min(1,(p-i/3)*3));d.style.opacity=a});const k=Math.min(3,Math.floor(p*3+.0001));if(k>stgSeen){stgSeen=k;sfx('feuer_entfacht',.35);fx('magic',o.querySelector('.ph-kw'),160);}};
  o.insertAdjacentHTML('beforeend','<div class="ph-glow"></div><div class="ph-band"><span>warm</span></div><div class="ph-meter"><i class="z"></i><i class="f"></i></div><div class="ph-kw"><i class="ph-fl"></i><img class="ph-k" src="'+A+'items/sonnenkerze.png" alt=""></div>');
  const btn=el('button','pbtn big ps-go','Kerze heben');o.appendChild(btn);
  let v=.3,vel=0,hold=false,prog=0,zc=.5,run=true,last=performance.now();
@@ -190,7 +210,7 @@ GAMES.p_herz=()=>new Promise(async done=>{const W4=phWho(4);const zone=W4.right?
  const tick=t=>{if(!run)return;const dt=Math.min(.05,(t-last)/1000);last=t;const s=t/1000;
   zc=.5+.28*Math.sin(s*.8)+.08*Math.sin(s*2.1);vel+=(hold?1.5:-1.3)*dt;vel*=.9;v=Math.max(0,Math.min(1,v+vel*dt*2.2));
   const inZ=Math.abs(v-zc)<zone/2;if(inZ)prog+=dt*.11;else prog=Math.max(0,prog-dt*.02);
-  z.style.bottom=((zc-zone/2)*100)+'%';z.style.height=(zone*100)+'%';f.style.bottom=(v*100)+'%';f.classList.toggle('in',inZ);gl.style.opacity=.15+prog*.85;bar(o,'Wärme',prog);
+  z.style.bottom=((zc-zone/2)*100)+'%';z.style.height=(zone*100)+'%';f.style.bottom=(v*100)+'%';f.classList.toggle('in',inZ);gl.style.opacity=.15+prog*.85;bar(o,'Wärme',prog);stgUp(prog);
   band.style.top=(yOf(zc+zone/2)*100)+'%';band.style.height=((Y1-Y0)*zone*100)+'%';band.classList.toggle('in',inZ);kw.style.top=(yOf(v)*100)+'%';kw.classList.toggle('in',inZ);
   if(inZ&&(spT-=dt)<0){spT=.12;const sp=el('i','ph-sp');sp.style.left=(46+Math.random()*8)+'%';sp.style.top=(yOf(v)*100-4)+'%';o.appendChild(sp);setTimeout(()=>sp.remove(),900)}
   if(prog>=1){run=false;removeEventListener('pointerup',up);sfx('feuer_entfacht',.8);phEnd(o,'Die Asche schmilzt. Darunter glimmt etwas.').then(()=>done(1));return}

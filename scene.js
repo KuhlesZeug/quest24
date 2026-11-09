@@ -89,6 +89,7 @@ async function step(s,ctx){
   if(s.note){sfx('rohrpost');await rohrpost()}
   if(s.s==='WG')wgCut(s.wg);
   await say(s.s,male?s.tm:s.t,vo,s.e)}
+ if(s.camp){await campfire(s.camp,ctx);return}
  if(s.choice){const i=s.pick?await pickImg(s.pick,s.choice):await choice(s.choice);const o=s.choice[i];if(o.flag)flag(o.flag);if(o.go)await run(o.go,ctx)}
  if(s.probe){const r=await probe(s.probe);await run(r?s.ok||[]:s.fail||[],ctx)}
  if(s.code){const r=await codeInput(s.code);await run(r?s.ok||[]:s.fail||[],ctx)}
@@ -123,7 +124,7 @@ async function probe(p){hideBox();const bonus=(st.hero[p.stat]||0)+(p.bonus?p.bo
 function itemBonus(p){let b=0;const tags=[p.tag,p.name==='Wahrnehmung'?'blick':null].filter(Boolean);st.inv.forEach(x=>{const I=ITEMS[x.id];if(I&&I.bonus)tags.forEach(t=>{if(I.bonus[t])b+=I.bonus[t]})});return b}
 
 // Sprechzeilen fest durchnummerieren (auch in Verzweigungen), damit jede Zeile ihre Aufnahme hat
-function numberSteps(id,steps){let n=0;const walk=a=>{(a||[]).forEach(s=>{if(s.s)s._vo=s.vo||(id+'_'+String(++n).padStart(3,'0'));['ok','fail','then','else','wrong'].forEach(k=>walk(s[k]));if(s.choice)s.choice.forEach(o=>walk(o.go));if(s.code){walk(s.code.wrongSteps)}if(s.phases)s.phases.forEach(walk);})};walk(steps);return n}
+function numberSteps(id,steps){let n=0;const walk=a=>{(a||[]).forEach(s=>{if(s.s)s._vo=s.vo||(id+'_'+String(++n).padStart(3,'0'));['ok','fail','then','else','wrong'].forEach(k=>walk(s[k]));if(s.choice)s.choice.forEach(o=>walk(o.go));if(s.camp)s.camp.people.forEach(p=>p.choice.forEach(o=>walk(o.go)));if(s.code){walk(s.code.wrongSteps)}if(s.phases)s.phases.forEach(walk);})};walk(steps);return n}
 
 // Zirpias Auftritt: Lied läuft, Bilder der Vorstellung wechseln, Tippen beendet
 async function songShow(name,imgs,o){const cur=$('#sc-bg .on');const prev=cur?cur.dataset.src:null;let skip=false;
@@ -152,3 +153,31 @@ function pickImg(P,opts){return new Promise(r=>{hideBox();const sc=$('#s-scene')
  const box=()=>{const W=o.clientWidth,H=o.clientHeight,k=Math.max(W/IW,H/IH);return {k,ox:(W-IW*k)/2,oy:(H-IH*k)/2}};
  const sp=P.spots.map((q,i)=>{const b=el('button','pk-spot','<i class="pk-ring"></i><span class="pk-lab">'+esc(opts[i].t)+'</span>');o.appendChild(b);b.onclick=()=>{sfx('zauber',.6);b.classList.add('on');o.querySelectorAll('.pk-spot').forEach(x=>x.disabled=true);setTimeout(()=>{o.classList.add('out');setTimeout(()=>{o.remove();removeEventListener('resize',lay);r(i)},450)},700)};return {q,b}});
  const lay=()=>{const {k,ox,oy}=box();sp.forEach(({q,b})=>{const R=q.r*IW*k;b.style.left=(ox+q.x*IW*k)+'px';b.style.top=(oy+q.y*IH*k)+'px';b.style.setProperty('--r',R+'px');b.classList.toggle('lb-up',!!q.up)})};lay();addEventListener('resize',lay)})}
+
+// Lagerfeuer: animiertes Feuer, Figuren antippen, Frage wählen. Jede Figur gibt einen Vertrauensmarker.
+function campfire(C,ctx){return new Promise(async r=>{hideBox();const sc=$('#s-scene');const IW=1080,IH=1920;
+ const o=el('div','pg cf','<div class="pg-img" style="background-image:url('+A+'img/'+C.img+'.jpg)"></div><canvas class="cf-cv"></canvas><div class="cf-glow"></div><div class="pg-top">'+esc(C.t)+'</div><div class="cf-marker"></div>');sc.appendChild(o);
+ const cv=o.querySelector('.cf-cv'),gl=o.querySelector('.cf-glow'),mk=o.querySelector('.cf-marker');
+ const box=()=>{const W=o.clientWidth,H=o.clientHeight,k=Math.max(W/IW,H/IH);return {k,ox:(W-IW*k)/2,oy:(H-IH*k)/2,W,H}};
+ let done=0;const N=C.people.length;const drawMk=()=>{mk.innerHTML='<span>Vertrauen</span>'+C.people.map((p,i)=>'<i class="'+(i<done?'an':'')+'"></i>').join('')};drawMk();
+ const sp=C.people.map((p,i)=>{const b=el('button','pk-spot cf-spot','<i class="pk-ring"></i><span class="pk-lab">'+esc(p.name)+'</span><em class="cf-q"><b></b><b></b><b></b></em>');o.appendChild(b);return {p,b}});
+ const lay=()=>{const {k,ox,oy,W,H}=box();cv.width=W;cv.height=H;sp.forEach(({p,b})=>{b.style.left=(ox+p.x*IW*k)+'px';b.style.top=(oy+p.y*IH*k)+'px';b.style.setProperty('--r',p.r*IW*k+'px');b.classList.toggle('lb-up',!!p.up)});
+  gl.style.left=(ox+C.fire.x*IW*k)+'px';gl.style.top=(oy+C.fire.y*IH*k)+'px';gl.style.setProperty('--r',C.fire.r*IW*k+'px')};lay();addEventListener('resize',lay);
+ // Feuer: Flammenzungen, Funken und flackerndes Licht über dem gemalten Feuer
+ const parts=[];let run_=true;const t0=performance.now();
+ const tick=()=>{if(!run_)return;requestAnimationFrame(tick);const {k,ox,oy}=box();const cx=cv.getContext('2d');cx.clearRect(0,0,cv.width,cv.height);const fx_=ox+C.fire.x*IW*k,fy=oy+C.fire.y*IH*k,R=C.fire.r*IW*k;const t=(performance.now()-t0)/1000;
+  for(let n=0;n<3;n++)parts.push({x:fx_+(Math.random()-.5)*R*.9,y:fy+R*.15,vx:(Math.random()-.5)*.4,vy:-(.6+Math.random()*1.2),l:1,s:R*(.18+Math.random()*.22),sp:Math.random()<.12});
+  cx.globalCompositeOperation='lighter';
+  for(let i=parts.length-1;i>=0;i--){const q=parts[i];q.x+=q.vx+Math.sin(t*6+i)*.3;q.y+=q.vy*(q.sp?1.8:1);q.l-=q.sp?.008:.028;if(q.l<=0){parts.splice(i,1);continue}
+   if(q.sp){cx.fillStyle='rgba(255,'+(170+q.l*80|0)+',90,'+q.l+')';cx.beginPath();cx.arc(q.x,q.y,1.6+q.l*1.4,0,7);cx.fill()}
+   else{const g=cx.createRadialGradient(q.x,q.y,0,q.x,q.y,q.s*q.l);g.addColorStop(0,'rgba(255,240,170,'+(.55*q.l)+')');g.addColorStop(.5,'rgba(255,140,40,'+(.35*q.l)+')');g.addColorStop(1,'rgba(200,40,10,0)');cx.fillStyle=g;cx.beginPath();cx.arc(q.x,q.y,q.s*q.l,0,7);cx.fill()}}
+  cx.globalCompositeOperation='source-over';gl.style.opacity=.75+Math.sin(t*9)*.08+Math.sin(t*23)*.06};tick();
+ sfx('feuer_entfacht',.35);
+ while(done<N){
+  sp.forEach(({b},i)=>b.disabled=b.classList.contains('fertig'));
+  const i=await new Promise(res=>sp.forEach(({b},j)=>b.onclick=()=>{if(b.classList.contains('fertig'))return;sfx('zauber',.5);res(j)}));
+  const P=C.people[i];o.classList.add('weg');
+  const k=await choice(P.choice);const q=P.choice[k];if(q.flag)flag(q.flag);if(q.go)await run(q.go,ctx);hideBox();
+  done++;st.flags.trust=Math.min(3,(st.flags.trust||0)+1);save();sp[i].b.classList.add('fertig');drawMk();sfx('richtig',.5);o.classList.remove('weg')}
+ await sleep(500);toast('Drei Vertrauensmarker für den Drachenkampf');await sleep(1600);
+ run_=false;o.classList.add('out');setTimeout(()=>{o.remove();removeEventListener('resize',lay);r()},450)})}

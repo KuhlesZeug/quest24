@@ -113,7 +113,7 @@ FILMS.z6={shots:[
  {img:'f_z6a',mus:'rueckblende',s:'HU',t:'Ich dachte, es wäre einfach ein Juwel. Ein schönes, warmes Juwel.'},
  {img:'f_z6b',s:'HU',t:'Ich hab ein Plätzchen dagelassen. Wie immer. Damit es nicht so … nackt aussieht.'},
  {img:'f_z6c',mus:null,s:'HU',t:'Ich habe es nie verkauft. Ich konnte nicht. Es ist kalt geworden, sobald ich draußen war. Sechzig Jahre trage ich es mit mir herum.'},
- {img:'f_z6n1',s:'NA',t:'Ich war dabei, als er aufgewacht ist. Er hat nicht gebrüllt. Er hat nur gefragt, wo es so kalt herkommt.'},
+ {img:'f_z6n1',s:'NA',t:'Ich war dabei, als er aufgewacht ist. Er hat nicht gebrüllt. Er hat nur gefragt, woher diese Kälte kommt.'},
  {img:'f_z6n2',s:'NA',t:'Und ich bin gegangen. Weil ich es nicht ausgehalten habe, ihn so zu sehen.'},
  {img:'f_z6d',d:2500},
  {s:'SL',t:'Manchmal ist das Schwerste an einem Abenteuer nicht der Drache. Sondern das, was man selbst mit sich herumträgt.'},
