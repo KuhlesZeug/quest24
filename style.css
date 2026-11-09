@@ -1577,3 +1577,6 @@ img{display:block;max-width:100%}
 .rk-st.shake{animation:rkShake .18s}
 @keyframes rkShake{25%{transform:translateX(calc(-50% + 3px))}75%{transform:translateX(calc(-50% - 3px))}}
 .rk-pop{display:none}
+.rk-notes{z-index:6}
+.rk-ring{transform:translate(-50%,-50%)!important;border-width:3px}
+.rk-txt{z-index:8}
