@@ -1918,3 +1918,16 @@ img{display:block;max-width:100%}
 .lvup-c:disabled{pointer-events:none;color:var(--ink)}
 
 .rk.feuer .rk-w b{width:296.9%!important;height:296.9%!important}
+
+/* Lagerfeuer: die ganze Figur ist antippbar, Namensschild mit Sprechpunkten über dem Kopf (Grumbold) oder unter den Füßen */
+.cf-spot.cf-box{margin:0;border-radius:24px;--r:0px}
+.cf-spot.cf-box .pk-lab{top:calc(100% + 4px);display:inline-flex;align-items:center;gap:8px}
+.cf-spot.cf-box.lb-up .pk-lab{top:auto;bottom:calc(100% + 4px)}
+.cf-spot.cf-box .cf-q{position:static;padding:4px 6px;box-shadow:none;background:rgba(90,53,25,.12);animation:none}
+.cf-spot.cf-box::after{inset:0;border-radius:24px;background:radial-gradient(ellipse,rgba(255,220,140,.3),transparent 70%)}
+
+/* Lagerfeuer: während Frage und Antwort laufen, liegt das Bild nur noch im Hintergrund und fängt keine Tipps ab */
+.cf.weg{pointer-events:none}
+.cf.weg .cf-spot{pointer-events:none}
+.cf.weg{z-index:3}
+.cf.weg .cf-spot,.cf.weg .cf-marker{opacity:0}

@@ -160,9 +160,11 @@ function campfire(C,ctx){return new Promise(async r=>{hideBox();const sc=$('#s-s
  const cv=o.querySelector('.cf-cv'),gl=o.querySelector('.cf-glow'),mk=o.querySelector('.cf-marker');
  const box=()=>{const W=o.clientWidth,H=o.clientHeight,k=Math.max(W/IW,H/IH);return {k,ox:(W-IW*k)/2,oy:(H-IH*k)/2,W,H}};
  let done=0;const N=C.people.length;const drawMk=()=>{mk.innerHTML='<span>Vertrauen</span>'+C.people.map((p,i)=>'<i class="'+(i<done?'an':'')+'"></i>').join('')};drawMk();
- const sp=C.people.map((p,i)=>{const b=el('button','pk-spot cf-spot','<i class="pk-ring"></i><span class="pk-lab">'+esc(p.name)+'</span><em class="cf-q"><b></b><b></b><b></b></em>');o.appendChild(b);return {p,b}});
- const lay=()=>{const {k,ox,oy,W,H}=box();cv.width=W;cv.height=H;sp.forEach(({p,b})=>{b.style.left=(ox+p.x*IW*k)+'px';b.style.top=(oy+p.y*IH*k)+'px';b.style.setProperty('--r',p.r*IW*k+'px');b.classList.toggle('lb-up',!!p.up)});
-  gl.style.left=(ox+C.fire.x*IW*k)+'px';gl.style.top=(oy+C.fire.y*IH*k)+'px';gl.style.setProperty('--r',C.fire.r*IW*k+'px')};lay();addEventListener('resize',lay);
+ const sp=C.people.map((p,i)=>{const b=el('button','pk-spot cf-spot'+(p.box?' cf-box':''),'<i class="pk-ring"></i><span class="pk-lab">'+esc(p.name)+'<em class="cf-q"><b></b><b></b><b></b></em></span>');b.style.zIndex=p.z||5;o.appendChild(b);return {p,b}});
+ const lay=()=>{const {k,ox,oy,W,H}=box();cv.width=W;cv.height=H;sp.forEach(({p,b})=>{if(p.box){const [x0,y0,x1,y1]=p.box;b.style.left=(ox+x0*IW*k)+'px';b.style.top=(oy+y0*IH*k)+'px';b.style.width=((x1-x0)*IW*k)+'px';b.style.height=((y1-y0)*IH*k)+'px'}else{b.style.left=(ox+p.x*IW*k)+'px';b.style.top=(oy+p.y*IH*k)+'px'}b.style.setProperty('--r',p.r*IW*k+'px');b.classList.toggle('lb-up',!!p.up)});
+  gl.style.left=(ox+C.fire.x*IW*k)+'px';gl.style.top=(oy+C.fire.y*IH*k)+'px';gl.style.setProperty('--r',C.fire.r*IW*k+'px');
+  // Namensschilder ganz im Bild halten
+  requestAnimationFrame(()=>{const R=o.getBoundingClientRect();sp.forEach(({b})=>{const l=b.querySelector('.pk-lab');l.style.transform='translateX(-50%)';const q=l.getBoundingClientRect();let dx=0;if(q.left<R.left+8)dx=R.left+8-q.left;else if(q.right>R.right-8)dx=R.right-8-q.right;l.style.transform='translateX(calc(-50% + '+dx+'px))'})})};lay();addEventListener('resize',lay);
  // Feuer: Flammenzungen, Funken und flackerndes Licht über dem gemalten Feuer
  const parts=[];let run_=true;const t0=performance.now();
  const tick=()=>{if(!run_)return;requestAnimationFrame(tick);const {k,ox,oy}=box();const cx=cv.getContext('2d');cx.clearRect(0,0,cv.width,cv.height);const fx_=ox+C.fire.x*IW*k,fy=oy+C.fire.y*IH*k,R=C.fire.r*IW*k;const t=(performance.now()-t0)/1000;
