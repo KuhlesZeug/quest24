@@ -71,11 +71,27 @@ const STECK={gr:['Herbert (ein Kiesel)','Dunkelheit','Entschuldigung, bevor ich 
 async function joinParty(id){if(!st.party.includes(id))st.party.push(id);save();const C=COMP[id],s=STECK[id];
  await showCard('<div class="cc-port" style="background-image:url('+A+'img/k_'+id+'.jpg)"></div><div class="cc-k">Neuer Gefährte</div><h3>'+C.n+'</h3><dl class="steck"><dt>Lieblingsding</dt><dd>'+s[0]+'</dd><dt>Größte Angst</dt><dd>'+s[1]+'</dd><dt>Spruch</dt><dd>'+s[2]+'</dd><dt>Element</dt><dd>'+ELEM[C.el]+'</dd></dl>','fanfare')}
 async function learnSkill(x){const [id,s]=x.split(':');const arr=st.flags['sk_'+id]||[];if(!arr.includes(s))arr.push(s);st.flags['sk_'+id]=arr;save();
- await showCard('<div class="cc-port" style="background-image:url('+A+'img/k_'+id+'.jpg)"></div><div class="cc-k">'+COMP[id].n+' lernt</div><h3>'+SK[s].n+'</h3><p>'+SK[s].d+'</p>','stufenaufstieg')}
-async function levelUp(lv){st.lvl=lv;save();sfx('stufenaufstieg');const [a,b]=LVL_SK[st.hero.cls][lv-2];
- const o=$('#card');o.classList.remove('gbg');o.innerHTML='<div class="c-card lv"><img class="cc-img" src="'+A+'ui/stern.png" alt=""><div class="cc-k">Stufenaufstieg</div><h3>Stufe '+lv+'</h3><p>Plus 3 Lebenspunkte. Wähle eine neue Fähigkeit:</p><div class="lv-ch"></div></div>';o.classList.add('on');
- await new Promise(r=>[a,b].forEach(s=>{const bt=el('button','lv-b','<b>'+SK[s].n+'</b><span>'+SK[s].d+'</span>');bt.onclick=()=>{st.hero.skills.push(s);save();r()};o.querySelector('.lv-ch').appendChild(bt)}));
- o.classList.remove('on');renderHud()}
+ await showCard('<div class="cc-port" style="background-image:url('+A+'img/k_'+id+'.jpg)"></div><div class="cc-k">'+COMP[id].n+' lernt</div><h3 class="sk-h">'+skIcon(s)+SK[s].n+'</h3><p>'+SK[s].d+'</p>','stufenaufstieg')}
+// Fähigkeiten Icon (a/ui/sk/<id>.png), falls keins da ist: allgemeines Buch
+const skIcon=s=>'<img class="sk-ic" src="'+A+'ui/sk/'+s+'.png" alt="" onerror="this.onerror=null;this.src=\''+A+'ui/ac_faehigkeit.png\'">';
+const skArt=s=>SK[s].passive?'Immer aktiv':SK[s].once?'Einmal pro Kampf':'Beliebig oft';
+// Stufenaufstieg: eigener Bildschirm mit Lichtstrahlen, Emblem, Lebenspunkten und zwei Fähigkeiten zur Wahl
+async function levelUp(lv){const old=heroMaxHp();st.lvl=lv;save();const neu=heroMaxHp();const [a,b]=LVL_SK[st.hero.cls][lv-2];
+ const o=el('div','lvup','<div class="lvup-st"><div class="lvup-rays"></div><div class="lvup-glanz"></div><div class="lvup-in">'
+  +'<div class="lvup-em"><img src="'+A+'ui/lvl_emblem.png" alt=""><b>'+lv+'</b></div>'
+  +'<div class="lvup-k">Stufenaufstieg</div><h2 class="lvup-h">Stufe '+lv+'</h2>'
+  +'<div class="lvup-hp"><img src="'+A+'ui/herz.png" alt=""><span>Lebenspunkte</span><s>'+old+'</s><i>▸</i><em>'+neu+'</em><small>plus '+(neu-old)+'</small></div>'
+  +'<div class="lvup-w">Wähle eine neue Fähigkeit</div><div class="lvup-ch"></div></div></div>');
+ document.body.appendChild(o);const sp=o.querySelector('.lvup-st');for(let i=0;i<28;i++){const f=el('i','lvup-f');f.style.left=Math.random()*100+'%';f.style.animationDelay=(Math.random()*4)+'s';f.style.animationDuration=(3+Math.random()*3)+'s';sp.appendChild(f)}
+ requestAnimationFrame(()=>o.classList.add('on'));sfx('stufenaufstieg');setTimeout(()=>{fx('magic',o.querySelector('.lvup-em'),260);sfx('fanfare',.5)},650);
+ const ch=o.querySelector('.lvup-ch');
+ const s=await new Promise(r=>[a,b].forEach((k,i)=>{const bt=el('button','lvup-c',skIcon(k)+'<div><b>'+SK[k].n+'</b><span>'+SK[k].d+'</span><em>'+skArt(k)+'</em></div>');bt.style.animationDelay=(1.1+i*.18)+'s';bt.onclick=()=>{sfx('ui_klick',.6);r(k)};ch.appendChild(bt)}));
+ st.hero.skills.push(s);save();
+ ch.querySelectorAll('.lvup-c').forEach(c=>{c.onclick=null;c.classList.add(c.querySelector('b').textContent===SK[s].n?'gewaehlt':'weg')});
+ const g=ch.querySelector('.gewaehlt');sfx('richtig',.7);fx('magic',g.querySelector('.sk-ic'),180);
+ const ok=el('div','lvup-ok','<span>Neue Fähigkeit gelernt</span><button class="pbtn">Weiter</button>');o.querySelector('.lvup-in').appendChild(ok);requestAnimationFrame(()=>ok.classList.add('on'));
+ await new Promise(r=>ok.querySelector('button').onclick=r);sfx('ui_klick',.5);
+ o.classList.remove('on');await sleep(450);o.remove();renderHud()}
 async function lootRoll(){const v=await rollPercent({title:'Beutetabelle',sub:'W100 und W10. Schau auf dein Druckblatt.',after:x=>'Nummer '+x});
  let r=LOOT[v];if(st.hero.skills.includes('meisterdieb')){const v2=rnd(100);const r2=LOOT[v2];if(typeof r2==='number'&&typeof r==='number'?r2>r:false)r=r2}
  if(typeof r==='number')return addGold(r);await gainItem(r)}

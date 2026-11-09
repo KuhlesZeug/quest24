@@ -91,7 +91,7 @@ DAYS[4]={end:'Heute zum Ausdrucken: Grumbolds Gefährtenbogen.',steps:[
  {s:'GR',t:'Eins. Zwei …'},
  {s:'SL',t:'Jemand zählt. Und kommt nicht über die Sieben. Das ist entweder sehr unheimlich oder sehr traurig.'},
  {bg:'f_gr_tunnel'},
- {s:'SL',t:'Vier alte Messingspiegel hängen an den Wänden. Dreh sie so, dass das Licht deiner Laterne bis in die hintere Kammer fällt.'},
+ {s:'SL',t:'In den Stollen hängen alte Messingspiegel. Dreh sie so, dass das Licht deiner Laterne bis in die hintere Kammer fällt.'},
  {game:'spiegel'},
  {hide:1},{sfx:'licht_an'},{bg:'f_gr_licht'},{wait:1800},
  {s:'GR',t:'Oh. Oh! Licht. Danke. Ich … ich mag das Dunkle nicht so. Das ist peinlich für einen Golem aus einer Mine, ich weiß.'},

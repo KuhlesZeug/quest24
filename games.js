@@ -5,26 +5,72 @@ const GBG={spiegel:'ort05',irrlicht:'ort08_leer',takt:'ort10',sumpf:'ort11',tran
 function gameShell(title,help){const cd=$('#card');const k=window.GAMEKEY;cd.classList.toggle('gbg',!!(k&&GBG[k]));if(k&&GBG[k])cd.style.setProperty('--gbg','url('+A+'img/'+GBG[k]+'.jpg)');if(!/Reim/.test(help))setTimeout(()=>readAloud(help),350);const o=$('#card');o.innerHTML='<div class="c-card game"><div class="cc-k">Minispiel</div><h3>'+title+'</h3><p class="g-help">'+help+'</p><div class="g-area"></div><div class="g-foot"></div></div>';o.classList.add('on');return o.querySelector('.g-area')}
 function gameEnd(){const cd=$('#card');cd.classList.remove('on');cd.classList.remove('gbg')}
 
-// Tag 4: Licht in den Stollen. Spiegel drehen, bis das Licht in die Kammer fällt.
-GAMES.spiegel=()=>new Promise(done=>{
- const W=5,H=5,area=gameShell('Licht in den Stollen','Tippe auf die Spiegel, um sie zu drehen. Das Licht der Laterne muss bis in die Kammer unten rechts fallen.');
- const M={'3,0':'/','3,2':'\\','1,2':'\\','1,4':'/'};const SOL={'3,0':'\\','3,2':'/','1,2':'/','1,4':'\\'};
- area.innerHTML='<div class="sp-grid" style="--w:'+W+';--h:'+H+'"><canvas class="sp-beam"></canvas></div>';const g=area.querySelector('.sp-grid');
- for(let y=0;y<H;y++)for(let x=0;x<W;x++){const k=x+','+y;const c=el('div','sp-c');c.style.gridColumn=x+1;c.style.gridRow=y+1;
-  if(x===0&&y===0)c.innerHTML='<img src="'+A+'ui/laterne.png" alt="">';
-  else if(x===W-1&&y===H-1)c.innerHTML='<img class="sp-goal" src="'+A+'ui/kammer.png" alt="">';
-  else if(M[k]){c.classList.add('mir');c.innerHTML='<img src="'+A+'ui/spiegel.png" alt="">';c.onclick=()=>{M[k]=M[k]==='/'?'\\':'/';sfx('stein',.5);draw()}}
-  g.appendChild(c)}
- const cv=g.querySelector('canvas');
- const easy=el('button','lnk','Leichter machen');area.parentElement.querySelector('.g-foot').appendChild(easy);easy.onclick=()=>{let n=0;for(const k in SOL)if(M[k]!==SOL[k]&&n<2){M[k]=SOL[k];n++}easy.remove();draw()};
- function draw(){g.querySelectorAll('.mir').forEach(c=>{const k=(+c.style.gridColumn-1)+','+(+c.style.gridRow-1);c.querySelector('img').style.transform=M[k]==='/'?'rotate(0deg)':'scaleX(-1)'});
-  const r=g.getBoundingClientRect();cv.width=r.width*2;cv.height=r.height*2;const cx=cv.getContext('2d');const cw=cv.width/W,ch=cv.height/H;
-  let x=0,y=0,dx=1,dy=0;const pts=[[.5,.5]];let hit=false;
-  for(let i=0;i<40;i++){x+=dx;y+=dy;if(x<0||y<0||x>=W||y>=H){pts.push([x+.5-dx*.5,y+.5-dy*.5]);break}pts.push([x+.5,y+.5]);
-   const m=M[x+','+y];if(m==='/'){[dx,dy]=[-dy,-dx]}else if(m==='\\'){[dx,dy]=[dy,dx]}if(x===W-1&&y===H-1){hit=true;break}}
-  cx.lineCap='round';[[20,'rgba(255,200,80,.25)'],[8,'rgba(255,220,120,.7)'],[3,'#fff6c8']].forEach(([w,c])=>{cx.strokeStyle=c;cx.lineWidth=w;cx.beginPath();pts.forEach((p,i)=>i?cx.lineTo(p[0]*cw,p[1]*ch):cx.moveTo(p[0]*cw,p[1]*ch));cx.stroke()});
-  if(hit&&!g._won){g._won=1;g.classList.add('won');sfx('richtig');setTimeout(()=>{gameEnd();done()},1400)}}
- setTimeout(draw,60)});
+// Tag 4: Licht in den Stollen. Drei Stollen nacheinander: Spiegel drehen, Felsen halten das Licht auf, im letzten Stollen müssen zwei Glutkristalle leuchten.
+// Spielfeld 5 x 7 Felder. Spiegel: "/" lenkt von links nach oben, "\" von links nach unten.
+const SP_LV=[
+ {L:[0,0,1,0],G:[4,6],M:{'2,0':'\\','2,3':'\\','4,3':'\\'},R:['0,4','1,5','3,1'],C:[],say:['sp_1','SL','Erster Stollen. Das Zählen kommt von ganz hinten. Tippe die Spiegel an und lenk das Licht in die Kammer.'],ok:['sp_1ok','GR','Ist da jemand? Da hinten wird es hell!']},
+ {L:[0,6,0,-1],G:[4,0],M:{'0,2':'/','2,2':'\\','2,5':'\\','4,5':'/','1,0':'/'},dec:['1,0'],R:['3,2','1,4','3,0'],C:[],say:['sp_2','SL','Zweiter Stollen. Hier liegen Felsbrocken im Weg. Licht geht nicht durch Stein. Ich habe es ausprobiert.'],ok:['sp_2ok','GR','Heller! Herbert, es wird heller!']},
+ {L:[0,1,1,0],G:[4,6],M:{'3,1':'\\','3,3':'/','0,3':'/','0,6':'\\','1,5':'/','4,1':'\\'},dec:['1,5','4,1'],R:['2,5','4,4','1,0'],C:['1,1','1,3'],say:['sp_3','SL','Letzter Stollen. Siehst du die Glutkristalle? Das Licht muss durch beide hindurch, sonst bleibt die Kammer dunkel.']}];
+GAMES.spiegel=()=>new Promise(async done=>{hideBox();
+ const W=5,H=7,FACE={SL:'p_sl_2',GR:'p_gr_6'};
+ const o=el('div','sp2','<div class="sp2-st"><div class="tk2-top"><div class="tk2-t">Licht in den Stollen</div><div class="sp2-pips"><i></i><i></i><i></i></div></div><div class="sp2-wrap"><div class="sp2-b"><canvas class="sp2-cv"></canvas><div class="sp2-pc"></div><canvas class="sp2-fx"></canvas></div></div><div class="sp2-help">Tippe auf einen Spiegel, um ihn zu drehen.</div><div class="sp2-foot"><button class="lnk sp2-easy">Leichter machen</button></div></div>');
+ document.body.appendChild(o);requestAnimationFrame(()=>o.classList.add('on'));
+ const stg=o.querySelector('.sp2-st'),wrap=o.querySelector('.sp2-wrap'),bd=o.querySelector('.sp2-b'),cv=o.querySelector('.sp2-cv'),fxc=o.querySelector('.sp2-fx'),pc=o.querySelector('.sp2-pc'),pips=[...o.querySelectorAll('.sp2-pips i')];
+ let cs=60,lv=0,LV,M,SOL,path=[],lit=new Set(),hit=false,won=false,easyUsed=0,t0=performance.now(),raf=0,warnK='';
+ const key=(x,y)=>x+','+y;
+ const speak=(id,who,t)=>new Promise(res=>{const b=el('div','rk-say sp2-say','<div class="rk-face"></div><p>'+t+'</p>');b.querySelector('.rk-face').style.backgroundImage='url('+A+'img/'+FACE[who]+'.jpg)';if(who==='GR')b.classList.add('dunkel');stg.appendChild(b);requestAnimationFrame(()=>b.classList.add('on'));
+  const a=playVo(A+'vo/'+id+'.mp3');let f=0;const go=()=>{if(f)return;f=1;if(a&&!a.ended)stopVo();b.classList.remove('on');setTimeout(()=>b.remove(),250);res()};
+  b.onpointerdown=e=>{e.stopPropagation();go()};const iv=setInterval(()=>{if(!a||a.ended){clearInterval(iv);setTimeout(go,a?400:t.length*55)}},120)});
+ function layout(){const r=wrap.getBoundingClientRect();cs=Math.floor(Math.min(r.width/W,r.height/H));bd.style.width=cs*W+'px';bd.style.height=cs*H+'px';bd.style.setProperty('--cs',cs+'px');
+  [cv,fxc].forEach(c=>{c.width=cs*W*2;c.height=cs*H*2});place();trace()}
+ function piece(cls,x,y,html){const d=el('div','sp2-p '+cls,html||'');d.dataset.k=key(x,y);pc.appendChild(d);return d}
+ function place(){pc.querySelectorAll('.sp2-p').forEach(d=>{const [x,y]=d.dataset.k.split(',').map(Number);d.style.left=x*cs+'px';d.style.top=y*cs+'px'})}
+ function build(){pc.innerHTML='';LV=SP_LV[lv];SOL=LV.M;M={};for(const k in SOL)M[k]=(LV.dec||[]).includes(k)?(Math.random()<.5?'/':'\\'):(SOL[k]==='/'?'\\':'/');
+  won=false;hit=false;warnK='';pips.forEach((p,i)=>p.className=i<lv?'ok':i===lv?'jetzt':'');
+  const [lx,ly,dx,dy]=LV.L;const ln=piece('sp2-lat',lx,ly,'<img src="'+A+'ui/laterne.png" alt=""><b></b>');ln.style.setProperty('--rot',(Math.atan2(dy,dx)*180/Math.PI)+'deg');
+  piece('sp2-door',LV.G[0],LV.G[1],'<img src="'+A+'ui/kammer.png" alt="">');
+  LV.R.forEach((k,i)=>{const [x,y]=k.split(',').map(Number);piece('sp2-rock',x,y,'<img src="'+A+'ui/'+['sp_geroell','sp_fels','stein'][i%3]+'.png" alt="">')});
+  LV.C.forEach(k=>{const [x,y]=k.split(',').map(Number);piece('sp2-kr',x,y,'<img class="aus" src="'+A+'ui/sp_kristall.png" alt=""><img class="an" src="'+A+'ui/sp_kristall_an.png" alt="">')});
+  for(const k in M){const [x,y]=k.split(',').map(Number);const d=piece('sp2-mir',x,y,'<i></i><img src="'+A+'ui/sp_spiegel.png" alt="">');d.dataset.r=M[k]==='/'?0:90;d.style.setProperty('--r',d.dataset.r+'deg');
+   d.onclick=()=>{if(won)return;M[k]=M[k]==='/'?'\\':'/';d.dataset.r=+d.dataset.r+90;d.style.setProperty('--r',d.dataset.r+'deg');d.classList.remove('tap');void d.offsetWidth;d.classList.add('tap');sfx('stein',.45);setTimeout(()=>sfx('licht_an',.18),120);trace()}}
+  layout()}
+ function trace(){const [lx,ly,dx0,dy0]=LV.L;let x=lx,y=ly,dx=dx0,dy=dy0;path=[[x+.5,y+.5]];lit=new Set();hit=false;const seen=new Set();
+  for(let i=0;i<80;i++){x+=dx;y+=dy;const k=key(x,y);
+   if(x<0||y<0||x>=W||y>=H){path.push([x+.5-dx*.5,y+.5-dy*.5]);break}
+   if(LV.R.includes(k)){path.push([x+.5-dx*.32,y+.5-dy*.32]);break}
+   if(x===lx&&y===ly){path.push([x+.5-dx*.4,y+.5-dy*.4]);break}
+   const sk=k+dx+dy;if(seen.has(sk))break;seen.add(sk);
+   path.push([x+.5,y+.5]);
+   if(LV.C.includes(k))lit.add(k);
+   if(x===LV.G[0]&&y===LV.G[1]){hit=true;break}
+   const m=M[k];if(m==='/')[dx,dy]=[-dy,-dx];else if(m==='\\')[dx,dy]=[dy,dx]}
+  pc.querySelectorAll('.sp2-kr').forEach(d=>d.classList.toggle('lit',lit.has(d.dataset.k)));
+  pc.querySelectorAll('.sp2-mir').forEach(d=>d.classList.toggle('hot',path.some(p=>key(Math.floor(p[0]),Math.floor(p[1]))===d.dataset.k)));
+  const allLit=LV.C.every(k=>lit.has(k));const door=pc.querySelector('.sp2-door');door.classList.toggle('lit',hit&&allLit);door.classList.toggle('halb',hit&&!allLit);
+  if(hit&&!allLit){const wk=JSON.stringify(M);if(wk!==warnK){warnK=wk;toast('Die Kammer bleibt dunkel. Erst müssen beide Glutkristalle leuchten.',3200)}}
+  if(hit&&allLit&&!won)win();drawBeam()}
+ function drawBeam(){const cx=cv.getContext('2d');cx.clearRect(0,0,cv.width,cv.height);const s=cs*2;if(path.length<2)return;
+  cx.lineCap='round';cx.lineJoin='round';
+  [[s*.5,'rgba(255,170,60,.10)'],[s*.26,'rgba(255,190,90,.22)'],[s*.12,'rgba(255,215,130,.6)'],[s*.045,'#fffbe6']].forEach(([w,c])=>{cx.strokeStyle=c;cx.lineWidth=w;cx.beginPath();path.forEach((p,i)=>i?cx.lineTo(p[0]*s,p[1]*s):cx.moveTo(p[0]*s,p[1]*s));cx.stroke()});
+  const e=path[path.length-1];const g=cx.createRadialGradient(e[0]*s,e[1]*s,0,e[0]*s,e[1]*s,s*.45);g.addColorStop(0,'rgba(255,240,190,.9)');g.addColorStop(1,'rgba(255,200,90,0)');cx.fillStyle=g;cx.beginPath();cx.arc(e[0]*s,e[1]*s,s*.45,0,7);cx.fill()}
+ // Lichtfunken wandern den Strahl entlang, Staub schwebt im Licht
+ const motes=Array.from({length:26},()=>({x:Math.random()*W,y:Math.random()*H,v:.05+Math.random()*.08,a:Math.random()*6}));
+ function anim(){raf=requestAnimationFrame(anim);const cx=fxc.getContext('2d'),s=cs*2;cx.clearRect(0,0,fxc.width,fxc.height);const t=(performance.now()-t0)/1000;
+  let L=0;const seg=[];for(let i=1;i<path.length;i++){const a=path[i-1],b=path[i];const d=Math.hypot(b[0]-a[0],b[1]-a[1]);seg.push([a,b,L,d]);L+=d}
+  cx.globalCompositeOperation='lighter';
+  if(L>0)for(let n=0;n<Math.ceil(L*2.2);n++){const p=((t*2.4+n/2.2)%L+L)%L;const sg=seg.find(q=>p>=q[2]&&p<=q[2]+q[3]);if(!sg)continue;const u=(p-sg[2])/(sg[3]||1);const x=(sg[0][0]+(sg[1][0]-sg[0][0])*u)*s,y=(sg[0][1]+(sg[1][1]-sg[0][1])*u)*s;
+   const g=cx.createRadialGradient(x,y,0,x,y,s*.11);g.addColorStop(0,'rgba(255,255,235,.95)');g.addColorStop(1,'rgba(255,200,100,0)');cx.fillStyle=g;cx.beginPath();cx.arc(x,y,s*.11,0,7);cx.fill()}
+  motes.forEach(m=>{m.y-=m.v/60;m.x+=Math.sin(t+m.a)*.002;if(m.y<0){m.y=H;m.x=Math.random()*W}const near=path.some((p,i)=>i&&distSeg(m.x,m.y,path[i-1],p)<.35);cx.fillStyle='rgba(255,230,170,'+(near?.75:.12)+')';cx.beginPath();cx.arc(m.x*s,m.y*s,near?2.6:1.6,0,7);cx.fill()});
+  cx.globalCompositeOperation='source-over'}
+ const distSeg=(x,y,a,b)=>{const vx=b[0]-a[0],vy=b[1]-a[1],l=vx*vx+vy*vy||1;let u=((x-a[0])*vx+(y-a[1])*vy)/l;u=Math.max(0,Math.min(1,u));return Math.hypot(x-a[0]-vx*u,y-a[1]-vy*u)};
+ async function win(){won=true;sfx('richtig');const door=pc.querySelector('.sp2-door');door.classList.add('auf');
+  const r=door.getBoundingClientRect();fx('magic',door,cs*2.2);pips[lv].className='ok';await sleep(1300);
+  if(LV.ok)await speak(...LV.ok);
+  lv++;if(lv<SP_LV.length){stg.classList.add('wechsel');await sleep(450);build();stg.classList.remove('wechsel');await sleep(350);await speak(...SP_LV[lv].say);return}
+  await sleep(300);cancelAnimationFrame(raf);removeEventListener('resize',layout);o.classList.remove('on');await sleep(450);o.remove();done()}
+ o.querySelector('.sp2-easy').onclick=()=>{if(won)return;let n=0;for(const k in SOL)if(!(LV.dec||[]).includes(k)&&M[k]!==SOL[k]&&n<2){M[k]=SOL[k];const d=pc.querySelector('.sp2-mir[data-k="'+k+'"]');d.dataset.r=+d.dataset.r+90;d.style.setProperty('--r',d.dataset.r+'deg');n++}sfx('licht_an',.4);trace()};
+ if(TEST){const tb=el('button','lnk','Test: lösen');o.querySelector('.sp2-foot').appendChild(tb);tb.onclick=()=>{for(const k in SOL)if(!(LV.dec||[]).includes(k))M[k]=SOL[k];trace()}}
+ addEventListener('resize',layout);build();anim();await sleep(450);await speak(...SP_LV[0].say)});
 
 // Lieder von Zirpia (Suno), laufen über der Musik
 let songEl=null;

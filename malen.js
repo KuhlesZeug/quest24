@@ -71,12 +71,12 @@ GAMES.malen=(s)=>new Promise(async done=>{hideBox();
  cv.addEventListener('wheel',e=>{e.preventDefault();const rc=cv.getBoundingClientRect(),mx=e.clientX-rc.left,my=e.clientY-rc.top,ix=(mx-tx)/sc,iy=(my-ty)/sc;sc=Math.max(fit,Math.min(fit*5,sc*Math.exp(-e.deltaY*.0018)));tx=mx-ix*sc;ty=my-iy*sc;clamp();draw()},{passive:false});
  const findReg=(x,y)=>{x=Math.round(x);y=Math.round(y);if(x<0||y<0||x>=W||y>=H)return 0;let r=reg[y*W+x];if(r)return r;
   for(let d=1;d<=Math.ceil(6/sc);d++)for(let a=0;a<8;a++){const xx=x+Math.round(Math.cos(a*.785)*d),yy=y+Math.round(Math.sin(a*.785)*d);if(xx>=0&&yy>=0&&xx<W&&yy<H&&reg[yy*W+xx])return reg[yy*W+xx]}return 0};
- let idle=performance.now();
+ let idle=performance.now(),wrong=0;
  const tap=(x,y)=>{const r=findReg(x,y);if(!r||filled[r])return;const c=D.r[r-1][0];
   if(sel<0){toast('Wähle unten zuerst eine Farbe.');return}
-  if(c!==sel){sfx('falsch',.35);const b=pal.children[sel];b.classList.remove('wob');void b.offsetWidth;b.classList.add('wob');toast('Hier gehört die Farbe '+(c+1)+' hin.',1600);return}
+  if(c!==sel){wrong++;if(wrong>=3){wrong=0;setTimeout(showTip,0)}sfx('falsch',.35);const b=pal.children[sel];b.classList.remove('wob');void b.offsetWidth;b.classList.add('wob');toast('Hier gehört die Farbe '+(c+1)+' hin.',1600);return}
   fill(r,x,y)};
- const fill=(r,x,y)=>{filled[r]=1;nFill++;idle=performance.now();const c=D.r[r-1][0];left[c]--;ring(c);sfx('pinsel',.7);
+ const fill=(r,x,y)=>{filled[r]=1;nFill++;idle=performance.now();wrong=0;const c=D.r[r-1][0];left[c]--;ring(c);sfx('pinsel',.7);
   const b=bb[r-1],maxR=Math.hypot(Math.max(x-b[0],b[2]-x),Math.max(y-b[1],b[3]-y))+2;const t0=performance.now();
   const step=()=>{const t=Math.min(1,(performance.now()-t0)/320);paintReg(r,2,x,y,maxR*t);draw();if(t<1)requestAnimationFrame(step)};step();
   o.querySelector('.pbn-bar i').style.width=(nFill/N*100)+'%';
@@ -84,14 +84,20 @@ GAMES.malen=(s)=>new Promise(async done=>{hideBox();
   if(nFill===N)setTimeout(finish,500)};
  // Lupe
  let hints=6;const lb=o.querySelector('.pbn-lupe');
- lb.onclick=async()=>{if(sel<0){const n=left.findIndex(v=>v>0);if(n>=0)pick(n)}if(hints<=0){toast('Die Lupe ist erschöpft. Schau genau hin, du schaffst das.');return}
+ lb.onclick=async()=>{hideTip();if(sel<0){const n=left.findIndex(v=>v>0);if(n>=0)pick(n)}if(hints<=0){toast('Die Lupe ist erschöpft. Schau genau hin, du schaffst das.');return}
   let best=0,bs=1e9;for(let r=1;r<=N;r++)if(!filled[r]&&D.r[r-1][0]===sel){const R=D.r[r-1];const sx=tx+R[1]*D.s*sc-vw/2,sy=ty+R[2]*D.s*sc-vh/2;const d=sx*sx+sy*sy-R[4]*.01;if(d<bs){bs=d;best=r}}
   if(!best)return;hints--;lb.querySelector('b').textContent=hints;if(hints<=0)lb.classList.add('leer');sfx('licht_an',.5);
   const z=Math.max(1.4,Math.min(3.2,45/(D.r[best-1][3]*D.s*fit)));await zoomTo(best,z);pulse={r:best,t:performance.now()};draw()};
- const nag=setInterval(()=>{if(performance.now()-idle>45000){lb.classList.add('nudge');idle=performance.now()}},5000);
+ // Hinweis auf die Lupe: nach 25 s ohne Fortschritt oder nach 3 falschen Tipps hintereinander
+ let tipT=-1e9,tipVo=0;const tip=el('div','pbn-tip','<i></i>Kommst du nicht weiter? Tippe auf die Lupe. Sie zeigt dir, wo deine Farbe noch fehlt.');o.appendChild(tip);
+ const hideTip=()=>tip.classList.remove('on');tip.onclick=hideTip;
+ const showTip=()=>{if(hints<=0||nFill===N||performance.now()-tipT<40000)return;tipT=performance.now();document.querySelectorAll('.toast').forEach(t=>t.classList.remove('on'));const r=lb.getBoundingClientRect(),ro=o.getBoundingClientRect();tip.style.top=(r.bottom-ro.top+12)+'px';tip.style.setProperty('--ax',(ro.right-r.right+r.width/2-9)+'px');tip.classList.add('on');lb.classList.remove('nudge');void lb.offsetWidth;lb.classList.add('nudge');
+  if(!tipVo){tipVo=1;playVo(A+'vo/pbn_lupe.mp3')}setTimeout(hideTip,9000)};
+ window.__pbnTip=showTip;
+ const nag=setInterval(()=>{if(performance.now()-idle>25000){idle=performance.now();showTip()}},3000);
  if(TEST){const tb=el('button','pbn-test','Test: fertig malen');tb.onclick=()=>{for(let r=1;r<=N;r++)if(!filled[r]){filled[r]=1;paintReg(r,2)}nFill=N;draw();finish()};o.querySelector('.pbn-top').appendChild(tb)}
  // Fertig
- let fin=0;async function finish(){if(fin)return;fin=1;clearInterval(nag);o.classList.add('fertig');await anim(fit,(vw-W*fit)/2,(vh-H*fit)/2,700);
+ let fin=0;async function finish(){if(fin)return;fin=1;clearInterval(nag);hideTip();o.classList.add('fertig');await anim(fit,(vw-W*fit)/2,(vh-H*fit)/2,700);
   const sh=el('div','pbn-show','<img src="'+B+'bild.jpg" alt=""><div class="pbn-glanz"></div><div class="pbn-done">Dein Abenteuer</div>');o.appendChild(sh);
   sfx('kritisch',.8);setTimeout(()=>sfx('fanfare',.7),500);requestAnimationFrame(()=>sh.classList.add('on'));
   const sp=sh.querySelector('.pbn-glanz');for(let i=0;i<36;i++){const e=el('i','');e.style.left=Math.random()*100+'%';e.style.top=Math.random()*100+'%';e.style.animationDelay=(Math.random()*1.6)+'s';sp.appendChild(e)}
