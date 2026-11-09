@@ -169,7 +169,7 @@ DAYS[24]={end:'Heute ist Lichternacht.',steps:[
    {s:'SL',t:'Ein Schlaflied. In der Rockfassung. Der Drache ist jetzt hellwach.',vo:'d24_r1'},
    {s:'ZI',t:'Ups. Gut, dann die leise Fassung. Augen zu, Großer.',e:'smile',vo:'d24_r2'},
    {song:'zirpia_12',v:.9,max:24,imgs:['zw1','zw2','zw3','zw4']},
-   {s:'ZI',t:'Oh. Äh. Die zweite Strophe kann ich nur laut. Leise ist sie komplett weg.',e:'shock'},
+   {s:'ZI',t:'Oh. Äh. Mir ist der Text entfallen. Ab der zweiten Strophe. Komplett.',e:'shock'},
    {s:'ZI',t:'Er hat es nicht gemerkt. Er schläft fast.',e:'smile'},
    {if:'traum',then:[{s:'ZI',t:'Du bist ein wunderschöner Drache.',e:'smile'},{s:'VH',t:'… Danke.',e:6}]}],
   [{sfx:'katze'},{bg:'ph4',alt:'ort24',look:1500},{game:'p_schatten'},
