@@ -396,13 +396,13 @@ GAMES.schatz=()=>new Promise(async done=>{hideBox();const g=GIFT||{};
 // Tag 2: Hütchenspiel des Wirts. Kompass unter einem Becher, drei Runden, immer schneller.
 GAMES.becher=()=>new Promise(done=>{hideBox();const sc=$('#s-scene');const IW=1080,IH=1920;
  // Bildkoordinaten auf dem Tavernentisch (bc_tisch.jpg): Becherplätze, Kerzenlicht
- const CFG={X:[.26,.5,.74],Y:.775,H:.15,candle:[.06,.685],slow:1};
+ const CFG={X:[.29,.5,.71],Y:.738,H:.14,candle:[.06,.685],slow:1};
  const o=el('div','pg bc2','<div class="pg-img" style="background-image:url('+A+'img/bc_tisch.jpg),url('+A+'img/f_wirt2.jpg)"></div><div class="bc2-glow"></div><div class="pg-top">Das Becherspiel</div><div class="bc2-coins"><i></i><i></i><i></i></div><div class="bc2-say"><b>Wirt</b><span></span></div><div class="bc2-msg"></div><div class="bc2-help">Merk dir, unter welchem Becher der Kompass liegt. Dreimal hintereinander richtig, dann gehört er dir.</div>');sc.appendChild(o);
  const say=o.querySelector('.bc2-say'),sayT=say.querySelector('span'),msg=o.querySelector('.bc2-msg'),coins=[...o.querySelectorAll('.bc2-coins i')],glow=o.querySelector('.bc2-glow');
  const M=()=>{const W=o.clientWidth,H=o.clientHeight,k=Math.max(W/IW,H/IH),iw=IW*k,ih=IH*k;return{W,H,iw,ih,ox:(W-iw)/2,oy:(H-ih)/2}};
  // Becher: Schatten, darunter liegender Gegenstand (Kompass oder Korken) und der Becher selbst. Der Gegenstand wandert mit dem Becher.
  const cups=[0,1,2].map(i=>{const c=el('button','bc2-c','<i class="bc2-sh"></i><img class="bc2-u" alt=""><img class="bc2-cup" src="'+A+'ui/becher.png" alt="">');o.appendChild(c);return {el:c,slot:i,u:c.querySelector('.bc2-u')}});
- const slotXY=(m,s)=>{const w=Math.min(m.W/3.6,CFG.H*m.ih*.92,.2*m.iw);const x=Math.min(m.W-w/2-6,Math.max(w/2+6,m.ox+CFG.X[s]*m.iw));return[x,m.oy+CFG.Y*m.ih,w]};
+ const slotXY=(m,s)=>{const w=Math.min(m.W/3.6,CFG.H*m.ih*.92,.185*m.iw);const x=Math.min(m.W-w/2-6,Math.max(w/2+6,m.ox+CFG.X[s]*m.iw));return[x,m.oy+CFG.Y*m.ih,w]};
  const lay=()=>{const m=M();cups.forEach(c=>{const [x,y,w]=slotXY(m,c.slot);c.el.style.width=w+'px';c.el.style.left=x+'px';c.el.style.top=y+'px'});glow.style.left=(m.ox+CFG.candle[0]*m.iw)+'px';glow.style.top=(m.oy+CFG.candle[1]*m.ih)+'px'};
  lay();addEventListener('resize',lay);
  const wirt=async(t,id,wait)=>{sayT.textContent=t;say.classList.remove('on');void say.offsetWidth;say.classList.add('on');const a=playVo(A+'vo/'+id+'.mp3');if(wait&&a)await Promise.race([voDone(a),sleep(4500)])};
