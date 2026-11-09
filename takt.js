@@ -9,7 +9,7 @@ function pluck(t,f,vol){const c=ac(),out=c.createGain(),d=c.createDelay(.05),fb=
 
 // Rock Band Variante: Zirpias Schlagzeug von oben, vier Spuren, echte Instrumentalfassung von Zirpias Mittelalter Rock
 GAMES.takt=()=>new Promise(async done=>{hideBox();
- const LANES=[{n:'rk_pauke',c:'#ff7a4a'},{n:'rk_trommel',c:'#ffd23f'},{n:'rk_tom',c:'#5fd16a'},{n:'rk_becken',c:'#5ab8ff'}];
+ const LANES=[{n:'rk_pauke2',c:'#ff7a4a'},{n:'rk_trommel',c:'#ffd23f'},{n:'rk_tom',c:'#5fd16a'},{n:'rk_becken',c:'#5ab8ff'}];
  const LEAD=1.9,PADY=.735,TOPY=.33;
  const o=el('div','rk');o.innerHTML='<div class="tk2-bg rk-bgb"></div><div class="rk-st"><div class="tk2-top"><div class="tk2-t">Zirpias großer Auftritt</div><div class="tk2-meter"><i></i><b>Begeisterung</b></div></div>'+
   '<svg class="rk-hw" viewBox="0 0 100 100" preserveAspectRatio="none"></svg><div class="rk-notes"></div>'+
@@ -28,7 +28,9 @@ GAMES.takt=()=>new Promise(async done=>{hideBox();
   const c3=TG[3];stand.style.left=c3.x+'px';stand.style.top=c3.y+'px';stand.style.height=(H-c3.y)+'px';
   hw.setAttribute('viewBox','0 0 '+W+' '+H);let sv='';TG.forEach((g,i)=>{const o2=OR[i],wb=g.rx*.9,wt=W*.026;sv+='<polygon points="'+(o2.x-wt)+','+o2.y+' '+(o2.x+wt)+','+o2.y+' '+(g.x+wb)+','+g.y+' '+(g.x-wb)+','+g.y+'" fill="'+LANES[i].c+'" fill-opacity=".16" stroke="rgba(255,240,200,.45)" stroke-width="1.2"/>'});hw.innerHTML=sv};
  layout();addEventListener('resize',layout);
- const inside=(L,P,f)=>{const g=TG[L];const dx=(P.x-g.x)/(g.rx*f),dy=(P.y-g.y)/(g.ry*f);return dx*dx+dy*dy<=1};
+ // Trefferzone: mindestens so hoch wie breit, damit schmale Felle (von oben gesehen) nicht schwerer sind
+ const zd=(L,P,f)=>{const g=TG[L];const ry=Math.max(g.ry,g.rx*.8);const dx=(P.x-g.x)/(g.rx*f),dy=(P.y-g.y)/(ry*f);return dx*dx+dy*dy};
+ const inside=(L,P,f)=>zd(L,P,f)<=1;
  const lanePos=(i,u)=>{const o2=OR[i],g=TG[i];return {x:o2.x+(g.x-o2.x)*u,y:o2.y+(g.y-o2.y)*u,s:.4+.6*u}};
  // Arme: Schultern unten links und rechts außerhalb des Bildes
  const SH=[{x:.1,y:1.1},{x:.9,y:1.1}];
@@ -77,7 +79,7 @@ GAMES.takt=()=>new Promise(async done=>{hideBox();
    if(bd<=.09){res.perfect++;burst(L,true);setMood(mood+2.2)}else{burst(L,false);setMood(mood+1.3)}
    comboEl.textContent=combo>=4?combo+' in Folge':'';comboEl.classList.remove('bump');void comboEl.offsetWidth;comboEl.classList.add('bump');
    if(combo%25===0){sfx('lachen',.35);say(combo+' in Folge!','p')}};
-  const tap=e=>{if(e.target.closest('button'))return;e.preventDefault();const r=stg.getBoundingClientRect();const fx=(e.clientX-r.left)/r.width;{const x=e.clientX-r.left,y=e.clientY-r.top;let b=-1;TG.forEach((g,i)=>{if(b<0&&inside(i,{x,y},1.25))b=i});if(b<0){let bd=1e9;TG.forEach((g,i)=>{const d=Math.abs(g.x-x);if(d<bd){bd=d;b=i}})}hitLane(b,e)}};
+  const tap=e=>{if(e.target.closest('button'))return;e.preventDefault();const r=stg.getBoundingClientRect();const fx=(e.clientX-r.left)/r.width;{const x=e.clientX-r.left,y=e.clientY-r.top;let b=-1,bz=1;TG.forEach((g,i)=>{const z=zd(i,{x,y},1.25);if(z<=bz){bz=z;b=i}});if(b<0){let bd=1e9;TG.forEach((g,i)=>{const d=Math.abs(g.x-x);if(d<bd){bd=d;b=i}})}hitLane(b,e)}};
   const kb=e=>{const L='dfjk'.indexOf(e.key.toLowerCase());if(L>=0&&!e.repeat)hitLane(L)};
   o.addEventListener('pointerdown',tap);addEventListener('keydown',kb);
   const loop=()=>{const now=c.currentTime-LAT,W=stg.clientWidth,H=stg.clientHeight;
