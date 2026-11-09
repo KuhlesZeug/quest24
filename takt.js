@@ -19,7 +19,7 @@ GAMES.takt=()=>new Promise(async done=>{hideBox();
  document.body.appendChild(o);requestAnimationFrame(()=>o.classList.add('on'));
  const $o=s=>o.querySelector(s),stg=$o('.rk-st'),notesEl=$o('.rk-notes'),pads=[...o.querySelectorAll('.rk-pad')],arms=[...o.querySelectorAll('.rk-arm')],pop=$o('.rk-pop'),comboEl=$o('.rk-combo'),meter=$o('.tk2-meter i');
  // Ego Ansicht: Instrumente im Bogen vor Zirpia, Spuren laufen von oben auf die Trommelfelle zu
- const INS=[{cx:.21,cy:.805,w:.46,hx:.397,hy:.526,rx:.328,ry:.403,ar:324/360},{cx:.445,cy:.715,w:.21,hx:.504,hy:.157,rx:.405,ry:.132,ar:360/274},{cx:.645,cy:.735,w:.21,hx:.503,hy:.157,rx:.399,ry:.132,ar:360/276},{cx:.845,cy:.585,w:.3,hx:.498,hy:.495,rx:.48,ry:.478,ar:330/360}];
+ const INS=[{cx:.17,cy:.805,w:.46,hx:.603,hy:.526,rx:.328,ry:.403,ar:324/360},{cx:.445,cy:.715,w:.21,hx:.504,hy:.157,rx:.405,ry:.132,ar:360/274},{cx:.645,cy:.735,w:.21,hx:.503,hy:.157,rx:.399,ry:.132,ar:360/276},{cx:.845,cy:.585,w:.3,hx:.498,hy:.495,rx:.48,ry:.478,ar:330/360}];
  const rings=[...o.querySelectorAll('.rk-ring')],stand=$o('.rk-stand'),hw=$o('.rk-hw');let TG=[],OR=[];
  const layout=()=>{const W=stg.clientWidth,H=stg.clientHeight;
   TG=INS.map((d,i)=>{const w=d.w*W,h=w*d.ar,l=d.cx*W-w/2,t=d.cy*H-h/2;const p=pads[i];p.style.left=l+'px';p.style.top=t+'px';p.style.width=w+'px';p.style.height=h+'px';return {x:l+d.hx*w,y:t+d.hy*h,rx:d.rx*w,ry:d.ry*h,r:Math.min(d.rx*w,d.ry*h)}});
