@@ -1908,3 +1908,8 @@ img{display:block;max-width:100%}
 .cf-spot::after{content:'';position:absolute;inset:-10%;border-radius:50%;background:radial-gradient(circle,rgba(255,220,140,.45),transparent 65%);opacity:0;transition:opacity .25s;pointer-events:none}
 .cf-spot:active::after,.cf-spot.tipp::after{opacity:1}
 .cf-spot{cursor:pointer}
+
+/* Brücke: nur der Körper der Figur ist antippbar, damit sich Nachbarn nicht gegenseitig verdecken */
+.bz .bz-t,.bz .bz-t.has-sp{pointer-events:none;min-width:0;width:auto}
+.bz .bz-t .bz-hit{position:absolute;left:24%;right:24%;top:10%;bottom:6%;pointer-events:auto;cursor:pointer;text-decoration:none}
+.bz .bz-t:not(.has-sp) .bz-hit{left:0;right:0;top:0;bottom:0}
