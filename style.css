@@ -1646,3 +1646,12 @@ img{display:block;max-width:100%}
 .rk-sp.big{width:12px;height:12px;margin:-6px}
 .pl4-str line.zap{animation:plZap .3s ease-out}
 @keyframes plZap{0%{stroke-width:9;stroke-opacity:1}100%{stroke-width:2.2}}
+/* Treffer Flamme */
+.rk-fire{position:absolute;width:calc(90px*var(--s));height:calc(150px*var(--s));transform:translate(-50%,-92%);pointer-events:none;mix-blend-mode:screen;z-index:2}
+.rk-fire.p{width:calc(110px*var(--s));height:calc(190px*var(--s))}
+.rk-fire span{position:absolute;left:50%;bottom:0;width:38%;height:calc(100%*var(--h));margin-left:calc(-19% + var(--x)*var(--s));border-radius:50% 50% 45% 45% / 70% 70% 30% 30%;background:radial-gradient(ellipse at 50% 85%,#fff 0,#fff6c8 14%,color-mix(in srgb,var(--c) 55%,#ffd27a) 34%,color-mix(in srgb,var(--c) 80%,#ff7a20) 55%,transparent 78%);filter:blur(1.5px);transform-origin:50% 100%;transform:rotate(var(--r)) scaleY(.1);opacity:0;animation:rkTongue .62s cubic-bezier(.2,.8,.3,1) forwards}
+.rk-fire em{position:absolute;left:50%;bottom:-6%;width:70%;height:34%;transform:translateX(-50%);border-radius:50%;background:radial-gradient(ellipse,#fff 0,#fff3b8 30%,color-mix(in srgb,var(--c) 60%,transparent) 60%,transparent 75%);filter:blur(2px);animation:rkCore .5s ease-out forwards}
+@keyframes rkTongue{0%{opacity:0;transform:rotate(var(--r)) scaleY(.1) scaleX(.6)}18%{opacity:1;transform:rotate(var(--r)) scaleY(1.05) scaleX(1)}38%{transform:rotate(calc(var(--r)*-.6)) scaleY(.85) scaleX(1.05)}58%{opacity:.9;transform:rotate(var(--r)) scaleY(1) scaleX(.9)}100%{opacity:0;transform:rotate(calc(var(--r)*-.4)) translateY(-18%) scaleY(.55) scaleX(.5)}}
+@keyframes rkCore{0%{opacity:1;transform:translateX(-50%) scale(.6)}30%{opacity:1;transform:translateX(-50%) scale(1.1)}100%{opacity:0;transform:translateX(-50%) scale(.8)}}
+.rk-ember{position:absolute;width:calc(6px*var(--s));height:calc(6px*var(--s));margin:-3px;border-radius:50%;background:#fff3c0;box-shadow:0 0 6px var(--c),0 0 10px #ffb347;opacity:0;animation:rkEmber .9s ease-out forwards;pointer-events:none}
+@keyframes rkEmber{0%{opacity:1;transform:translate(0,-20px)}100%{opacity:0;transform:translate(var(--dx),var(--dy)) scale(.4)}}

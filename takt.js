@@ -11,10 +11,17 @@ function pluck(t,f,vol){const c=ac(),out=c.createGain(),d=c.createDelay(.05),fb=
 // Irrlicht als Note: Bild plus starker Leuchthof
 const WISP={'#ff7a4a':4,'#ffd23f':3,'#5fd16a':2,'#5ab8ff':1,'#4fe36a':2,'#ff5a6a':4,'#ffd23f ':3};
 function wispEl(col,wi){const e=el('div','rk-w','<b></b><i></i><img src="'+A+'ui/wisp_'+wi+'.png" alt="">');e.style.setProperty('--c',col);return e}
+
+// Flamme wie bei Guitar Hero. Stufe 0: nur draufgehauen (kleines Flämmchen), 1: Treffer, 2: perfekt
+function fireFx(fx,x,y,col,sc,lv){const S=[.45,1,1.35][lv];const f=el('div','rk-fire');f.style.left=x+'px';f.style.top=y+'px';f.style.setProperty('--c',col);f.style.setProperty('--s',sc*S);fx.appendChild(f);setTimeout(()=>f.remove(),700);
+ const nT=[3,5,7][lv];for(let k=0;k<nT;k++){const t=el('span');const off=(k-(nT-1)/2);t.style.setProperty('--x',(off*9)+'px');t.style.setProperty('--h',(0.55+Math.random()*.45+(Math.abs(off)<1?.35:0)).toFixed(2));t.style.setProperty('--r',((Math.random()-.5)*16+off*5).toFixed(1)+'deg');t.style.animationDelay=(Math.random()*.06).toFixed(2)+'s';if(!lv)t.style.animationDuration='.38s';f.appendChild(t)}
+ f.appendChild(el('em'));
+ for(let k=0;k<[1,6,12][lv];k++){const e=el('div','rk-ember');e.style.left=x+'px';e.style.top=y+'px';e.style.setProperty('--c',col);e.style.setProperty('--s',sc);e.style.setProperty('--dx',((Math.random()-.5)*60*sc*S)+'px');e.style.setProperty('--dy',(-(90+Math.random()*120)*sc*S)+'px');e.style.animationDelay=(Math.random()*.15).toFixed(2)+'s';fx.appendChild(e);setTimeout(()=>e.remove(),1100)}}
 // Trefferfeedback für Schlagzeug und Laute: Blitz, Lichtsäule, Schockwellen, Funken, Text
 function hitFx(fx,x,y,col,perf,sc,txtY){sc=sc||1;
  const add=(cls,w,ms)=>{const d=el('div',cls);d.style.left=x+'px';d.style.top=y+'px';d.style.setProperty('--c',col);d.style.setProperty('--s',sc);fx.appendChild(d);setTimeout(()=>d.remove(),ms);return d};
- add('rk-flash'+(perf?' p':''),0,420);add('rk-beam'+(perf?' p':''),0,520);add('rk-wave',0,500);if(perf)setTimeout(()=>add('rk-wave w2',0,500),70);
+ add('rk-flash'+(perf?' p':''),0,420);
+ fireFx(fx,x,y,col,sc,perf?2:1);
  for(let k=0;k<(perf?26:12);k++){const sp=add('rk-sp'+(k%4===0?' big':''),0,700);sp.style.setProperty('--c',k%3?col:'#fffbe6');sp.style.setProperty('--a',(Math.random()*360)+'deg');sp.style.setProperty('--d',((45+Math.random()*(perf?110:60))*sc)+'px')}
  const t=el('div','rk-txt '+(perf?'p':'g'),perf?'Perfekt!':'Gut!');t.style.left=x+'px';t.style.top=(txtY!=null?txtY:y-60*sc)+'px';fx.appendChild(t);setTimeout(()=>t.remove(),750);
  try{navigator.vibrate&&navigator.vibrate(perf?18:10)}catch(e){}}
@@ -83,7 +90,7 @@ GAMES.takt=()=>new Promise(async done=>{hideBox();
    const p=pads[L];p.classList.remove('hit');void p.offsetWidth;p.classList.add('hit');
    const a=L<2?0:1;armAim(a,TG[L].x,TG[L].y);clearTimeout(arms[a]._t);arms[a]._t=setTimeout(()=>rest(a),120);const rg=rings[L];rg.classList.remove('hit');void rg.offsetWidth;rg.classList.add('hit');
    let k=-1,bd=9;for(let j=next;j<N&&notes[j].t<now+LEAD;j++){const n=notes[j];if(n.st||n.L!==L)continue;const P=lanePos(L,1-(n.t-now)/LEAD);if(!inside(L,P,1.12))continue;const d=Math.abs(now-n.t);if(d<bd){bd=d;k=j}}
-   if(k<0){samp(L===3?'schelle':L===1?'tr_hoch':'tr_tief',c.currentTime,.3);return}
+   if(k<0){samp(L===3?'schelle':L===1?'tr_hoch':'tr_tief',c.currentTime,.3);fireFx(fx,TG[L].x,TG[L].y,LANES[L].c,Math.max(.8,TG[L].r/60),0);return}
    const n=notes[k];n.st=1;res.hits++;combo++;dg.gain.setTargetAtTime(1,c.currentTime,.02);if(res.hits===5)$o('.rk-help').classList.add('weg');
    if(bd<=.09){res.perfect++;burst(L,true);setMood(mood+2.2)}else{burst(L,false);setMood(mood+1.3)}
    comboEl.textContent=combo>=4?combo+' in Folge':'';comboEl.classList.remove('bump');void comboEl.offsetWidth;comboEl.classList.add('bump');

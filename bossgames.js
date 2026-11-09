@@ -114,7 +114,7 @@ GAMES.p_lied=()=>new Promise(async done=>{hideBox();const W2=phWho(2);const LEAD
   let next=0;const end=t0+(band?band.duration:CH[N-1][0]+3);
   const hit=L=>{if(fin)return;const r=rings[L];r.classList.remove('on');void r.offsetWidth;r.classList.add('on');const now=c.currentTime-LAT;
    let k=-1,bd=9;for(let j=next;j<N&&notes[j].t<now+LEAD;j++){const n=notes[j];if(n.st||n.L!==L)continue;if(!inZone(pos(L,1-(n.t-now)/LEAD),1.12))continue;const d=Math.abs(now-n.t);if(d<bd){bd=d;k=j}}
-   if(k<0){pluck(262*[1,1.25,1.5,2][L]*.94,.07);return}
+   if(k<0){pluck(262*[1,1.25,1.5,2][L]*.94,.07);fireFx(fx,G.L[L].x1,G.hy,COL[L],G.pw/100,0);return}
    const n=notes[k];n.st=1;res.hits++;combo++;lg.gain.setTargetAtTime(1.15,c.currentTime,.02);if(res.hits===5)$o('.rk-help').classList.add('weg');
    if(bd<=.09){res.perfect++;burst(L,true);setMood(mood+2.2)}else{burst(L,false);setMood(mood+1.3)}
    comboEl.textContent=combo>=4?combo+' in Folge':'';comboEl.classList.remove('bump');void comboEl.offsetWidth;comboEl.classList.add('bump');
