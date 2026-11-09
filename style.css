@@ -1916,3 +1916,5 @@ img{display:block;max-width:100%}
 
 /* Fähigkeitenwahl: erst antippbar, wenn die Karte zu sehen ist, damit ein schneller Tipp nicht aus Versehen wählt */
 .lvup-c:disabled{pointer-events:none;color:var(--ink)}
+
+.rk.feuer .rk-w b{width:296.9%!important;height:296.9%!important}
