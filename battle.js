@@ -184,7 +184,7 @@ async function attack(u,f,o){let bonus=u.atk+(B.buff.all||0)+(u.next||0)+(o.add|
  if(v.total<f.def&&!v.crit){popFx(foeEl(f),'miss','Daneben!',u.hero?v.total+' reicht nicht, Ziel '+f.def:'');blog(u.n+' verfehlt.');sfx('daneben',.7);await sleep(500);return}
  let dmg=o.fixed||(Math.ceil(d10()/2)+u.dmg+(o.dmgAdd||0));const el_=o.el||u.el;let m=o.ignore?Math.max(1,elemMul(el_,f.el)):elemMul(el_,f.el);
  if(v.crit)dmg*=2;if(u.hero&&B.first&&st.hero.cls==='schurke'){dmg*=2;B.first=false}if(u.ballad){dmg*=2;u.ballad=0}if(o.double)dmg*=2;
- dmg=Math.max(1,Math.round(dmg*m));u.face=m>1||v.crit?3:6;setTimeout(()=>{u.face=0;if(B)render()},800);hurtFoe(f,dmg,u,null,m);if(v.crit)setTimeout(()=>popFx(foeEl(f),'crit','Kritischer Treffer!','Doppelter Schaden'),200);if(m>1&&el_&&f.el)setTimeout(()=>popFx(foeEl(f),'super','Super effektiv!','Doppelter Schaden',[el_,f.el],v.crit?110:0),v.crit?700:200);else if(m<1&&el_&&f.el)setTimeout(()=>popFx(foeEl(f),'weak','Nicht sehr wirksam','Halber Schaden',[el_,f.el]),200);if(m>1)superEff(u,f);if(v.crit&&u.hero)critLine();await sleep(650)}
+ dmg=Math.max(1,Math.round(dmg*m));u.face=m>1||v.crit?3:6;setTimeout(()=>{u.face=0;if(B)render()},800);hurtFoe(f,dmg,u,null,m);if(v.crit)setTimeout(()=>popFx(foeEl(f),'crit','Kritischer Treffer!','Doppelter Schaden'),200);if(m>1&&el_&&f.el)setTimeout(()=>popFx(foeEl(f),'super','Super effektiv!','Doppelter Schaden',[el_,f.el],v.crit?110:0),v.crit?700:200);else if(m<1&&el_&&f.el)setTimeout(()=>popFx(foeEl(f),'weak','Nicht sehr wirksam','Halber Schaden',[el_,f.el]),200);if(m>1)superEff(u,f,el_);if(v.crit&&u.hero)critLine();await sleep(650)}
 // Großes Banner in der Bildmitte mit Strahlenkranz, Elementsymbolen und Schmuckschrift
 function popBig(kind,main,sub,els,dy){const ov=$('#battle');if(!ov)return;
  const d=el('div','bt-big '+kind,'<div class="bb-rays"></div>'+(els?'<div class="bb-els"><span class="bb-el"><span class="el el-'+els[0]+'"></span><i>'+ELEM[els[0]]+'</i></span><span class="bb-arr"></span><span class="bb-el"><span class="el el-'+els[1]+'"></span><i>'+ELEM[els[1]]+'</i></span></div>':'')+'<div class="bb-rib"><b>'+esc(main)+'</b>'+(sub?'<small>'+esc(sub)+'</small>':'')+'</div>');
@@ -285,7 +285,7 @@ async function useItemBattle(u,it){const I=ITEMS[it.id];const U=I.use;
 async function fumble(){const F=FUMBLE[B.key]||'Du rutschst auf einem Käse aus. Natürlich. Es ist immer ein Käse.';blog('Patzer! '+F);sfx('patzer',.8);await sleep(1400)}
 const FUMBLE={ratten:'Du rutschst auf einem Käse aus. Es ist immer ein Käse.',spinne:'Du klebst am Netz fest.',krok:'Die Krone fällt ins Wasser, alle schauen hinterher, auch du.',eis:'Du frierst kurz am Boden fest. Oma Hulda: Kindchen, Socken.',asche:'Du niest in die Asche. Gesundheit, Kindchen.'};
 let effSaid={};
-function superEff(u,f){if(!st.flags.tut_t11){st.flags.tut_t11=1;save();B._elT=1}if(effSaid[B.key])return;effSaid[B.key]=1;blog(ELEM[u.el||'feuer']+' gegen '+ELEM[f.el]+': super effektiv!',1)}
+function superEff(u,f,e){if(!st.flags.tut_t11){st.flags.tut_t11=1;save();B._elT=1}if(effSaid[B.key])return;effSaid[B.key]=1;blog(ELEM[e||u.el||'feuer']+' gegen '+ELEM[f.el]+': super effektiv!',1)}
 function critLine(){blog('Natürliche Zwanzig! Der Spielleiter muss sich kurz setzen.',1)}
 async function phaseCheck(){const F=B&&B.F;if(!F||!F.phases)return;const f=B.foes.find(x=>x.boss);if(!f)return;
  while(B.phI<F.phases.length&&f.hp<=Math.ceil(F.phases[B.phI]*f.max)){const i=B.phI;const ov=$('#battle');ov.classList.remove('on');ov.style.visibility='hidden';
