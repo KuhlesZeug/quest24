@@ -12,7 +12,7 @@ function pluck(t,f,vol){const c=ac(),out=c.createGain(),d=c.createDelay(.05),fb=
 const WISP={'#ff7a4a':4,'#ffd23f':3,'#5fd16a':2,'#5ab8ff':1,'#4fe36a':2,'#ff5a6a':4,'#ffd23f ':3};
 // Leuchtkern je Irrlichtbild (gemessen), damit Lichthof und Kern genau auf dem Irrlicht sitzen
 const WISPK={1:[.534,.693],2:[.489,.703],3:[.538,.672],4:[.485,.659],5:[.528,.625]};
-function wispEl(col,wi){const k=WISPK[wi]||[.5,.66];const e=el('div','rk-w','<b></b><i></i><img src="'+A+'ui/wisp_'+wi+'.png" alt="" style="left:'+(50-k[0]*128).toFixed(1)+'%;top:'+(50-k[1]*128).toFixed(1)+'%">');e.style.setProperty('--c',col);return e}
+function wispEl(col,wi){const k=WISPK[wi]||[.5,.66];const e=el('div','rk-w','<b></b><i></i><img src="'+A+'ui/wisp_'+wi+'.png" alt="" style="position:absolute;width:128%;height:128%;max-width:none;max-height:none;left:'+(50-k[0]*128).toFixed(1)+'%;top:'+(50-k[1]*128).toFixed(1)+'%">');e.style.setProperty('--c',col);return e}
 
 // Flamme wie bei Guitar Hero. Stufe 0: nur draufgehauen (kleines Flämmchen), 1: Treffer, 2: perfekt
 function fireFx(fx,x,y,col,sc,lv){const S=[.45,1,1.35][lv];const f=el('div','rk-fire');f.style.left=x+'px';f.style.top=y+'px';f.style.setProperty('--c',col);f.style.setProperty('--s',sc*S);fx.appendChild(f);setTimeout(()=>f.remove(),700);

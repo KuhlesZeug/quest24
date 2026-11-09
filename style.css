@@ -1808,7 +1808,7 @@ img{display:block;max-width:100%}
 .cf .pg-img{filter:brightness(.92)}
 .cf-cv{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;z-index:2}
 .cf-glow{position:absolute;width:calc(var(--r)*9);height:calc(var(--r)*9);margin:calc(var(--r)*-4.5) 0 0 calc(var(--r)*-4.5);border-radius:50%;background:radial-gradient(circle,rgba(255,170,70,.42),rgba(255,120,40,.14) 40%,transparent 68%);mix-blend-mode:screen;pointer-events:none;z-index:1}
-.cf.weg .cf-spot,.cf.weg .cf-marker{opacity:0;pointer-events:none}
+.cf.weg .cf.weg .cf-spot,.cf.weg .cf-marker{opacity:0;pointer-events:none}
 .cf-spot{transition:opacity .3s}
 .cf-spot .pk-ring{border-width:2px;opacity:.85}
 .cf-q{position:absolute;right:-6px;top:-6px;display:flex;gap:3px;padding:6px 8px;border-radius:12px 12px 12px 3px;background:url(a/ui/pergament.jpg) center/cover;box-shadow:0 0 0 2px #5a3519,0 4px 10px rgba(0,0,0,.4);animation:cfQ 1.4s ease-in-out infinite}
@@ -1902,3 +1902,9 @@ img{display:block;max-width:100%}
 .sz-ppl i{width:50px;height:50px;border-radius:50%;background:center/cover;box-shadow:0 0 0 2px #5a3519,0 0 0 4px #c9963f,0 0 14px rgba(255,200,90,.5)}
 .sz-fw{margin:14px 0 18px;font:700 2.4rem/1.1 var(--head);color:#ffe3a3;background:linear-gradient(100deg,#ffd27a 30%,#fffaf0 50%,#ffd27a 70%) 0/250% 100%;-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;filter:drop-shadow(0 0 14px rgba(255,180,70,.7));animation:lvAuf .7s 1.6s both,lvGlanz 3s 2.2s ease-in-out infinite}
 .sz-md .pbtn{animation:lvAuf .6s 2s both}
+
+/* Lagerfeuer: keine sichtbaren Trefferkreise, nur Sprechblase und Name; Figur leuchtet beim Antippen kurz */
+.cf-spot .pk-ring{display:none}
+.cf-spot::after{content:'';position:absolute;inset:-10%;border-radius:50%;background:radial-gradient(circle,rgba(255,220,140,.45),transparent 65%);opacity:0;transition:opacity .25s;pointer-events:none}
+.cf-spot:active::after,.cf-spot.tipp::after{opacity:1}
+.cf-spot{cursor:pointer}
