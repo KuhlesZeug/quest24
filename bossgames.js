@@ -72,7 +72,7 @@ GAMES.p_glut=()=>new Promise(async done=>{const W1=phWho(1);const T=W1.right?9:6
 // Phase 3: Der Aschesturm. Zirpia spielt das Wiegenlied auf den vier Saiten ihrer Walnusslaute.
 function pluck(f,vol){const c=ac(),t=c.currentTime;const o=c.createOscillator(),g=c.createGain(),fl=c.createBiquadFilter();o.type='triangle';o.frequency.setValueAtTime(f,t);fl.type='lowpass';fl.frequency.setValueAtTime(3200,t);fl.frequency.exponentialRampToValueAtTime(700,t+.6);g.gain.setValueAtTime(vol||.35,t);g.gain.exponentialRampToValueAtTime(.001,t+1.1);o.connect(fl);fl.connect(g);g.connect(sfxBus);o.start(t);o.stop(t+1.2)}
 GAMES.p_lied=()=>new Promise(async done=>{hideBox();const W2=phWho(2);const LEAD=W2.right?2.1:1.75;
- const C=['g','r','y','b'],COL=['#4fe36a','#ff5a4a','#ffd23f','#5ab8ff'];
+ const C=['g','r','y','b'],COL=['#4fe36a','#ff5a6a','#ffd23f','#5ab8ff'];
  // Gleicher Aufbau wie Zirpias Schlagzeug: Begeisterung oben, Lichter, Treffer, Zähler, Endkarte
  const o=el('div','rk pl5');o.innerHTML='<div class="tk2-bg" style="background-image:url('+A+'img/mg_laute2.jpg)"></div><div class="rk-st"><div class="tk2-top"><div class="tk2-t">'+W2.name+' rockt das Wiegenlied</div><div class="tk2-meter"><i></i><b>Begeisterung</b></div></div>'+
   '<svg class="pl4-str" preserveAspectRatio="none"></svg><div class="rk-notes"></div>'+
@@ -98,11 +98,8 @@ GAMES.p_lied=()=>new Promise(async done=>{hideBox();const W2=phWho(2);const LEAD
  $o('.rk-load').remove();
  const N=CH.length;let res={hits:0,perfect:0},combo=0,mood=25,fin=0,raf=0,srcs=[],lg=null,jubelT=0;
  const setMood=v=>{const was=mood;mood=Math.max(0,Math.min(100,v));meter.style.width=mood+'%';o.classList.toggle('m2',mood>75);o.classList.toggle('voll',mood>=100);if(mood>=100&&was<100&&performance.now()>jubelT){jubelT=performance.now()+9000;sfx('jubel_voll',.7);const j=el('div','rk-jubel','Die Menge tobt!');stg.appendChild(j);setTimeout(()=>j.remove(),2200)}};
- const burst=(L,perf)=>{const x=G.L[L].x1,y=G.hy,col=COL[L];
-  const b=el('div','rk-burst'+(perf?' p':''));b.style.left=x+'px';b.style.top=y+'px';b.style.setProperty('--c',col);fx.appendChild(b);setTimeout(()=>b.remove(),500);
-  const w=el('div','rk-wave');w.style.left=x+'px';w.style.top=y+'px';w.style.setProperty('--c',col);fx.appendChild(w);setTimeout(()=>w.remove(),500);
-  for(let k=0;k<(perf?16:8);k++){const sp=el('i','rk-sp');sp.style.left=x+'px';sp.style.top=y+'px';sp.style.setProperty('--c',k%3?col:'#fff6c8');sp.style.setProperty('--a',(Math.random()*360)+'deg');sp.style.setProperty('--d',(40+Math.random()*(perf?90:50))+'px');fx.appendChild(sp);setTimeout(()=>sp.remove(),650)}
-  const t=el('div','rk-txt '+(perf?'p':'g'),perf?'Perfekt!':'Gut!');t.style.left=x+'px';t.style.top=(y-G.ph*.5-34)+'px';fx.appendChild(t);setTimeout(()=>t.remove(),700);
+ const burst=(L,perf)=>{hitFx(fx,G.L[L].x1,G.hy,COL[L],perf,G.pw/100,G.hy-G.ph*.5-34);
+  const ln=svg.querySelectorAll('line')[L*2];if(ln){ln.classList.remove('zap');void ln.getBoundingClientRect();ln.classList.add('zap')}
   if(perf&&combo>=10){stg.classList.remove('shake');void stg.offsetWidth;stg.classList.add('shake')}
   o.classList.toggle('feuer',combo>=10)};
  const missFx=L=>{const m=el('div','rk-miss');m.style.left=G.L[L].x1+'px';m.style.top=G.hy+'px';fx.appendChild(m);setTimeout(()=>m.remove(),450);o.classList.remove('feuer')};
@@ -113,7 +110,7 @@ GAMES.p_lied=()=>new Promise(async done=>{hideBox();const W2=phWho(2);const LEAD
   ['4','3','2','1'].forEach((n,i)=>setTimeout(()=>{cnt.textContent=n;cnt.className='tk2-count on';pluck(392,.16);setTimeout(()=>cnt.className='tk2-count',380)},Math.max(0,(t0-(4-i)*beat-c.currentTime)*1000)));
   lg=c.createGain();lg.gain.value=1.15;lg.connect(drumOut());const bg=c.createGain();bg.gain.value=1;bg.connect(drumOut());
   [[band,bg],[lute,lg]].forEach(([b,g])=>{if(!b)return;const s=c.createBufferSource();s.buffer=b;s.connect(g);s.start(t0);srcs.push(s)});
-  const notes=CH.map(([t,L])=>{const e=el('div','rk-n pl-n');e.style.setProperty('--c',COL[L]);notesEl.appendChild(e);return {t:t0+t,L,e,st:0}});
+  const notes=CH.map(([t,L])=>{const e=wispEl(COL[L],[2,4,3,1][L]);notesEl.appendChild(e);return {t:t0+t,L,e,st:0}});
   let next=0;const end=t0+(band?band.duration:CH[N-1][0]+3);
   const hit=L=>{if(fin)return;const r=rings[L];r.classList.remove('on');void r.offsetWidth;r.classList.add('on');const now=c.currentTime-LAT;
    let k=-1,bd=9;for(let j=next;j<N&&notes[j].t<now+LEAD;j++){const n=notes[j];if(n.st||n.L!==L)continue;if(!inZone(pos(L,1-(n.t-now)/LEAD),1.12))continue;const d=Math.abs(now-n.t);if(d<bd){bd=d;k=j}}
@@ -130,10 +127,10 @@ GAMES.p_lied=()=>new Promise(async done=>{hideBox();const W2=phWho(2);const LEAD
   const loop=()=>{const now=c.currentTime-LAT;
    for(let j=next;j<N;j++){const n=notes[j];const dt=n.t-now;if(dt>LEAD+.1)break;
     const u=1-dt/LEAD,P=pos(n.L,Math.min(1.6,u));
-    if(!n.st&&dt<0&&(!inZone(P,1.12)||dt<-.5)){n.st=2;missFx(n.L);combo=0;comboEl.textContent='';setMood(mood-2.5);lg.gain.setTargetAtTime(.2,c.currentTime,.02);setTimeout(()=>{if(lg)lg.gain.setTargetAtTime(1.15,c.currentTime,.08)},380)}
-    const sz=G.pw*.42*P.k;n.e.style.width=n.e.style.height=sz+'px';
-    n.e.style.transform='translate('+P.x+'px,'+P.y+'px) translate(-50%,-50%) scale('+(n.st===1?1.6:1)+')';n.e.style.opacity=n.st?0:(u<0?0:Math.min(1,u*3))}
-   while(next<N&&notes[next].st&&notes[next].t<now-.4)next++;
+    if(!n.st&&dt<0&&(!inZone(P,1.12)||dt<-.5)){n.st=2;n.mt=now;n.e.classList.add('miss');missFx(n.L);combo=0;comboEl.textContent='';setMood(mood-2.5);lg.gain.setTargetAtTime(.2,c.currentTime,.02);setTimeout(()=>{if(lg)lg.gain.setTargetAtTime(1.15,c.currentTime,.08)},380)}
+    const sz=G.pw*.72*P.k;n.e.style.width=n.e.style.height=sz+'px';
+    n.e.style.transform='translate('+P.x+'px,'+P.y+'px) translate(-50%,-50%)';n.e.style.opacity=n.st===1?0:n.st===2?Math.max(0,1-(now-n.mt)/.5):(u<0?0:Math.min(1,u*3))}
+   while(next<N&&notes[next].st&&(notes[next].st===1?notes[next].t<now-.4:now-notes[next].mt>.55)){notes[next].e.style.opacity=0;next++}
    if(now>end+.3||(next>=N&&now>CH[N-1][0]+t0+2.5)){finish();return}
    raf=requestAnimationFrame(loop)};raf=requestAnimationFrame(loop);
   o._cleanup=()=>{o.removeEventListener('pointerdown',tap);removeEventListener('keydown',kb)};

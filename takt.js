@@ -7,6 +7,18 @@ function pluck(t,f,vol){const c=ac(),out=c.createGain(),d=c.createDelay(.05),fb=
  out.gain.setValueAtTime(.9,t);out.gain.exponentialRampToValueAtTime(.001,t+1.4);out.connect(drumOut());n.start(t);n.stop(t+.03);
  setTimeout(()=>{try{fb.disconnect();out.disconnect()}catch(e){}},1700+Math.max(0,(t-c.currentTime)*1000))}
 
+
+// Irrlicht als Note: Bild plus starker Leuchthof
+const WISP={'#ff7a4a':4,'#ffd23f':3,'#5fd16a':2,'#5ab8ff':1,'#4fe36a':2,'#ff5a6a':4,'#ffd23f ':3};
+function wispEl(col,wi){const e=el('div','rk-w','<b></b><i></i><img src="'+A+'ui/wisp_'+wi+'.png" alt="">');e.style.setProperty('--c',col);return e}
+// Trefferfeedback für Schlagzeug und Laute: Blitz, Lichtsäule, Schockwellen, Funken, Text
+function hitFx(fx,x,y,col,perf,sc,txtY){sc=sc||1;
+ const add=(cls,w,ms)=>{const d=el('div',cls);d.style.left=x+'px';d.style.top=y+'px';d.style.setProperty('--c',col);d.style.setProperty('--s',sc);fx.appendChild(d);setTimeout(()=>d.remove(),ms);return d};
+ add('rk-flash'+(perf?' p':''),0,420);add('rk-beam'+(perf?' p':''),0,520);add('rk-wave',0,500);if(perf)setTimeout(()=>add('rk-wave w2',0,500),70);
+ for(let k=0;k<(perf?26:12);k++){const sp=add('rk-sp'+(k%4===0?' big':''),0,700);sp.style.setProperty('--c',k%3?col:'#fffbe6');sp.style.setProperty('--a',(Math.random()*360)+'deg');sp.style.setProperty('--d',((45+Math.random()*(perf?110:60))*sc)+'px')}
+ const t=el('div','rk-txt '+(perf?'p':'g'),perf?'Perfekt!':'Gut!');t.style.left=x+'px';t.style.top=(txtY!=null?txtY:y-60*sc)+'px';fx.appendChild(t);setTimeout(()=>t.remove(),750);
+ try{navigator.vibrate&&navigator.vibrate(perf?18:10)}catch(e){}}
+
 // Rock Band Variante: Zirpias Schlagzeug von oben, vier Spuren, echte Instrumentalfassung von Zirpias Mittelalter Rock
 GAMES.takt=()=>new Promise(async done=>{hideBox();
  const LANES=[{n:'rk_pauke2',c:'#ff7a4a'},{n:'rk_trommel',c:'#ffd23f'},{n:'rk_tom',c:'#5fd16a'},{n:'rk_becken',c:'#5ab8ff'}];
@@ -52,11 +64,7 @@ GAMES.takt=()=>new Promise(async done=>{hideBox();
  const spark=(i,gold)=>{const p=pads[i];for(let k=0;k<(gold?12:6);k++){const s=el('i','tk2-sp'+(gold?' g':''));s.style.setProperty('--a',(Math.random()*360)+'deg');s.style.setProperty('--d',(35+Math.random()*55)+'px');p.appendChild(s);setTimeout(()=>s.remove(),600)}};
  // Trefferfeedback: Lichtblitz, Schockwelle, Funken in Spurfarbe, schwebender Text über dem Instrument
  const fx=$o('.rk-fx');
- const burst=(L,perf)=>{const g=TG[L],col=LANES[L].c;
-  const b=el('div','rk-burst'+(perf?' p':''));b.style.left=g.x+'px';b.style.top=g.y+'px';b.style.setProperty('--c',col);fx.appendChild(b);setTimeout(()=>b.remove(),500);
-  const w=el('div','rk-wave');w.style.left=g.x+'px';w.style.top=g.y+'px';w.style.setProperty('--c',col);fx.appendChild(w);setTimeout(()=>w.remove(),500);
-  for(let k=0;k<(perf?16:8);k++){const sp=el('i','rk-sp');sp.style.left=g.x+'px';sp.style.top=g.y+'px';sp.style.setProperty('--c',k%3?col:'#fff6c8');sp.style.setProperty('--a',(Math.random()*360)+'deg');sp.style.setProperty('--d',(40+Math.random()*(perf?90:50))+'px');fx.appendChild(sp);setTimeout(()=>sp.remove(),650)}
-  const t=el('div','rk-txt '+(perf?'p':'g'),perf?'Perfekt!':'Gut!');t.style.left=g.x+'px';t.style.top=(g.y-g.r*1.2)+'px';fx.appendChild(t);setTimeout(()=>t.remove(),700);
+ const burst=(L,perf)=>{const g=TG[L];hitFx(fx,g.x,g.y,LANES[L].c,perf,Math.max(.8,g.r/60),g.y-g.r*1.2);
   if(perf&&combo>=10){stg.classList.remove('shake');void stg.offsetWidth;stg.classList.add('shake')}
   o.classList.toggle('feuer',combo>=10)};
  const missFx=L=>{const g=TG[L];const m=el('div','rk-miss');m.style.left=g.x+'px';m.style.top=g.y+'px';fx.appendChild(m);setTimeout(()=>m.remove(),450);o.classList.remove('feuer')};
@@ -69,7 +77,7 @@ GAMES.takt=()=>new Promise(async done=>{hideBox();
   // Band und Schlagzeug getrennt starten, Schlagzeug wird bei Fehlern leiser
   dg=c.createGain();dg.gain.value=1;dg.connect(drumOut());const bg=c.createGain();bg.gain.value=.9;bg.connect(drumOut());
   [[band,bg],[drums,dg]].forEach(([b,g])=>{if(!b)return;const s=c.createBufferSource();s.buffer=b;s.connect(g);s.start(t0);srcs.push(s)});
-  const notes=CH.map(([t,L],i)=>{const e=el('div','rk-n l'+L);notesEl.appendChild(e);return {t:t0+t,L,e,st:0}});
+  const notes=CH.map(([t,L],i)=>{const e=wispEl(LANES[L].c,[4,3,2,1][L]);notesEl.appendChild(e);return {t:t0+t,L,e,st:0}});
   let next=0;const end=t0+(band?band.duration:CH[N-1][0]+3);
   const hitLane=(L,ev)=>{if(fin)return;const now=c.currentTime-LAT;
    const p=pads[L];p.classList.remove('hit');void p.offsetWidth;p.classList.add('hit');
@@ -85,9 +93,9 @@ GAMES.takt=()=>new Promise(async done=>{hideBox();
   o.addEventListener('pointerdown',tap);addEventListener('keydown',kb);
   const loop=()=>{const now=c.currentTime-LAT,W=stg.clientWidth,H=stg.clientHeight;
    for(let j=next;j<N;j++){const n=notes[j];const dt=n.t-now;if(dt>LEAD+.1)break;
-    const Pq=lanePos(n.L,Math.min(1.8,1-dt/LEAD));if(!n.st&&dt<0&&(!inside(n.L,Pq,1.12)||dt<-.6)){n.st=2;missFx(n.L);combo=0;comboEl.textContent='';setMood(mood-2.5);dg.gain.setTargetAtTime(.2,c.currentTime,.02);setTimeout(()=>{if(dg)dg.gain.setTargetAtTime(1,c.currentTime,.08)},380)}
-    const u=1-dt/LEAD,P=lanePos(n.L,Math.min(1.8,u));n.e.style.transform='translate('+P.x+'px,'+P.y+'px) translate(-50%,-50%) scale('+P.s*(n.st===1?1.6:1)+')';n.e.style.opacity=n.st?0:(u<0?0:Math.min(1,u*3))}
-   while(next<N&&notes[next].st&&notes[next].t<now-.4)next++;
+    const Pq=lanePos(n.L,Math.min(1.8,1-dt/LEAD));if(!n.st&&dt<0&&(!inside(n.L,Pq,1.12)||dt<-.6)){n.st=2;n.mt=now;n.e.classList.add('miss');missFx(n.L);combo=0;comboEl.textContent='';setMood(mood-2.5);dg.gain.setTargetAtTime(.2,c.currentTime,.02);setTimeout(()=>{if(dg)dg.gain.setTargetAtTime(1,c.currentTime,.08)},380)}
+    const u=1-dt/LEAD,P=lanePos(n.L,Math.min(1.8,u));n.e.style.transform='translate('+P.x+'px,'+P.y+'px) translate(-50%,-50%) scale('+P.s+')';n.e.style.opacity=n.st===1?0:n.st===2?Math.max(0,1-(now-n.mt)/.5):(u<0?0:Math.min(1,u*3))}
+   while(next<N&&notes[next].st&&(notes[next].st===1?notes[next].t<now-.4:now-notes[next].mt>.55)){notes[next].e.style.opacity=0;next++}
    if(now>end+.3||(next>=N&&now>CH[N-1][0]+t0+2.5)){o.removeEventListener('pointerdown',tap);removeEventListener('keydown',kb);finish();return}
    raf=requestAnimationFrame(loop)};raf=requestAnimationFrame(loop);
   o._cleanup=()=>{o.removeEventListener('pointerdown',tap);removeEventListener('keydown',kb)}};

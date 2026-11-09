@@ -1625,3 +1625,24 @@ img{display:block;max-width:100%}
 .pl5 .rk-help{top:auto;bottom:calc(4% + env(safe-area-inset-bottom))}
 .pl5 .rk-combo{top:calc(83% - 150px)}
 .pl5 .tk2-count{top:36%}
+/* Irrlichter als Noten: kräftiger Leuchthof */
+.rk-w{position:absolute;left:0;top:0;width:58px;height:58px;opacity:0;pointer-events:none;will-change:transform,opacity}
+.rk-w b{position:absolute;left:50%;top:50%;width:300%;height:300%;transform:translate(-50%,-50%);border-radius:50%;background:radial-gradient(circle,color-mix(in srgb,var(--c) 85%,#fff) 0,color-mix(in srgb,var(--c) 55%,transparent) 18%,color-mix(in srgb,var(--c) 22%,transparent) 38%,transparent 66%);mix-blend-mode:screen}
+.rk-w i{position:absolute;left:50%;top:50%;width:120%;height:120%;transform:translate(-50%,-50%);border-radius:50%;background:radial-gradient(circle,#fff 0 22%,color-mix(in srgb,var(--c) 70%,#fff) 40%,transparent 70%);mix-blend-mode:screen;animation:rkWisp .5s ease-in-out infinite alternate}
+.rk-w img{position:absolute;left:-14%;top:-30%;width:128%;height:128%;object-fit:contain;filter:brightness(1.18) saturate(1.2)}
+@keyframes rkWisp{to{transform:translate(-50%,-50%) scale(1.15);opacity:.85}}
+.rk-w.miss{filter:saturate(.25) brightness(.7)}
+.rk-w.miss b,.rk-w.miss i{opacity:.25;animation:none}
+.rk.feuer .rk-w b{width:380%;height:380%}
+.pl5 .rk-w{z-index:5}
+/* Treffer: Blitz, Lichtsäule, doppelte Welle */
+.rk-flash{position:absolute;width:calc(170px*var(--s));height:calc(170px*var(--s));transform:translate(-50%,-50%);border-radius:50%;background:radial-gradient(circle,#fff 0 14%,color-mix(in srgb,var(--c) 80%,#fff) 26%,color-mix(in srgb,var(--c) 45%,transparent) 46%,transparent 70%);mix-blend-mode:screen;animation:rkFlash .42s ease-out forwards;pointer-events:none}
+.rk-flash.p{width:calc(250px*var(--s));height:calc(250px*var(--s))}
+@keyframes rkFlash{0%{opacity:1;transform:translate(-50%,-50%) scale(.4)}35%{opacity:1}100%{opacity:0;transform:translate(-50%,-50%) scale(1.25)}}
+.rk-beam{position:absolute;width:calc(46px*var(--s));height:calc(220px*var(--s));transform:translate(-50%,-100%);transform-origin:50% 100%;border-radius:50% 50% 40% 40%;background:linear-gradient(0deg,#fff 0,color-mix(in srgb,var(--c) 85%,#fff) 18%,color-mix(in srgb,var(--c) 40%,transparent) 55%,transparent);mix-blend-mode:screen;filter:blur(2px);animation:rkBeam .52s ease-out forwards;pointer-events:none}
+.rk-beam.p{width:calc(64px*var(--s));height:calc(320px*var(--s))}
+@keyframes rkBeam{0%{opacity:0;transform:translate(-50%,-100%) scaleY(.2)}20%{opacity:1;transform:translate(-50%,-100%) scaleY(1)}100%{opacity:0;transform:translate(-50%,-100%) scaleY(1.15) scaleX(.4)}}
+.rk-wave.w2{border-width:3px;animation-duration:.5s}
+.rk-sp.big{width:12px;height:12px;margin:-6px}
+.pl4-str line.zap{animation:plZap .3s ease-out}
+@keyframes plZap{0%{stroke-width:9;stroke-opacity:1}100%{stroke-width:2.2}}
