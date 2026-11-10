@@ -6,7 +6,7 @@ window.openKomplize=function(){
  const card=(n,ic,t,h,inner,opt)=>'<div class="kp-card'+(opt?' opt':'')+'" data-n="'+n+'"><div class="kp-ch"><span class="kp-seal"><img src="'+U+'siegel.png" alt=""><b>'+n+'</b></span><img class="kp-ic" src="'+ic+'" alt=""><div><h3>'+t+'</h3><p>'+h+'</p></div></div>'+inner+'</div>';
  sec.innerHTML='<div class="kp">'+
  '<div class="kp-hero" style="background-image:linear-gradient(180deg,rgba(10,8,20,.15),rgba(10,8,20,.35) 55%,var(--night) 100%),url('+A+'img/f_intro3.jpg)"><div class="kp-snow"></div>'+
- '<span class="kp-only">Nur für dich, nicht für den Beschenkten</span><img class="kp-logo" src="'+U+'logo.png" alt="Quest 24"><h2>Das Abenteuer verschenken</h2><p>In fünf Minuten eingerichtet. Am 24. Dezember wartet deine Nachricht im Drachenschatz.</p></div>'+
+ '<span class="kp-only">Nur für dich, nicht für den Beschenkten</span><div class="lg kp-lg"><img class="lg-base" src="'+U+'logo_base.png" alt="Quest 24"><img class="lg-dr" src="'+U+'logo_drache.png" alt=""><i class="lg-glow"></i><img class="lg-fl" src="'+U+'flamme.png" alt=""><div class="lg-smoke"></div></div><h2>Das Abenteuer verschenken</h2><p>In fünf Minuten eingerichtet. Am 24. Dezember wartet deine Nachricht im Drachenschatz.</p></div>'+
  '<div class="kp-how"><div><img src="'+I+'feder.png" alt=""><b>Einrichten</b><span>Name, Nachricht und Hinweis eintragen</span></div><i></i><div><img src="'+I+'liebesbrief.png" alt=""><b>Verschicken</b><span>Link senden oder QR Code in die Akte legen</span></div><i></i><div><img src="'+U+'truhe.png" alt=""><b>Staunen</b><span>Am 24. öffnet sich der Drachenschatz</span></div></div>'+
  '<div class="kp-in">'+
  card(1,I+'schluessel.png','Dein Zugangscode','Er steht in deiner Abenteuerakte und in der Spielleitung.','<input id="kp-code" autocapitalize="characters" autocomplete="off" placeholder="Zugangscode">')+
@@ -20,6 +20,9 @@ window.openKomplize=function(){
   [['#kp-code',1],['#kp-an',2],['#kp-von',3],['#kp-msg',4],['#kp-ort',5]].forEach(([i,n])=>sec.querySelector('.kp-card[data-n="'+n+'"]').classList.toggle('done',!!v(i)))};
  ['#kp-code','#kp-an','#kp-von','#kp-msg','#kp-ort'].forEach(i=>$(i).addEventListener('input',upd));
  show('#s-komp');
+ // Logo wie auf dem Startbildschirm: Drache atmet, Flamme flackert, Rauch steigt aus den Nüstern
+ {const L=sec.querySelector('.kp-lg'),d=L.querySelector('.lg-dr'),sm=L.querySelector('.lg-smoke');const puff=()=>{if(!sec.classList.contains('on')||document.hidden)return;for(let k=0;k<2;k++){const i=el('img','');i.src=A+'ui/fx_smoke_'+(k+1)+'.png';i.style.left=(17.5+k*2)+'%';i.style.top=(30-k*3)+'%';i.style.animationDelay=(k*.25)+'s';sm.appendChild(i);setTimeout(()=>i.remove(),2900)}};
+  const go=()=>setTimeout(puff,1750);d.addEventListener('animationiteration',go);go()}
  $('#kp-go').onclick=async()=>{const e=$('#kp-err');e.textContent='';
   if(await QZ.hash($('#kp-code').value)!==QZ.ACCESS){sfx('falsch');return e.textContent='Dieser Zugangscode stimmt nicht. Er steht in deiner Abenteuerakte.'}
   const an=$('#kp-an').value.trim();if(!an)return e.textContent='Bitte einen Namen eintragen.';
