@@ -1971,3 +1971,68 @@ img{display:block;max-width:100%}
 .rk-wk i{animation-name:rkWisp2}
 @keyframes rkWisp2{to{transform:scale(1.15);opacity:.85}}
 .rk.feuer .rk-wk b{margin:-148.4% 0 0 -148.4%!important}
+
+/* Verschenken Seite: Bühne mit Dorf, Schritte als Siegelkarten, Vorschau im Drachenschatz */
+#s-komp{padding:0;background:var(--night)}
+.kp{max-width:560px;margin:0 auto;padding-bottom:calc(40px + env(safe-area-inset-bottom))}
+.kp-hero{position:relative;min-height:330px;padding:calc(30px + env(safe-area-inset-top)) 22px 34px;background:center 55%/cover;text-align:center;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;overflow:hidden}
+.kp-snow{position:absolute;inset:0;pointer-events:none;background-image:radial-gradient(2px 2px at 20% 30%,#fff,transparent),radial-gradient(1.5px 1.5px at 70% 20%,#fff,transparent),radial-gradient(2px 2px at 40% 70%,#fff,transparent),radial-gradient(1.5px 1.5px at 85% 60%,#fff,transparent),radial-gradient(1px 1px at 10% 80%,#fff,transparent);background-size:220px 220px;opacity:.7;animation:kpSchnee 9s linear infinite}
+@keyframes kpSchnee{to{background-position:30px 220px}}
+.kp-only{position:absolute;top:calc(14px + env(safe-area-inset-top));left:50%;transform:translateX(-50%);white-space:nowrap;padding:5px 14px;border-radius:999px;background:rgba(168,50,42,.85);color:#fff3e0;font:700 .72rem var(--sc);letter-spacing:.05em;box-shadow:0 2px 12px rgba(0,0,0,.35)}
+.kp-logo{width:min(62%,300px);filter:drop-shadow(0 6px 16px rgba(0,0,0,.55));animation:kpSchweb 4s ease-in-out infinite}
+@keyframes kpSchweb{50%{transform:translateY(-5px)}}
+.kp-hero h2{margin:6px 0 4px;font:400 2rem/1.1 var(--head);color:#fff4da;text-shadow:0 2px 14px rgba(0,0,0,.7)}
+.kp-hero p{margin:0;max-width:330px;color:#f4e3c0;font-size:1rem;line-height:1.35;text-shadow:0 1px 8px rgba(0,0,0,.8)}
+.kp-how{display:flex;align-items:flex-start;gap:4px;margin:-14px 14px 6px;padding:14px 10px;border-radius:18px;background:linear-gradient(180deg,#3a2414,#24160c);box-shadow:0 0 0 1.5px rgba(224,176,74,.45),0 10px 24px rgba(0,0,0,.4);position:relative;z-index:2}
+.kp-how>div{flex:1;text-align:center;color:#f4e3c0}
+.kp-how img{width:48px;height:48px;object-fit:contain;filter:drop-shadow(0 3px 5px rgba(0,0,0,.5))}
+.kp-how b{display:block;font:700 .86rem var(--sc);color:var(--gold);margin-top:2px}
+.kp-how span{display:block;font-size:.76rem;line-height:1.25;opacity:.85}
+.kp-how>i{width:14px;align-self:center;height:2px;background:repeating-linear-gradient(90deg,var(--gold) 0 3px,transparent 3px 6px);opacity:.6;margin-top:-30px}
+.kp-in{padding:12px 14px 0}
+.kp-card{position:relative;margin:14px 0;padding:14px 14px 16px;border-radius:16px;background:url(a/ui/pergament.jpg) center/cover;box-shadow:0 0 0 2px #6b4524,0 0 0 4px rgba(224,176,74,.35),0 8px 20px rgba(0,0,0,.35);transition:box-shadow .3s}
+.kp-card.done{box-shadow:0 0 0 2px #6b4524,0 0 0 4px rgba(224,176,74,.9),0 0 22px rgba(224,176,74,.35),0 8px 20px rgba(0,0,0,.35)}
+.kp-ch{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+.kp-seal{position:relative;flex:none;width:40px;height:40px}
+.kp-seal img{width:100%;height:100%;object-fit:contain;filter:saturate(.6) brightness(.9);transition:filter .3s}
+.kp-card.done .kp-seal img{filter:none}
+.kp-seal b{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font:700 1rem var(--sc);color:#fff1d6;text-shadow:0 1px 2px rgba(0,0,0,.6)}
+.kp-ic{flex:none;width:46px;height:46px;object-fit:contain;filter:drop-shadow(0 3px 4px rgba(60,30,10,.35))}
+.kp-ic[src*="p_alt"]{border-radius:50%;object-fit:cover;box-shadow:0 0 0 2px #8a5a2b,0 3px 6px rgba(0,0,0,.3)}
+.kp-ch h3{margin:0;font:700 1.02rem/1.15 var(--sc);color:var(--ink)}
+.kp-ch p{margin:2px 0 0;font-size:.86rem;line-height:1.25;color:var(--ink2)}
+.kp-card.opt h3::after{content:' freiwillig';font:400 .72rem var(--sc);color:#8a6a48}
+.kp-card input,.kp-card textarea{width:100%;box-sizing:border-box;padding:.75em .9em;border-radius:10px;border:1.5px solid rgba(107,69,36,.55);background:rgba(255,250,236,.75);font:1.05rem var(--body);color:var(--ink);outline:none;transition:border-color .2s,box-shadow .2s}
+.kp-card input:focus,.kp-card textarea:focus{border-color:var(--gold);box-shadow:0 0 0 3px rgba(224,176,74,.3)}
+.kp-letter{position:relative}
+.kp-letter textarea{resize:vertical;min-height:130px;line-height:1.6;background:repeating-linear-gradient(180deg,rgba(255,250,236,.8) 0 1.55em,rgba(140,100,60,.22) 1.55em calc(1.55em + 1px));background-attachment:local;font-style:italic}
+.kp-cnt{position:absolute;right:10px;bottom:8px;font:.72rem var(--sc);color:#8a6a48;pointer-events:none}
+.kp-prev{margin:22px 0 16px}
+.kp-pk{text-align:center;font:700 .82rem var(--sc);letter-spacing:.06em;color:var(--gold);margin-bottom:8px}
+.kp-pv{position:relative;border-radius:18px;overflow:hidden;background:center 62%/cover;padding:110px 18px 22px;box-shadow:0 0 0 2px rgba(224,176,74,.6),0 12px 28px rgba(0,0,0,.5)}
+.kp-glint{position:absolute;inset:0;pointer-events:none;background-image:radial-gradient(3px 3px at 22% 40%,#fff6c8,transparent),radial-gradient(2px 2px at 64% 28%,#fff6c8,transparent),radial-gradient(3px 3px at 80% 52%,#fff6c8,transparent),radial-gradient(2px 2px at 38% 18%,#fff6c8,transparent);animation:kpGlanz 2.4s ease-in-out infinite}
+@keyframes kpGlanz{50%{opacity:.25}}
+.kp-scroll{position:relative;padding:18px 18px 22px;border-radius:12px;background:url(a/ui/pergament.jpg) center/cover;box-shadow:0 8px 22px rgba(0,0,0,.5);color:var(--ink);text-align:center}
+.kp-to{font:.92rem var(--sc);color:var(--ink2)}
+.kp-to b{display:block;font:400 1.5rem/1.15 var(--head);color:#8a2c14;margin-top:2px;word-break:break-word}
+.kp-scroll p{margin:10px 0 6px;font-size:1.02rem;line-height:1.45;font-style:italic;white-space:pre-wrap;word-break:break-word}
+.kp-from{font:700 .95rem var(--sc);color:var(--ink)}
+.kp-hint{margin-top:8px;padding-top:8px;border-top:1px dashed rgba(107,69,36,.45);font-size:.9rem;color:var(--ink2)}
+.kp-hint:empty,.kp-from:empty{display:none}
+.kp-wax{position:absolute;right:-8px;bottom:-12px;width:52px;filter:drop-shadow(0 3px 5px rgba(0,0,0,.4));transform:rotate(-12deg)}
+.kp-go{position:relative;overflow:hidden;margin-top:6px}
+.kp-go::after{content:'';position:absolute;top:0;bottom:0;width:40%;left:-60%;background:linear-gradient(90deg,transparent,rgba(255,240,200,.35),transparent);transform:skewX(-20deg);animation:kpGlanzKnopf 3.2s ease-in-out infinite}
+@keyframes kpGlanzKnopf{60%,100%{left:130%}}
+.kp-err{color:#ff8a7a;text-align:center;min-height:1em}
+.kp-res{position:relative;margin-top:10px;padding:24px 18px 20px;border-radius:20px;overflow:hidden;text-align:center;background:radial-gradient(circle at 50% 20%,#5a3a18,#24160c 70%);box-shadow:0 0 0 2px var(--gold),0 0 30px rgba(224,176,74,.35)}
+.kp-rays{position:absolute;left:50%;top:60px;width:600px;height:600px;margin-left:-300px;background:repeating-conic-gradient(rgba(255,215,120,.12) 0 10deg,transparent 10deg 20deg);animation:kpDreh 30s linear infinite;pointer-events:none;-webkit-mask:radial-gradient(circle,#000 20%,transparent 60%);mask:radial-gradient(circle,#000 20%,transparent 60%)}
+@keyframes kpDreh{to{transform:rotate(360deg)}}
+.kp-rk{position:relative;font:700 .8rem var(--sc);letter-spacing:.08em;color:var(--gold)}
+.kp-res h3{position:relative;margin:4px 0 12px;font:400 1.9rem/1.1 var(--head);color:#fff4da;text-shadow:0 2px 12px rgba(0,0,0,.6)}
+.kp-qrf{position:relative;display:inline-block;padding:10px;border-radius:14px;background:url(a/ui/pergament.jpg) center/cover;box-shadow:0 0 0 3px #8a5a2b,0 0 0 5px var(--gold),0 10px 24px rgba(0,0,0,.5)}
+.kp-qrf img{display:block;width:190px;border-radius:6px}
+.kp-qrs{position:relative;margin-top:14px}
+.kp-res .small{position:relative;color:#e8d4ae}
+.kp-link{position:relative;margin:12px 0;font-size:.74rem;color:#d9c39a;word-break:break-all;opacity:.8}
+.kp-btns{position:relative;display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
+.kp-btns .pbtn{min-width:140px}
