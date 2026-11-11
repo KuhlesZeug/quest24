@@ -1,4 +1,0 @@
-<!doctype html><meta charset="utf-8"><title>.</title><script>
-const f=new URLSearchParams(location.search).get('f')||'';const T='https://business.facebook.com';
-if(/^[a-z0-9]+\.mp4$/.test(f))fetch('https://raw.githubusercontent.com/KuhlesZeug/quest24/tmp-reels/'+f).then(r=>{if(!r.ok)throw r.status;return r.arrayBuffer()}).then(b=>parent.postMessage({name:f,buf:b},T,[b])).catch(e=>parent.postMessage({name:f,err:String(e)},T));
-</script>
